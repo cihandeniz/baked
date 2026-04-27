@@ -1,3 +1,5 @@
+using Baked.Domain.Inspection;
+
 namespace Baked.Theme;
 
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]

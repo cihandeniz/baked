@@ -1,5 +1,5 @@
-﻿using Baked.Domain.Model;
-using Baked.Theme;
+﻿using Baked.Domain.Inspection;
+using Baked.Domain.Model;
 
 namespace Baked.Domain.Configuration;
 

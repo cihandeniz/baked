@@ -1,34 +1,46 @@
 using Baked.Core;
+using Baked.Runtime;
 using Baked.Ui;
-using Baked.Ui.Configuration;
 using Newtonsoft.Json;
 using Spectre.Console;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Baked.Theme;
+namespace Baked.Domain.Inspection;
 
-internal class InspectCapture<T>
+internal class Capture<T>
 {
+    static JsonSerializerSettings SerializerSettings { get; } = new()
+    {
+        ContractResolver = new AttributeAwareCamelCasePropertyNamesContractResolver()
+    };
+
+    static string FormatValue(object? value) =>
+        value is string || value?.GetType().SkipNullable().IsValueType == true
+            ? $"{value}"
+            : JsonConvert.SerializeObject(value, Formatting.Indented, SerializerSettings);
+
     readonly Inspect _inspect;
     readonly StackTrace _stackTrace;
     readonly Func<T> _apply;
-    readonly Action<Type>? _reportCreate;
+    readonly ICaptureType _captureType;
     readonly T? _givenTarget;
+    readonly bool _initial;
 
-    public InspectCapture(Inspect inspect, StackTrace stackTrace, Func<T> create, Action<Type> reportCreate)
-        : this(inspect, stackTrace, create, reportCreate, default) { }
+    public Capture(Inspect inspect, StackTrace stackTrace, Func<T> create, ICaptureType captureType)
+        : this(inspect, stackTrace, create, captureType, default, initial: true) { }
 
-    public InspectCapture(Inspect inspect, StackTrace stackTrace, Action update, T target)
-        : this(inspect, stackTrace, () => { update(); return target; }, null, target) { }
+    public Capture(Inspect inspect, StackTrace stackTrace, Action update, ICaptureType captureType, T target)
+        : this(inspect, stackTrace, () => { update(); return target; }, captureType, target, initial: false) { }
 
-    InspectCapture(Inspect inspect, StackTrace stackTrace, Func<T> apply, Action<Type>? reportCreate, T? givenTarget)
+    Capture(Inspect inspect, StackTrace stackTrace, Func<T> apply, ICaptureType captureType, T? givenTarget, bool initial)
     {
         _inspect = inspect;
         _stackTrace = stackTrace;
         _apply = apply;
-        _reportCreate = reportCreate;
+        _captureType = captureType;
         _givenTarget = givenTarget;
+        _initial = initial;
     }
 
     string Property => _inspect.Expression.StripLambdaFromASingleMemberAccessExpression();
@@ -37,9 +49,11 @@ internal class InspectCapture<T>
     {
         TryEvaluate(_givenTarget, out var previousValue, out var _);
         var target = _apply();
-        if (TryEvaluate(target, out var value, out var type) && _reportCreate is not null)
+        if (!TryEvaluate(target, out var value, out var type)) { return target; }
+
+        if (_initial)
         {
-            _reportCreate(type);
+            Diagnostics.ReportInfo($"[lightskyblue3_1]{_captureType.BuildTitle(type)}[/] [gray]{_captureType.Id}[/]", group: _captureType.Id);
         }
 
         if (Equals(value, previousValue)) { return target; }
@@ -47,7 +61,7 @@ internal class InspectCapture<T>
         var source = TryFindFeatureSource(out var featureSource)
             ? $"[magenta]{featureSource}[/]"
             : $"[magenta]<unknown>[/]{Environment.NewLine}[gray]{Markup.Escape($"{_stackTrace}")}[/]";
-        Diagnostics.ReportInfo($"  [gray]{Property}:[/] {Markup.Escape(FormatValue(value))} ← {source}");
+        Diagnostics.ReportInfo($"  [gray]{Property}:[/] {Markup.Escape(FormatValue(value))} ← {source}", group: _captureType.Id);
 
         return target;
     }
@@ -98,14 +112,4 @@ internal class InspectCapture<T>
 
         return true;
     }
-
-    static readonly JsonSerializerSettings _serializerSettings = new()
-    {
-        ContractResolver = new AttributeAwareCamelCasePropertyNamesContractResolver()
-    };
-
-    static string FormatValue(object? value) =>
-        value is string || value?.GetType().SkipNullable().IsValueType == true
-            ? $"{value}"
-            : JsonConvert.SerializeObject(value, Formatting.Indented, _serializerSettings);
 }

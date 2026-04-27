@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Baked.Ui.Configuration;
+namespace Baked.Runtime;
 
 public class AttributeAwareCamelCasePropertyNamesContractResolver : CamelCasePropertyNamesContractResolver
 {

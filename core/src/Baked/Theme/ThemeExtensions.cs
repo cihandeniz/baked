@@ -1,6 +1,7 @@
 ﻿using Baked.Architecture;
 using Baked.Domain;
 using Baked.Domain.Configuration;
+using Baked.Domain.Inspection;
 using Baked.Domain.Model;
 using Baked.RestApi;
 using Baked.RestApi.Model;
@@ -10,6 +11,7 @@ using Baked.Theme.Default;
 using Baked.Ui;
 using Baked.Ui.Configuration;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 
 using static Baked.Ui.Datas;
 
@@ -995,37 +997,6 @@ public static class ThemeExtensions
             };
     }
 
-    extension(Stubber giveMe)
-    {
-        public PageContext APageContext(
-            string? path = default,
-            string? title = default
-        )
-        {
-            path ??= "/";
-            title ??= "TEST PAGE";
-
-            return new()
-            {
-                Route = new(path, title),
-                Sitemap = [],
-                Domain = giveMe.TheDomainModel(),
-                NewLocaleKey = s => s
-            };
-        }
-
-        public ComponentContext AComponentContext(
-            object[]? paths = default
-        )
-        {
-            paths ??= [];
-
-            return giveMe
-                .APageContext()
-                .Drill(paths);
-        }
-    }
-
     extension(IComponentSchema schema)
     {
         public TComponentSchema As<TComponentSchema>() where TComponentSchema : IComponentSchema =>
@@ -1109,6 +1080,14 @@ public static class ThemeExtensions
         }
 #pragma warning restore IDE0051
     }
+
+    // WARNING
+    //
+    // Do NOT remove this warning disable section unintentionally.
+    // Without this, GitHub Actions fails on dotnet format
+#pragma warning disable IDE0051
+    static bool WarnForMissingComponent => Environment.GetCommandLineArgs().Contains("--warn-for-missing-component");
+#pragma warning restore IDE0051
 
     extension(ICustomAttributesModel metadata)
     {
@@ -1199,11 +1178,76 @@ public static class ThemeExtensions
         }
     }
 
-    // WARNING
-    //
-    // Do NOT remove this warning disable section unintentionally.
-    // Without this, GitHub Actions fails on dotnet format
+    extension(InspectTrace trace)
+    {
+        // WARNING
+        //
+        // Do NOT remove this warning disable section unintentionally.
+        // Without this, GitHub Actions fails on dotnet format
 #pragma warning disable IDE0051
-    static bool WarnForMissingComponent => Environment.GetCommandLineArgs().Contains("--warn-for-missing-component");
+        static bool ShouldCapture(ComponentContext context, [NotNullWhen(true)] out Inspect? inspect)
+        {
+            inspect = Inspect.Current;
+
+            return inspect is not null && inspect.ComponentFilter(context);
+        }
 #pragma warning restore IDE0051
+
+        public T Capture<T>(ComponentContext context, Func<T> create)
+        {
+            if (!ShouldCapture(context, out var inspect))
+            {
+                return create();
+            }
+
+            return
+                new Capture<T>(inspect, trace.StackTrace, create, new DescriptorCaptureType(context))
+                .Execute();
+        }
+
+        public T Capture<T>(ComponentContext context, T target, Action update)
+        {
+            if (!ShouldCapture(context, out var inspect))
+            {
+                update();
+
+                return target;
+            }
+
+            return
+                new Capture<T>(inspect, trace.StackTrace, update, new DescriptorCaptureType(context), target)
+                .Execute();
+        }
+    }
+
+    extension(Stubber giveMe)
+    {
+        public PageContext APageContext(
+            string? path = default,
+            string? title = default
+        )
+        {
+            path ??= "/";
+            title ??= "TEST PAGE";
+
+            return new()
+            {
+                Route = new(path, title),
+                Sitemap = [],
+                Domain = giveMe.TheDomainModel(),
+                NewLocaleKey = s => s
+            };
+        }
+
+        public ComponentContext AComponentContext(
+            object[]? paths = default
+        )
+        {
+            paths ??= [];
+
+            return giveMe
+                .APageContext()
+                .Drill(paths);
+        }
+    }
 }

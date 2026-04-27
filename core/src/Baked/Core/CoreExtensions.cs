@@ -12,10 +12,28 @@ namespace Baked;
 
 public static class CoreExtensions
 {
+    // WARNING
+    //
+    // Do NOT remove this warning disable section unintentionally.
+    // Without this, GitHub Actions fails on dotnet format
+#pragma warning disable IDE0052
+    static readonly IAnsiConsole _buildConsole = AnsiConsole.Create(new() { Out = new AnsiConsoleOutput(new EscapeFixTextWriter(Console.Out)) });
+#pragma warning restore IDE0052
+
+    static CoreExtensions()
+    {
+        _buildConsole.Profile.Width = int.MaxValue;
+    }
+
     extension(List<IFeature> features)
     {
         public void AddCore(FeatureFunc<CoreConfigurator> configure) =>
             features.Add(configure(new()));
+    }
+
+    extension(Console)
+    {
+        internal static IAnsiConsole Build => _buildConsole;
     }
 
     extension(Dictionary<string, string>? dictionary)
@@ -239,18 +257,5 @@ public static class CoreExtensions
             method.GetParameters().Length.ShouldBe(1);
             method.GetParameters().First().ParameterType.ShouldBe<T>();
         }
-    }
-
-    // WARNING
-    //
-    // Do NOT remove this warning disable section unintentionally.
-    // Without this, GitHub Actions fails on dotnet format
-#pragma warning disable IDE0052
-    static readonly IAnsiConsole _buildConsole = AnsiConsole.Create(new() { Out = new AnsiConsoleOutput(new EscapeFixTextWriter(Console.Out)) });
-#pragma warning restore IDE0052
-
-    extension(Console)
-    {
-        internal static IAnsiConsole Build => _buildConsole;
     }
 }

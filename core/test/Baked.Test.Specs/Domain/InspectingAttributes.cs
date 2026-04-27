@@ -1,7 +1,7 @@
 using Baked.Business;
 using Baked.Domain.Configuration;
+using Baked.Domain.Inspection;
 using Baked.Playground.Orm;
-using Baked.Theme;
 using Baked.Theme.Default;
 
 namespace Baked.Test;
@@ -9,7 +9,7 @@ namespace Baked.Test;
 public class InspectingAttributes : TestSpec
 {
     readonly List<DiagnosticMessage> _messages = [];
-    InspectTrace _trace = Inspect.TraceHere();
+    readonly InspectTrace _trace = Inspect.TraceHere();
     IDisposable? _diagnostics;
 
     public override void SetUp()
@@ -27,7 +27,7 @@ public class InspectingAttributes : TestSpec
         _messages.Clear();
     }
 
-    IEnumerable<(DomainModelContext, string)> CreateContextCases()
+    IEnumerable<(DomainModelContext Context, string MemberName)> CreateContextCases()
     {
         var domain = GiveMe.TheDomainModel();
         var parent = GiveMe.TheTypeModel<Parent>().GetMembers();
@@ -79,18 +79,18 @@ public class InspectingAttributes : TestSpec
     {
         Inspect.Attribute<DataAttribute>(d => d.Label);
 
-        var cases = CreateContextCases();
+        var cases = CreateContextCases().OrderBy(c => c.Context.Identifier);
         using (_diagnostics)
         {
-            foreach (var (context, memberName) in cases)
+            foreach (var (c, _) in cases)
             {
-                _trace.Capture(context, () => new DataAttribute("test") { Label = "Test" });
+                _trace.Capture(c, () => new DataAttribute("test") { Label = "Test" });
             }
         }
 
         _messages.Count.ShouldBe(2 * cases.Count());
         var i = 0;
-        foreach (var (context, memberName) in cases)
+        foreach (var (_, memberName) in cases)
         {
             _messages[0 + i * 2].Level.ShouldBe("info");
             _messages[0 + i * 2].Message.ShouldContain(memberName);
@@ -105,85 +105,14 @@ public class InspectingAttributes : TestSpec
     public void Allows_inspecting_an_attribute_without_any_property()
     {
         Inspect.Attribute<LabelAttribute>();
-        var context = GiveMe.ATypeModelContext<Parent>();
+        var c = GiveMe.ATypeModelContext<Parent>();
 
-        var cases = CreateContextCases();
         using (_diagnostics)
         {
-            _trace.Capture(context, () => new LabelAttribute());
+            _trace.Capture(c, () => new LabelAttribute());
         }
 
         _messages.ShouldContain(m => m.Message.Contains("[gray]<this>:[/] {}"));
-    }
-
-    [Test]
-    [Ignore("not implemented")]
-    public void When_the_inspected_property_of_an_attribute_is_updated__it_reports_only_if_new_value_is_different()
-    {
-        this.ShouldFail();
-        // Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
-        // var cc = GiveMe.AComponentContext();
-        //
-        // using (_diagnostics)
-        // {
-        //     var dtc = B.DataTableColumn(key: GiveMe.AString(), options: dtc => dtc.Title = "initial");
-        //
-        //     _trace.Capture(cc, dtc, () => dtc.Title = "updated");
-        //     _trace.Capture(cc, dtc, () => dtc.Title = "updated");
-        // }
-        //
-        // _messages.Count(c => c.Message.Contains("updated")).ShouldBe(1);
-    }
-
-    [Test]
-    [Ignore("not implemented")]
-    public void Capture_returns_the_expected_attribute__so_that_usages_can_return_with_a_single_line()
-    {
-        this.ShouldFail();
-        // Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
-        // var cc = GiveMe.AComponentContext();
-        //
-        // using (_diagnostics)
-        // {
-        //     var dtc = _trace.Capture(cc, () => B.DataTableColumn(GiveMe.AString(), options: t => t.Title = "test title"));
-        //
-        //     dtc.Title.ShouldBe("test title");
-        // }
-    }
-
-    [Test]
-    [Ignore("not implemented")]
-    public void It_prints_member_name_once_for_consequent_updates()
-    {
-        this.ShouldFail();
-        // Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
-        // var cc = GiveMe.AComponentContext(paths: ["test", "path"]);
-        //
-        // using (_diagnostics)
-        // {
-        //     var dtc = _trace.Capture(cc, () => B.DataTableColumn(key: GiveMe.AString(), options: dtc => dtc.Title = "1"));
-        //
-        //     _trace.Capture(cc, dtc, () => dtc.Title = "2");
-        // }
-        //
-        // _messages.Count(c => c.Message.Contains("/test/path")).ShouldBe(1);
-    }
-
-    [Test]
-    [Ignore("not implemented")]
-    public void Capture_does_not_report_when_a_non_inspected_property_is_set_or_updated()
-    {
-        this.ShouldFail();
-        // Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
-        // var cc = GiveMe.AComponentContext();
-        //
-        // using (_diagnostics)
-        // {
-        //     var dtc = _trace.Capture(cc, () => B.DataTableColumn(GiveMe.AString(), options: dtc => dtc.AlignRight = true));
-        //     _trace.Capture(cc, dtc, () => dtc.AlignRight = false);
-        // }
-        //
-        // _messages.Count(c => c.Message.Contains($"{true}")).ShouldBe(0);
     }
 
     [Test]
@@ -241,6 +170,93 @@ public class InspectingAttributes : TestSpec
 
         _messages.ShouldContain(m => m.Message.Contains("[[Data]]"));
         _messages.ShouldContain(m => m.Message.Contains("[gray]Label:[/] Test"));
+    }
+
+    [Test]
+    public void When_the_inspected_property_of_an_attribute_is_updated__it_reports_only_if_new_value_is_different()
+    {
+        Inspect.Attribute<DataAttribute>(d => d.Label);
+        var c = GiveMe.ATypeModelContext<Parent>();
+
+        using (_diagnostics)
+        {
+            var d = new DataAttribute(GiveMe.AString()) { Label = "initial" };
+
+            _trace.Capture(c, d, () => d.Label = "updated");
+            _trace.Capture(c, d, () => d.Label = "updated");
+        }
+
+        _messages.Count(c => c.Message.Contains("updated")).ShouldBe(1);
+    }
+
+    [Test]
+    public void Capture_returns_the_expected_attribute__so_that_usages_can_return_with_a_single_line()
+    {
+        Inspect.Attribute<DataAttribute>(d => d.Label);
+        var c = GiveMe.ATypeModelContext<Parent>();
+
+        using (_diagnostics)
+        {
+            var d = _trace.Capture(c, () => new DataAttribute(GiveMe.AString()) { Label = "test label" });
+
+            d.Label.ShouldBe("test label");
+        }
+    }
+
+    [Test]
+    public void It_prints_member_name_once_for_consequent_updates()
+    {
+        Inspect.Attribute<DataAttribute>(d => d.Label);
+        var c = GiveMe.ATypeModelContext<Parent>();
+
+        using (_diagnostics)
+        {
+            var d = _trace.Capture(c, () => new DataAttribute(GiveMe.AString()) { Label = "1" });
+            _trace.Capture(c, d, () => d.Label = "2");
+        }
+
+        _messages.Count(c => c.Message.Contains("Parent")).ShouldBe(1);
+    }
+
+    [Test]
+    public void It_groups_and_sort_messages_by_the_member_id_to_be_reported_together()
+    {
+        Inspect.Attribute<DataAttribute>(d => d.Label);
+        var cParent = GiveMe.ATypeModelContext<Parent>();
+        var cChild = GiveMe.ATypeModelContext<Child>();
+
+        using (_diagnostics)
+        {
+            var dParent = _trace.Capture(cParent, () => new DataAttribute(GiveMe.AString()) { Label = "label 3" });
+            var dChild = _trace.Capture(cChild, () => new DataAttribute(GiveMe.AString()) { Label = "label 1" });
+
+            _trace.Capture(cParent, dParent, () => dParent.Label = "label 4");
+            _trace.Capture(cChild, dChild, () => dChild.Label = "label 2");
+        }
+
+        _messages.Count.ShouldBe(6);
+        _messages[0].Message.ShouldContain("Child");
+        _messages[1].Message.ShouldContain("label 1");
+        _messages[2].Message.ShouldContain("label 2");
+        _messages[3].Message.ShouldContain("Parent");
+        _messages[4].Message.ShouldContain("label 3");
+        _messages[5].Message.ShouldContain("label 4");
+    }
+
+    [Test]
+    public void Capture_does_not_report_when_a_non_inspected_property_is_set_or_updated()
+    {
+        Inspect.Attribute<DataAttribute>(d => d.Label);
+        var c = GiveMe.ATypeModelContext<Parent>();
+
+        using (_diagnostics)
+        {
+            var d = _trace.Capture(c, () => new DataAttribute(GiveMe.AString()) { Visible = true });
+            _trace.Capture(c, d, () => d.Visible = true);
+        }
+
+        _messages.Count(c => c.Message.Contains($"{true}")).ShouldBe(0);
+        _messages.Count(c => c.Message.Contains($"{false}")).ShouldBe(0);
     }
 
     [Test]

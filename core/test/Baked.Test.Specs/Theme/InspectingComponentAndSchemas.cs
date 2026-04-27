@@ -1,5 +1,5 @@
+using Baked.Domain.Inspection;
 using Baked.Playground.Ui;
-using Baked.Theme;
 using Baked.Ui;
 using System.Text.RegularExpressions;
 
@@ -13,7 +13,7 @@ namespace Baked.Test.Theme;
 public class InspectingComponentAndSchemas : TestSpec
 {
     readonly List<DiagnosticMessage> _messages = [];
-    InspectTrace _trace = Inspect.TraceHere();
+    readonly InspectTrace _trace = Inspect.TraceHere();
     IDisposable? _diagnostics;
 
     public override void SetUp()

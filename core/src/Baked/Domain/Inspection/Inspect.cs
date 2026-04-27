@@ -1,9 +1,10 @@
 using Baked.Domain.Configuration;
+using Baked.Theme;
 using Baked.Ui;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
-namespace Baked.Theme;
+namespace Baked.Domain.Inspection;
 
 public class Inspect
 {

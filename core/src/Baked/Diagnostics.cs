@@ -33,7 +33,10 @@ public class Diagnostics : IDisposable
             {
                 foreach (var message in result.Messages)
                 {
-                    try { Console.Build.MarkupLine(message.ToString()); }
+                    try
+                    {
+                        Console.Build.MarkupLine(message.ToString());
+                    }
                     catch { Console.WriteLine(message); }
                 }
 
@@ -81,13 +84,15 @@ public class Diagnostics : IDisposable
     public static void ReportWarning(DiagnosticCode code, string message) =>
         Report(message, level: "warning", code: code);
 
-    public static void ReportInfo(string message) =>
-        Report(message);
+    public static void ReportInfo(string message,
+        string? group = default
+    ) => Report(message, group: group);
 
     static void Report(string message,
         string level = "info",
-        DiagnosticCode? code = default
-    ) => Current._messages.Add(new(message, level, code));
+        DiagnosticCode? code = default,
+        string? group = default
+    ) => Current._messages.Add(new(message, level, code, group));
 
     Action<DiagnosticsResult> _dispose;
     bool _disposed;
@@ -109,7 +114,15 @@ public class Diagnostics : IDisposable
     {
         if (_disposed) { return; }
 
-        _dispose(new(_errors.AsReadOnly(), _messages.AsReadOnly()));
+        var errors = _errors.AsReadOnly();
+        var messages = _messages
+            .GroupBy(m => m.Group)
+            .OrderBy(g => g.Key)
+            .SelectMany(g => g)
+            .ToList()
+            .AsReadOnly();
+
+        _dispose(new(errors, messages));
 
         _current = null;
         _disposed = true;

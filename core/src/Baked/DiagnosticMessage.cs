@@ -1,20 +1,22 @@
 namespace Baked;
 
-public class DiagnosticMessage(string _message, string _level,
-    DiagnosticCode? _code = default
+public class DiagnosticMessage(string message, string level,
+    DiagnosticCode? code = default,
+    string? group = default
 )
 {
-    public string Level => _level;
-    public string Message => _message;
-    public DiagnosticCode? Code => _code;
+    public string Level { get; } = level;
+    public string Message { get; } = message;
+    public DiagnosticCode? Code { get; } = code;
+    public string Group { get; } = group ?? "_";
 
     string ErrorCode =>
-        _code is null ? string.Empty :
-        _code.Value.Key is null ? $" C{_code.Value.Number:D4}" :
-        $" [link=https://baked.mouseless.codes/errors#{_code.Value.Key}]B{_code.Value.Number:D4}[/]";
+        Code is null ? string.Empty :
+        Code.Value.Key is null ? $" C{Code.Value.Number:D4}" :
+        $" [link=https://baked.mouseless.codes/errors#{Code.Value.Key}]B{Code.Value.Number:D4}[/]";
 
     string Color =>
-        _level switch
+        Level switch
         {
             "error" => "maroon",
             "warning" => "darkorange3",
@@ -23,5 +25,5 @@ public class DiagnosticMessage(string _message, string _level,
         };
 
     public override string ToString() =>
-        $"[bold {Color}]{_level}{ErrorCode}[/]: {_message}";
+        $"[bold {Color}]{Level}{ErrorCode}[/]: {Message}";
 }

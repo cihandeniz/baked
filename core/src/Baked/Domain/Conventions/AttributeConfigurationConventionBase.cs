@@ -1,6 +1,6 @@
 ﻿using Baked.Domain.Configuration;
+using Baked.Domain.Inspection;
 using Baked.Domain.Model;
-using Baked.Theme;
 
 namespace Baked.Domain.Conventions;
 
