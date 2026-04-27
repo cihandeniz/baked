@@ -3,7 +3,7 @@ namespace Baked.Test;
 public class ReportingDiagnostics
 {
     [Test]
-    public void Error_comes_in_maroon_along_with_a_link()
+    public void Error_comes_in_a_red_tone_along_with_a_link()
     {
         var messages = new List<DiagnosticMessage>();
         using (Diagnostics.Start("test", result => messages.AddRange(result.Messages)))
@@ -31,7 +31,7 @@ public class ReportingDiagnostics
     }
 
     [Test]
-    public void Warning_comes_in_darkorange3_along_with_a_link()
+    public void Warning_comes_in_an_orange_tone_along_with_a_link()
     {
         var messages = new List<DiagnosticMessage>();
         using (Diagnostics.Start("test", result => messages.AddRange(result.Messages)))
@@ -45,7 +45,7 @@ public class ReportingDiagnostics
     }
 
     [Test]
-    public void Info_comes_in_cyan()
+    public void Info_comes_in_a_blue_tone()
     {
         var messages = new List<DiagnosticMessage>();
         using (Diagnostics.Start("test", result => messages.AddRange(result.Messages)))

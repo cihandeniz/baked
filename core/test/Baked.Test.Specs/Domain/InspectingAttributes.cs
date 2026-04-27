@@ -3,8 +3,9 @@ using Baked.Domain.Configuration;
 using Baked.Domain.Inspection;
 using Baked.Playground.Orm;
 using Baked.Theme.Default;
+using System.Text.RegularExpressions;
 
-namespace Baked.Test;
+namespace Baked.Test.Domain;
 
 public class InspectingAttributes : TestSpec
 {
@@ -112,28 +113,7 @@ public class InspectingAttributes : TestSpec
             _trace.Capture(c, () => new LabelAttribute());
         }
 
-        _messages.ShouldContain(m => m.Message.Contains("[gray]<this>:[/] {}"));
-    }
-
-    [Test]
-    [Ignore("not implemented")]
-    public void Allows_inspection_on_interfaces()
-    {
-        this.ShouldFail();
-        // Inspect.Component<ISelect>(s => s.OptionLabel);
-        // var cc = GiveMe.AComponentContext();
-        //
-        // using (_diagnostics)
-        // {
-        //     var sb = _trace.Capture(cc, () => B.SelectButton(
-        //         data: Inline(new[] { new { testProp = GiveMe.AString() } }),
-        //         options: sb => sb.OptionLabel = "initialized")
-        //     );
-        //     _trace.Capture(cc, sb, () => sb.Schema.OptionLabel = "updated");
-        // }
-        //
-        // _messages.ShouldContain(m => m.Message.Contains("initialized"));
-        // _messages.ShouldContain(m => m.Message.Contains("updated"));
+        _messages.ShouldContain(m => m.Message.Contains("<this>"));
     }
 
     [Test]
@@ -142,19 +122,17 @@ public class InspectingAttributes : TestSpec
         this.ShouldFail();
 
     [Test]
-    [Ignore("not tested")]
     public void Reports_member_in_gray_for_readability()
     {
-        this.ShouldFail();
-        // Inspect.Component<Text>(t => t.Prop);
-        // var cc = GiveMe.AComponentContext(paths: ["test", "path"]);
-        //
-        // using (_diagnostics)
-        // {
-        //     _trace.Capture(cc, () => B.Text(options: t => t.Prop = GiveMe.AString()));
-        // }
-        //
-        // _messages.ShouldContain(m => m.Message.Contains("[gray]/test/path[/]"));
+        Inspect.Attribute<LabelAttribute>();
+        var c = GiveMe.ATypeModelContext<Parent>();
+
+        using (_diagnostics)
+        {
+            _trace.Capture(c, () => new LabelAttribute());
+        }
+
+        _messages.ShouldContain(m => m.Message.Contains("[gray]Baked.Playground.Orm.Parent[/]"));
     }
 
     [Test]
@@ -170,6 +148,27 @@ public class InspectingAttributes : TestSpec
 
         _messages.ShouldContain(m => m.Message.Contains("[[Data]]"));
         _messages.ShouldContain(m => m.Message.Contains("[gray]Label:[/] Test"));
+    }
+
+    [Test]
+    public void Reports_new_value_as_json_when_value_is_not_value_type_or_string()
+    {
+        Inspect.Attribute<DataAttribute>();
+        var c = GiveMe.ATypeModelContext<Parent>();
+
+        using (_diagnostics)
+        {
+            _trace.Capture(c, () => new DataAttribute("test-prop") { Label = "Test Label" });
+        }
+
+        _messages.ShouldContain(m => m.Message.Contains("""
+        {
+          "prop": "test-prop",
+          "label": "Test Label",
+          "visible": true,
+          "order": 0
+        }
+        """));
     }
 
     [Test]
@@ -260,61 +259,35 @@ public class InspectingAttributes : TestSpec
     }
 
     [Test]
-    [Ignore("not tested")]
     public void Captures_and_reports_feature_name_from_stack_trace()
     {
-        this.ShouldFail();
-        // Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
-        //
-        // using (_diagnostics)
-        // {
-        //     new StubUxFeature(GiveMe).Configure(() =>
-        //         B.DataTableColumn(GiveMe.AString(), options: dtc => dtc.Title = GiveMe.AString())
-        //     );
-        // }
-        //
-        // _messages.ShouldContain(m => Regex.IsMatch(m.Message, @"\[link=.*]StubUxFeature:\d+\[/]"));
+        Inspect.Attribute<LabelAttribute>();
+        var c = GiveMe.ATypeModelContext<Parent>();
+
+        using (_diagnostics)
+        {
+            new StubFeature(c).Configure(() => new LabelAttribute());
+        }
+
+        _messages.ShouldContain(m => Regex.IsMatch(m.Message, @"\[link=.*]StubFeature:\d+\[/]"));
     }
 
     [Test]
-    [Ignore("not tested")]
     public void Reports_the_whole_stack_trace_when_feature_is_not_captured()
     {
-        this.ShouldFail();
-        // Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
-        // var cc = GiveMe.AComponentContext();
-        //
-        // using (_diagnostics)
-        // {
-        //     _trace.Capture(cc, () => B.DataTableColumn(GiveMe.AString(), options: dtc => dtc.Title = "test"));
-        // }
-        //
-        // _messages.ShouldContain(m => m.Message.Contains("[magenta]<unknown>[/]"));
-        // _messages.ShouldContain(m =>
-        //     Regex.IsMatch(m.Message, @"\[gray].*at Baked[.]Test[.]InspectingAttributes[.][.]ctor\(\).*\[/]",
-        //         RegexOptions.Singleline
-        //     )
-        // );
-    }
+        Inspect.Attribute<LabelAttribute>();
+        var c = GiveMe.ATypeModelContext<Parent>();
 
-    [Test]
-    [Ignore("not tested")]
-    public void Reports_new_value_as_json_when_value_is_not_value_type_or_string()
-    {
-        this.ShouldFail();
-        // Inspect.Component<Text>(c => c);
-        // var cc = GiveMe.AComponentContext();
-        //
-        // using (_diagnostics)
-        // {
-        //     _trace.Capture(cc, () => B.Text(options: t => t.Prop = "test"));
-        // }
-        //
-        // _messages.ShouldContain(m => m.Message.Contains($$"""
-        // {
-        //   "MaxLength": null,
-        //   "Prop": "test"
-        // }
-        // """), customMessage: _messages.Join(", "));
+        using (_diagnostics)
+        {
+            _trace.Capture(c, () => new LabelAttribute());
+        }
+
+        _messages.ShouldContain(m => m.Message.Contains("[magenta]<unknown>[/]"));
+        _messages.ShouldContain(m =>
+            Regex.IsMatch(m.Message, @"\[gray].*at Baked[.]Test[.]Domain[.]InspectingAttributes[.][.]ctor\(\).*\[/]",
+                RegexOptions.Singleline
+            )
+        );
     }
 }

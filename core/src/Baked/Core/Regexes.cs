@@ -16,7 +16,7 @@ internal static partial class Regexes
                 .Value;
     }
 
-    [GeneratedRegex(@"^\w+ => (?:Convert\()?(\w+\.)")]
+    [GeneratedRegex(@"^\w+ => (Convert\()?\w+\.?")]
     public static partial Regex LambdaOfASingleMemberAccessExpression { get; }
 
     [GeneratedRegex(@",\s*\w+\)$")]
@@ -24,12 +24,14 @@ internal static partial class Regexes
 
     extension(string expression)
     {
-        public string StripLambdaFromASingleMemberAccessExpression() =>
-            expression == "x => x"
-                ? "<this>"
-                : TrailingConvertSuffix.Replace(
-                    LambdaOfASingleMemberAccessExpression.Replace(expression, string.Empty),
-                    string.Empty
-                );
+        public string StripLambdaFromASingleMemberAccessExpression()
+        {
+            var result = TrailingConvertSuffix.Replace(
+                LambdaOfASingleMemberAccessExpression.Replace(expression, string.Empty),
+                string.Empty
+            );
+
+            return result == string.Empty ? "<this>" : result;
+        }
     }
 }

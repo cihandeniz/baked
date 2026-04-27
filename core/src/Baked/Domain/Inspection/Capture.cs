@@ -12,7 +12,8 @@ internal class Capture<T>
 {
     static JsonSerializerSettings SerializerSettings { get; } = new()
     {
-        ContractResolver = new AttributeAwareCamelCasePropertyNamesContractResolver()
+        ContractResolver = new AttributeAwareCamelCasePropertyNamesContractResolver(),
+        NullValueHandling = NullValueHandling.Ignore
     };
 
     static string FormatValue(object? value) =>

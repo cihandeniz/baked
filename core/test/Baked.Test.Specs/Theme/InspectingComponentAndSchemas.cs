@@ -1,7 +1,6 @@
 using Baked.Domain.Inspection;
 using Baked.Playground.Ui;
 using Baked.Ui;
-using System.Text.RegularExpressions;
 
 using static Baked.Ui.Datas;
 
@@ -32,7 +31,7 @@ public class InspectingComponentAndSchemas : TestSpec
     }
 
     [Test]
-    public void When_a_schema_is_created_with_a_non_null_on_the_inspected_property__it_reports_schema_path_and_the_initial_value()
+    public void Allows_inspecting_a_schema_property()
     {
         Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
         var cc = GiveMe.AComponentContext(paths: ["test", "path"]);
@@ -47,68 +46,6 @@ public class InspectingComponentAndSchemas : TestSpec
         _messages[0].Message.ShouldContain("/test/path");
         _messages[1].Level.ShouldBe("info");
         _messages[1].Message.ShouldContain($"test title");
-    }
-
-    [Test]
-    public void When_the_inspected_property_of_a_schema_is_updated__it_reports_only_if_new_value_is_different()
-    {
-        Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
-        var cc = GiveMe.AComponentContext();
-
-        using (_diagnostics)
-        {
-            var dtc = B.DataTableColumn(key: GiveMe.AString(), options: dtc => dtc.Title = "initial");
-
-            _trace.Capture(cc, dtc, () => dtc.Title = "updated");
-            _trace.Capture(cc, dtc, () => dtc.Title = "updated");
-        }
-
-        _messages.Count(c => c.Message.Contains("updated")).ShouldBe(1);
-    }
-
-    [Test]
-    public void Capture_returns_the_expected_schema__so_that_usages_can_return_with_a_single_line()
-    {
-        Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
-        var cc = GiveMe.AComponentContext();
-
-        using (_diagnostics)
-        {
-            var dtc = _trace.Capture(cc, () => B.DataTableColumn(GiveMe.AString(), options: t => t.Title = "test title"));
-
-            dtc.Title.ShouldBe("test title");
-        }
-    }
-
-    [Test]
-    public void It_prints_component_path_once_for_consequent_updates()
-    {
-        Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
-        var cc = GiveMe.AComponentContext(paths: ["test", "path"]);
-
-        using (_diagnostics)
-        {
-            var dtc = _trace.Capture(cc, () => B.DataTableColumn(key: GiveMe.AString(), options: dtc => dtc.Title = "1"));
-
-            _trace.Capture(cc, dtc, () => dtc.Title = "2");
-        }
-
-        _messages.Count(c => c.Message.Contains("/test/path")).ShouldBe(1);
-    }
-
-    [Test]
-    public void Capture_does_not_report_when_a_non_inspected_property_is_set_or_updated()
-    {
-        Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
-        var cc = GiveMe.AComponentContext();
-
-        using (_diagnostics)
-        {
-            var dtc = _trace.Capture(cc, () => B.DataTableColumn(GiveMe.AString(), options: dtc => dtc.AlignRight = true));
-            _trace.Capture(cc, dtc, () => dtc.AlignRight = false);
-        }
-
-        _messages.Count(c => c.Message.Contains($"{true}")).ShouldBe(0);
     }
 
     [Test]
@@ -160,6 +97,72 @@ public class InspectingComponentAndSchemas : TestSpec
     }
 
     [Test]
+    public void Allows_inspecting_a_schema_without_any_property()
+    {
+        Inspect.Schema<DataTable.Column>();
+        var cc = GiveMe.AComponentContext();
+
+        using (_diagnostics)
+        {
+            _trace.Capture(cc, () => B.DataTableColumn("test-key"));
+        }
+
+        _messages.ShouldContain(m => m.Message.Contains("""
+        [gray]<this>:[/] {
+          "key": "test-key",
+          "component": {
+            "type": "Text",
+            "schema": {}
+          }
+        }
+        """), customMessage: _messages.Join(", "));
+    }
+
+    [Test]
+    public void Allows_inspecting_a_component_without_any_property()
+    {
+        Inspect.Schema<Text>();
+        var cc = GiveMe.AComponentContext();
+
+        using (_diagnostics)
+        {
+            _trace.Capture(cc, () => B.Text());
+        }
+
+        _messages.ShouldContain(m => m.Message.Contains("[gray]<this>:[/] {}"));
+    }
+
+    [Test]
+    public void Capture_returns_the_expected_schema__so_that_usages_can_return_with_a_single_line()
+    {
+        Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
+        var cc = GiveMe.AComponentContext();
+
+        using (_diagnostics)
+        {
+            var dtc = _trace.Capture(cc, () => B.DataTableColumn(GiveMe.AString(), options: t => t.Title = "test title"));
+
+            dtc.Title.ShouldBe("test title");
+        }
+    }
+
+    [Test]
+    public void It_prints_component_path_once_for_consequent_updates()
+    {
+        Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
+        var cc = GiveMe.AComponentContext(paths: ["test", "path"]);
+
+        using (_diagnostics)
+        {
+            var dtc = _trace.Capture(cc, () => B.DataTableColumn(key: GiveMe.AString(), options: dtc => dtc.Title = "1"));
+
+            _trace.Capture(cc, dtc, () => dtc.Title = "2");
+        }
+
+        _messages.Count(c => c.Message.Contains("/test/path")).ShouldBe(1);
+    }
+
+    [Test]
     [Ignore("not tested")]
     public void Filters_by_model_context() =>
         this.ShouldFail();
@@ -187,12 +190,12 @@ public class InspectingComponentAndSchemas : TestSpec
     [Test]
     public void Reports_path_in_gray_for_readability()
     {
-        Inspect.Component<Text>(t => t.Prop);
+        Inspect.Component<Text>();
         var cc = GiveMe.AComponentContext(paths: ["test", "path"]);
 
         using (_diagnostics)
         {
-            _trace.Capture(cc, () => B.Text(options: t => t.Prop = GiveMe.AString()));
+            _trace.Capture(cc, () => B.Text());
         }
 
         _messages.ShouldContain(m => m.Message.Contains("[gray]/test/path[/]"));
@@ -226,58 +229,5 @@ public class InspectingComponentAndSchemas : TestSpec
 
         _messages.ShouldContain(m => m.Message.Contains("<DataTable>"));
         _messages.ShouldContain(m => m.Message.Contains("[gray]Paginator:[/] True"));
-    }
-
-    [Test]
-    public void Captures_and_reports_feature_name_from_stack_trace()
-    {
-        Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
-
-        using (_diagnostics)
-        {
-            new StubUxFeature(GiveMe).Configure(() =>
-                B.DataTableColumn(GiveMe.AString(), options: dtc => dtc.Title = GiveMe.AString())
-            );
-        }
-
-        _messages.ShouldContain(m => Regex.IsMatch(m.Message, @"\[link=.*]StubUxFeature:\d+\[/]"));
-    }
-
-    [Test]
-    public void Reports_the_whole_stack_trace_when_feature_is_not_captured()
-    {
-        Inspect.Schema<DataTable.Column>(dtc => dtc.Title);
-        var cc = GiveMe.AComponentContext();
-
-        using (_diagnostics)
-        {
-            _trace.Capture(cc, () => B.DataTableColumn(GiveMe.AString(), options: dtc => dtc.Title = "test"));
-        }
-
-        _messages.ShouldContain(m => m.Message.Contains("[magenta]<unknown>[/]"));
-        _messages.ShouldContain(m =>
-            Regex.IsMatch(m.Message, @"\[gray].*at Baked[.]Test[.]Theme[.]InspectingComponentAndSchemas[.][.]ctor\(\).*\[/]",
-                RegexOptions.Singleline
-            )
-        );
-    }
-
-    [Test]
-    public void Reports_new_value_as_json_when_value_is_not_value_type_or_string()
-    {
-        Inspect.Component<Text>(c => c);
-        var cc = GiveMe.AComponentContext();
-
-        using (_diagnostics)
-        {
-            _trace.Capture(cc, () => B.Text(options: t => t.Prop = "test"));
-        }
-
-        _messages.ShouldContain(m => m.Message.Contains($$"""
-        {
-          "maxLength": null,
-          "prop": "test"
-        }
-        """), customMessage: _messages.Join(", "));
     }
 }

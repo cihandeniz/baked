@@ -1,12 +1,12 @@
+using Baked.Domain.Configuration;
 using Baked.Domain.Inspection;
-using Baked.Testing;
 
-namespace Baked.Test;
+namespace Baked.Test.Domain;
 
-public class StubUxFeature(Stubber giveMe)
+public class StubFeature(DomainModelContext c)
 {
     readonly InspectTrace _trace = Inspect.TraceHere();
 
     public TSchema Configure<TSchema>(Func<TSchema> create) =>
-        _trace.Capture(giveMe.AComponentContext(), create);
+        _trace.Capture(c, create);
 }
