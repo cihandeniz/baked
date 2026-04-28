@@ -35,7 +35,9 @@ public class CustomThemeFeature(IEnumerable<Func<Router, Route>> routes)
 
         configurator.Domain.ConfigureInspect(inspect =>
         {
-            inspect.Attribute<LabelAttribute>();
+            inspect.MethodAttribute<InitializerAttribute>(
+                when: c => c.Type.Is<ReportPageSample>()
+            );
         });
 
         configurator.Domain.ConfigureDomainModelBuilder(builder =>

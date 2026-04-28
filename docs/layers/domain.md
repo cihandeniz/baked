@@ -27,32 +27,33 @@ This target is provided in `AddDomainTypes` phase. To configure it in a feature;
 ```csharp
 configurator.Domain.ConfigureInspect(inspect =>
 {
-    // To inspect any member
-    inspect.Attribute<MyAttribute>(
-        attribute: ma => ma.Value // optional to inspect just this value
-    );
-
-    // To inspect types
+    // To inspect an attribute on types
     inspect.TypeAttribute<MyAttribute>(
         when: c => c.Type..., // optional to inspect just this type model
         attribute: ma => ma.Value // optional to inspect just this value
     );
 
-    // To inspect properties
+    // To inspect an attribute properties
     inspect.PropertyAttribute<MyAttribute>(
         when: c => c.Property..., // optional to inspect a specific property model
         attribute: ma => ma.Value // optional to inspect just this value
     );
 
-    // To inspect methods
+    // To inspect an attribute methods
     inspect.MethodAttribute<MyAttribute>(
         when: c => c.Method..., // optional to inspect a specific method model
         attribute: ma => ma.Value // optional to inspect just this value
     );
 
-    // To inspect parameters
+    // To inspect an attribute parameters
     inspect.ParameterAttribute<MyAttribute>(
         when: c => c.Parameter..., // optional to inspect a specific parameter model
+        attribute: ma => ma.Value // optional to inspect just this value
+    );
+
+    // To inspect an attribute any member
+    inspect.Attribute<MyAttribute>(
+        when: c => c..., // optional to inspect a specific member
         attribute: ma => ma.Value // optional to inspect just this value
     );
 });
