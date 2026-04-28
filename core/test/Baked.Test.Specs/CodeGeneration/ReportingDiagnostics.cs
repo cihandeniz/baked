@@ -1,4 +1,4 @@
-using Baked.Runtime.Diagnostics;
+using Baked.CodeGeneration.Diagnostics;
 
 namespace Baked.Test.Runtime;
 

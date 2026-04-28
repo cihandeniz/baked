@@ -1,5 +1,5 @@
+using Baked.CodeGeneration.Diagnostics;
 using Baked.Domain.Model;
-using Baked.Runtime.Diagnostics;
 
 namespace Baked.Test.Domain;
 

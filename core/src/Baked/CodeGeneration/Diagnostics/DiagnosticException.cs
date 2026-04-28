@@ -1,4 +1,4 @@
-namespace Baked.Runtime.Diagnostics;
+namespace Baked.CodeGeneration.Diagnostics;
 
 public class DiagnosticException(DiagnosticCode code, string message)
     : Exception(message)

@@ -1,7 +1,7 @@
-﻿using Baked.Domain.Model;
+﻿using Baked.CodeGeneration.Diagnostics;
+using Baked.Domain.Model;
 using Baked.Playground.Business;
 using Baked.Playground.Theme;
-using Baked.Runtime.Diagnostics;
 using Baked.Ui;
 
 namespace Baked.Test.Theme;
