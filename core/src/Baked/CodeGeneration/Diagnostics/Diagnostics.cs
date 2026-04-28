@@ -47,6 +47,9 @@ public class Diagnostics : IDisposable
 
         if (result.Errors.Any())
         {
+            Console.Build.WriteLine();
+            Console.Build.MarkupLine($"Generate [bold maroon]failed with {result.Errors.Count} error(s)[/]");
+
             Environment.Exit(1);
         }
     }
