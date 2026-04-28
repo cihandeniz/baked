@@ -54,7 +54,7 @@ internal class Capture<T>
 
         if (_initial)
         {
-            Diagnostics.Current.ReportInfo($"[lightskyblue3_1]{_captureType.BuildTitle(type)}[/] [gray]{_captureType.Id}[/]", group: _captureType.Id);
+            Diagnostics.Current.ReportInfo($"[steelblue3]{_captureType.BuildTitle(type)}[/] [gray]{_captureType.Id}[/]", group: _captureType.Id);
         }
 
         if (Equals(value, previousValue)) { return target; }
@@ -62,7 +62,7 @@ internal class Capture<T>
         var source = TryFindFeatureSource(out var featureSource)
             ? $"[magenta]{featureSource}[/]"
             : $"[magenta]<unknown>[/]{Environment.NewLine}[gray]{Markup.Escape($"{_stackTrace}")}[/]";
-        Diagnostics.Current.ReportInfo($"  [wheat1]{Property}:[/] {Markup.Escape(FormatValue(value))} [gray]«[/] {source}", group: _captureType.Id);
+        Diagnostics.Current.ReportInfo($"  [darkgoldenrod]{Property}:[/] {Markup.Escape(FormatValue(value))} [gray]«[/] {source}", group: _captureType.Id);
 
         return target;
     }

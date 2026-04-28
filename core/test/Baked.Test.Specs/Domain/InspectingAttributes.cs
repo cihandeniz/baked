@@ -243,7 +243,7 @@ public class InspectingAttributes : TestSpec
         }
 
         _messages.ShouldContain(m => m.Message.Contains("[[Custom]]"));
-        _messages.ShouldContain(m => m.Message.Contains("[wheat1]Value:[/] Test"));
+        _messages.ShouldContain(m => m.Message.Contains("[darkgoldenrod]Value:[/] Test"));
     }
 
     [Test]

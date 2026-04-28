@@ -126,7 +126,7 @@ public class InspectingComponentAndSchemas : TestSpec
         }
 
         _messages.ShouldContain(m => m.Message.Contains("""
-        [wheat1]<this>:[/] {
+        [darkgoldenrod]<this>:[/] {
           "key": "test-key",
           "component": {
             "type": "Text",
@@ -148,7 +148,7 @@ public class InspectingComponentAndSchemas : TestSpec
             _trace.CaptureDescriptor(c, cc, () => B.Text());
         }
 
-        _messages.ShouldContain(m => m.Message.Contains("[wheat1]<this>:[/] {}"));
+        _messages.ShouldContain(m => m.Message.Contains("[darkgoldenrod]<this>:[/] {}"));
     }
 
     [Test]
@@ -344,7 +344,7 @@ public class InspectingComponentAndSchemas : TestSpec
         }
 
         _messages.ShouldContain(m => m.Message.Contains("<DataTable.Column>"));
-        _messages.ShouldContain(m => m.Message.Contains("[wheat1]Title:[/] test"));
+        _messages.ShouldContain(m => m.Message.Contains("[darkgoldenrod]Title:[/] test"));
     }
 
     [Test]
@@ -362,6 +362,6 @@ public class InspectingComponentAndSchemas : TestSpec
         }
 
         _messages.ShouldContain(m => m.Message.Contains("<DataTable>"));
-        _messages.ShouldContain(m => m.Message.Contains("[wheat1]Paginator:[/] True"));
+        _messages.ShouldContain(m => m.Message.Contains("[darkgoldenrod]Paginator:[/] True"));
     }
 }
