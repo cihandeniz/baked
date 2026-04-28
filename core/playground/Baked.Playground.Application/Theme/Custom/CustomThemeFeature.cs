@@ -1,5 +1,4 @@
 ﻿using Baked.Architecture;
-using Baked.Business;
 using Baked.Playground.Caching;
 using Baked.Playground.Orm;
 using Baked.Playground.Ui;
@@ -35,8 +34,9 @@ public class CustomThemeFeature(IEnumerable<Func<Router, Route>> routes)
 
         configurator.Domain.ConfigureInspect(inspect =>
         {
-            inspect.MethodAttribute<InitializerAttribute>(
-                when: c => c.Type.Is<ReportPageSample>()
+            inspect.MethodComponent<DataTable>(
+                when: c => c.Type.Is<ReportPageSample>(),
+                component: dt => dt.Paginator
             );
         });
 

@@ -252,59 +252,6 @@ public static class DomainExtensions
         }
     }
 
-    extension(Stubber giveMe)
-    {
-        public DomainModel TheDomainModel() =>
-            giveMe.Spec.GenerateContext.GetDomainModel();
-
-        public TypeModel TheTypeModel<T>() =>
-            giveMe.TheTypeModel(typeof(T));
-
-        public TypeModel TheTypeModel(Type type) =>
-            giveMe.TheDomainModel().Types[type];
-
-        public MethodModel TheMethodModel<T>(string name) =>
-            giveMe
-                .Spec.GenerateContext
-                .GetDomainModel().Types[typeof(T)]
-                .GetMembers().Methods[name];
-
-        public TypeModelContext ATypeModelContext<T>() =>
-            new()
-            {
-                Domain = giveMe.TheDomainModel(),
-                Type = giveMe.TheTypeModel<T>()
-            };
-
-        public XmlNode? TheDocumentation<T>(
-            string? property = default,
-            string? method = default,
-            string? parameter = default
-        )
-        {
-            var domainModel = giveMe.Spec.GenerateContext.GetDomainModel();
-            var type = domainModel.Types[typeof(T)];
-            if (!type.TryGetMembers(out var members)) { return null; }
-
-            if (property is not null)
-            {
-                return members.Properties[property].Documentation;
-            }
-
-            if (method is not null)
-            {
-                if (parameter is not null)
-                {
-                    return members.Methods[method].DefaultOverload.Parameters[parameter].Documentation;
-                }
-
-                return members.Methods[method].Documentation;
-            }
-
-            return members.Documentation;
-        }
-    }
-
     extension(IDomainModelConventionCollection conventions)
     {
         public void Add(IDomainModelConvention convention,
@@ -614,6 +561,15 @@ public static class DomainExtensions
 #pragma warning restore IDE0051
     }
 
+    extension<TModelContext>(Func<TModelContext, bool>? when)
+        where TModelContext : DomainModelContext
+    {
+        public Func<DomainModelContext, bool>? GeneralizeOrDefault() =>
+            when is not null
+                ? c => c is TModelContext mc && when(mc)
+                : null;
+    }
+
 #pragma warning disable IDE0052
     static readonly string _xmlLeftIndent = new string(' ', 3 * 4);
 #pragma warning restore IDE0052
@@ -646,5 +602,58 @@ public static class DomainExtensions
             .Replace("\n", "\\n")
             .Replace("\r", "\\r")
             ;
+    }
+
+    extension(Stubber giveMe)
+    {
+        public DomainModel TheDomainModel() =>
+            giveMe.Spec.GenerateContext.GetDomainModel();
+
+        public TypeModel TheTypeModel<T>() =>
+            giveMe.TheTypeModel(typeof(T));
+
+        public TypeModel TheTypeModel(Type type) =>
+            giveMe.TheDomainModel().Types[type];
+
+        public MethodModel TheMethodModel<T>(string name) =>
+            giveMe
+                .Spec.GenerateContext
+                .GetDomainModel().Types[typeof(T)]
+                .GetMembers().Methods[name];
+
+        public TypeModelContext ATypeModelContext<T>() =>
+            new()
+            {
+                Domain = giveMe.TheDomainModel(),
+                Type = giveMe.TheTypeModel<T>()
+            };
+
+        public XmlNode? TheDocumentation<T>(
+            string? property = default,
+            string? method = default,
+            string? parameter = default
+        )
+        {
+            var domainModel = giveMe.Spec.GenerateContext.GetDomainModel();
+            var type = domainModel.Types[typeof(T)];
+            if (!type.TryGetMembers(out var members)) { return null; }
+
+            if (property is not null)
+            {
+                return members.Properties[property].Documentation;
+            }
+
+            if (method is not null)
+            {
+                if (parameter is not null)
+                {
+                    return members.Methods[method].DefaultOverload.Parameters[parameter].Documentation;
+                }
+
+                return members.Methods[method].Documentation;
+            }
+
+            return members.Documentation;
+        }
     }
 }

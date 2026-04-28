@@ -26,7 +26,7 @@ public class Trace(StackTrace? stackTrace)
 
     public StackTrace StackTrace => stackTrace ?? new();
 
-    public TTarget Capture<TModelContext, TTarget>(TModelContext context, Func<TTarget> create)
+    public TTarget CaptureAttribute<TModelContext, TTarget>(TModelContext context, Func<TTarget> create)
         where TModelContext : DomainModelContext
     {
         if (!ShouldCapture(context, out var inspection))
@@ -39,7 +39,7 @@ public class Trace(StackTrace? stackTrace)
             .Execute();
     }
 
-    public TTarget Capture<TModelContext, TTarget>(TModelContext context, TTarget target, Action update)
+    public TTarget CaptureAttribute<TModelContext, TTarget>(TModelContext context, TTarget target, Action update)
         where TModelContext : DomainModelContext
     {
         if (!ShouldCapture(context, out var inspection))

@@ -22,7 +22,7 @@ public class SetAttributeConvention<TModelContext>(
         if (!_when(context)) { return; }
 
         _apply(context, (model, attribute) =>
-            _trace.Capture(context, () =>
+            _trace.CaptureAttribute(context, () =>
             {
                 Set(model, attribute);
 

@@ -123,7 +123,7 @@ public static class ThemeExtensions
             conventions.AddTypeAttribute(
                 attribute: c => new DescriptorBuilderAttribute<TSchema>
                 {
-                    Builder = cc => cc.Trace.Capture(cc, () => schema(c, cc)),
+                    Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
                     Filter = where,
                     Trace = c.Trace
                 },
@@ -180,7 +180,7 @@ public static class ThemeExtensions
             conventions.AddPropertyAttribute(
                 attribute: c => new DescriptorBuilderAttribute<TSchema>
                 {
-                    Builder = cc => cc.Trace.Capture(cc, () => schema(c, cc)),
+                    Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
                     Filter = where,
                     Trace = c.Trace
                 },
@@ -237,7 +237,7 @@ public static class ThemeExtensions
             conventions.AddMethodAttribute(
                 attribute: c => new DescriptorBuilderAttribute<TSchema>
                 {
-                    Builder = cc => cc.Trace.Capture(cc, () => schema(c, cc)),
+                    Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
                     Filter = where,
                     Trace = c.Trace
                 },
@@ -294,7 +294,7 @@ public static class ThemeExtensions
             conventions.AddParameterAttribute(
                 attribute: c => new DescriptorBuilderAttribute<TSchema>
                 {
-                    Builder = cc => cc.Trace.Capture(cc, () => schema(c, cc)),
+                    Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
                     Filter = where,
                     Trace = c.Trace
                 },
@@ -348,9 +348,9 @@ public static class ThemeExtensions
 
             conventions.AddTypeAttributeConfiguration<DescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (s, cc) => schema(s, c, cc),
-                    where: where,
-                    trace: c.Trace
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -389,9 +389,9 @@ public static class ThemeExtensions
 
             conventions.AddPropertyAttributeConfiguration<DescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (s, cc) => schema(s, c, cc),
-                    where: where,
-                    trace: c.Trace
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -430,9 +430,9 @@ public static class ThemeExtensions
 
             conventions.AddMethodAttributeConfiguration<DescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (s, cc) => schema(s, c, cc),
-                    where: where,
-                    trace: c.Trace
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -471,9 +471,9 @@ public static class ThemeExtensions
 
             conventions.AddParameterAttributeConfiguration<DescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (s, cc) => schema(s, c, cc),
-                    where: where,
-                    trace: c.Trace
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -519,7 +519,7 @@ public static class ThemeExtensions
                 {
                     add(c.Type, new ComponentDescriptorBuilderAttribute<TSchema>
                     {
-                        Builder = cc => cc.Trace.Capture(cc, () => component(c, cc)),
+                        Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
                         Filter = where,
                         Trace = c.Trace
                     });
@@ -585,7 +585,7 @@ public static class ThemeExtensions
                 {
                     add(c.Property, new ComponentDescriptorBuilderAttribute<TSchema>
                     {
-                        Builder = cc => cc.Trace.Capture(cc, () => component(c, cc)),
+                        Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
                         Filter = where,
                         Trace = c.Trace
                     });
@@ -651,7 +651,7 @@ public static class ThemeExtensions
                 {
                     add(c.Method, new ComponentDescriptorBuilderAttribute<TSchema>
                     {
-                        Builder = cc => cc.Trace.Capture(cc, () => component(c, cc)),
+                        Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
                         Filter = where,
                         Trace = c.Trace
                     });
@@ -717,7 +717,7 @@ public static class ThemeExtensions
                 {
                     add(c.Parameter, new ComponentDescriptorBuilderAttribute<TSchema>
                     {
-                        Builder = cc => cc.Trace.Capture(cc, () => component(c, cc)),
+                        Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
                         Filter = where,
                         Trace = c.Trace
                     });
@@ -778,9 +778,9 @@ public static class ThemeExtensions
 
             conventions.AddTypeAttributeConfiguration<ComponentDescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (d, cc) => component(d, c, cc),
-                    where: where,
-                    trace: c.Trace
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -821,9 +821,9 @@ public static class ThemeExtensions
 
             conventions.AddPropertyAttributeConfiguration<ComponentDescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (d, cc) => component(d, c, cc),
-                    where: where,
-                    trace: c.Trace
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -864,9 +864,9 @@ public static class ThemeExtensions
 
             conventions.AddMethodAttributeConfiguration<ComponentDescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (d, cc) => component(d, c, cc),
-                    where: where,
-                    trace: c.Trace
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -907,9 +907,9 @@ public static class ThemeExtensions
 
             conventions.AddParameterAttributeConfiguration<ComponentDescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (d, cc) => component(d, c, cc),
-                    where: where,
-                    trace: c.Trace
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -1065,19 +1065,20 @@ public static class ThemeExtensions
         // Filter is applied within the function because it is the only
         // way to access to the component context.
         void WrapBuilder(
+            DomainModelContext context,
             Func<ComponentContext, bool> where,
-            Action<TSchema, ComponentContext> apply,
-            Trace trace
+            Action<TSchema, ComponentContext> apply
         )
         {
             var prev = attribute.Builder;
+            var trace = context.Trace;
 
             attribute.Builder = cc =>
             {
                 var result = prev(cc);
                 if (!where(cc)) { return result; }
 
-                return trace.Capture(cc, result, () => apply(result, cc));
+                return trace.CaptureDescriptor(context, cc, result, () => apply(result, cc));
             };
         }
 #pragma warning restore IDE0051
@@ -1180,35 +1181,135 @@ public static class ThemeExtensions
         }
     }
 
-    extension(Inspect _)
+    extension(Inspect inspect)
     {
+        public void TypeComponent<T>(
+            Func<TypeModelMetadataContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? component = default
+        ) where T : IComponentSchema =>
+            inspect.Component(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                component: component
+            );
+
+        public void PropertyComponent<T>(
+            Func<PropertyModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? component = default
+        ) where T : IComponentSchema =>
+            inspect.Component(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                component: component
+            );
+
+        public void MethodComponent<T>(
+            Func<MethodModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? component = default
+        ) where T : IComponentSchema =>
+            inspect.Component(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                component: component
+            );
+
+        public void ParameterComponent<T>(
+            Func<ParameterModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? component = default
+        ) where T : IComponentSchema =>
+            inspect.Component(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                component: component
+            );
+
         public void Component<T>(
+            Func<DomainModelContext, bool>? when = default,
             Func<ComponentContext, bool>? where = default,
             Expression<Func<T, object?>>? component = default
         ) where T : IComponentSchema
         {
             component ??= x => x;
 
-            Inspection.Current = new(typeof(T), c => component.Compile().Invoke((T)c), component.ToString());
-            if (where is not null)
-            {
-                Inspection.Current.AddFilter(nameof(where), where);
-            }
+            inspect.Schema(component.Compile(), component.ToString(),
+                when: when,
+                where: where
+            );
         }
 
+        public void TypeSchema<T>(
+            Func<TypeModelMetadataContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? schema = default
+        ) => inspect.Schema(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                schema: schema
+            );
+
+        public void PropertySchema<T>(
+            Func<PropertyModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? schema = default
+        ) => inspect.Schema(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                schema: schema
+            );
+
+        public void MethodSchema<T>(
+            Func<MethodModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? schema = default
+        ) => inspect.Schema(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                schema: schema
+            );
+
+        public void ParameterSchema<T>(
+            Func<ParameterModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? schema = default
+        ) => inspect.Schema(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                schema: schema
+            );
+
         public void Schema<T>(
+            Func<DomainModelContext, bool>? when = default,
             Func<ComponentContext, bool>? where = default,
             Expression<Func<T, object?>>? schema = default
         )
         {
             schema ??= x => x;
 
-            Inspection.Current = new(typeof(T), c => schema.Compile().Invoke((T)c), schema.ToString());
-            if (where is not null)
-            {
-                Inspection.Current.AddFilter(nameof(where), where);
-            }
+            inspect.Schema(schema.Compile(), schema.ToString(),
+                when: when,
+                where: where
+            );
         }
+
+        // WARNING
+        //
+        // Do NOT remove this warning disable section unintentionally.
+        // Without this, GitHub Actions fails on dotnet format
+#pragma warning disable IDE0051
+        void Schema<T>(Func<T, object?> evaluate, string expression,
+            Func<DomainModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default
+        )
+        {
+            Inspection.Current = new(typeof(T), c => evaluate((T)c), expression);
+            if (when is not null) { Inspection.Current.AddFilter(nameof(when), when); }
+            if (where is not null) { Inspection.Current.AddFilter(nameof(where), where); }
+        }
+#pragma warning restore IDE0051
     }
 
     extension(Trace trace)
@@ -1218,34 +1319,38 @@ public static class ThemeExtensions
         // Do NOT remove this warning disable section unintentionally.
         // Without this, GitHub Actions fails on dotnet format
 #pragma warning disable IDE0051
-        static bool ShouldCapture(ComponentContext context, [NotNullWhen(true)] out Inspection? inspection)
+        static bool ShouldCapture(DomainModelContext c, ComponentContext cc, [NotNullWhen(true)] out Inspection? inspection)
         {
             inspection = Inspection.Current;
 
             return
                 inspection is not null &&
                 (
+                    !inspection.TryGetFilter<Func<DomainModelContext, bool>>("when", out var when) ||
+                    when(c)
+                ) &&
+                (
                     !inspection.TryGetFilter<Func<ComponentContext, bool>>("where", out var where) ||
-                    where(context)
+                    where(cc)
                 );
         }
 #pragma warning restore IDE0051
 
-        public T Capture<T>(ComponentContext context, Func<T> create)
+        public T CaptureDescriptor<T>(DomainModelContext c, ComponentContext cc, Func<T> create)
         {
-            if (!ShouldCapture(context, out var inspection))
+            if (!ShouldCapture(c, cc, out var inspection))
             {
                 return create();
             }
 
             return
-                new Capture<T>(inspection, trace.StackTrace, create, new DescriptorCaptureType(context))
+                new Capture<T>(inspection, trace.StackTrace, create, new DescriptorCaptureType(cc))
                 .Execute();
         }
 
-        public T Capture<T>(ComponentContext context, T target, Action update)
+        public T CaptureDescriptor<T>(DomainModelContext c, ComponentContext cc, T target, Action update)
         {
-            if (!ShouldCapture(context, out var inspection))
+            if (!ShouldCapture(c, cc, out var inspection))
             {
                 update();
 
@@ -1253,7 +1358,7 @@ public static class ThemeExtensions
             }
 
             return
-                new Capture<T>(inspection, trace.StackTrace, update, new DescriptorCaptureType(context), target)
+                new Capture<T>(inspection, trace.StackTrace, update, new DescriptorCaptureType(cc), target)
                 .Execute();
         }
     }

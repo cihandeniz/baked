@@ -10,9 +10,7 @@ public class Inspect
         Expression<Func<T, object?>>? attribute = default
     ) where T : Attribute =>
         Attribute(
-            when: when is not null
-                ? c => c is TypeModelMetadataContext tc && when(tc)
-                : null,
+            when: when.GeneralizeOrDefault(),
             attribute: attribute
         );
 
@@ -21,9 +19,7 @@ public class Inspect
         Expression<Func<T, object?>>? attribute = default
     ) where T : Attribute =>
         Attribute(
-            when: when is not null
-                ? c => c is PropertyModelContext pc && when(pc)
-                : null,
+            when: when.GeneralizeOrDefault(),
             attribute: attribute
         );
 
@@ -32,9 +28,7 @@ public class Inspect
         Expression<Func<T, object?>>? attribute = default
     ) where T : Attribute =>
         Attribute(
-            when: when is not null
-                ? c => c is MethodModelContext mc && when(mc)
-                : null,
+            when: when.GeneralizeOrDefault(),
             attribute: attribute
         );
 
@@ -43,9 +37,7 @@ public class Inspect
         Expression<Func<T, object?>>? attribute = default
     ) where T : Attribute =>
         Attribute(
-            when: when is not null
-                ? c => c is ParameterModelContext pc && when(pc)
-                : null,
+            when: when.GeneralizeOrDefault(),
             attribute: attribute
         );
 
