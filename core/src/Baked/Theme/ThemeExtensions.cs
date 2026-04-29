@@ -1,6 +1,8 @@
 ﻿using Baked.Architecture;
+using Baked.CodeGeneration.Diagnostics;
 using Baked.Domain;
 using Baked.Domain.Configuration;
+using Baked.Domain.Inspection;
 using Baked.Domain.Model;
 using Baked.RestApi;
 using Baked.RestApi.Model;
@@ -10,6 +12,8 @@ using Baked.Theme.Default;
 using Baked.Ui;
 using Baked.Ui.Configuration;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 
 using static Baked.Ui.Datas;
 
@@ -23,15 +27,15 @@ public static class ThemeExtensions
             features.Add(configure(new()));
     }
 
-    extension(DiagnosticsCode)
+    extension(DiagnosticCode)
     {
-        public static DiagnosticsCode MissingRequiredComponent => new(101, "missing-required-component");
-        public static DiagnosticsCode MissingRequiredComponentOfType => new(102, "missing-required-component-of-type");
-        public static DiagnosticsCode MissingRequiredSchema => new(103, "missing-required-schema");
-        public static DiagnosticsCode RequiresLocateAction => new(104, "requires-locate-action");
-        public static DiagnosticsCode MethodRequired => new(105, "method-required");
-        public static DiagnosticsCode MissingItem => new(106, "missing-item");
-        public static DiagnosticsCode InvalidState => new(107, "invalid-state");
+        public static DiagnosticCode MissingRequiredComponent => new(101, "missing-required-component");
+        public static DiagnosticCode MissingRequiredComponentOfType => new(102, "missing-required-component-of-type");
+        public static DiagnosticCode MissingRequiredSchema => new(103, "missing-required-schema");
+        public static DiagnosticCode RequiresLocateAction => new(104, "requires-locate-action");
+        public static DiagnosticCode MethodRequired => new(105, "method-required");
+        public static DiagnosticCode MissingItem => new(106, "missing-item");
+        public static DiagnosticCode InvalidState => new(107, "invalid-state");
     }
 
     extension<T>(Action<T>? action)
@@ -74,7 +78,7 @@ public static class ThemeExtensions
                 {
                     if (!c.Type.GetControllerModel().Action.TryGetValue("Locate", out var locate))
                     {
-                        throw DiagnosticsCode.RequiresLocateAction.Exception(
+                        throw DiagnosticCode.RequiresLocateAction.Exception(
                             $"`{c.Type.Name}` should have `Locate` action added"
                         );
                     }
@@ -117,10 +121,11 @@ public static class ThemeExtensions
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
             conventions.AddTypeAttribute(
-                attribute: c => new DescriptorBuilderAttribute<TSchema>()
+                attribute: c => new DescriptorBuilderAttribute<TSchema>
                 {
-                    Builder = cc => schema(c, cc),
-                    Filter = where
+                    Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
+                    Filter = where,
+                    Trace = c.Trace
                 },
                 when: when,
                 requiresIndex: false,
@@ -173,10 +178,11 @@ public static class ThemeExtensions
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
             conventions.AddPropertyAttribute(
-                attribute: c => new DescriptorBuilderAttribute<TSchema>()
+                attribute: c => new DescriptorBuilderAttribute<TSchema>
                 {
-                    Builder = cc => schema(c, cc),
-                    Filter = where
+                    Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
+                    Filter = where,
+                    Trace = c.Trace
                 },
                 when: when,
                 requiresIndex: false,
@@ -229,10 +235,11 @@ public static class ThemeExtensions
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
             conventions.AddMethodAttribute(
-                attribute: c => new DescriptorBuilderAttribute<TSchema>()
+                attribute: c => new DescriptorBuilderAttribute<TSchema>
                 {
-                    Builder = cc => schema(c, cc),
-                    Filter = where
+                    Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
+                    Filter = where,
+                    Trace = c.Trace
                 },
                 when: c => c.Type.Has<ControllerModelAttribute>() && c.Method.Has<ActionModelAttribute>() && when(c),
                 requiresIndex: false,
@@ -285,10 +292,11 @@ public static class ThemeExtensions
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
             conventions.AddParameterAttribute(
-                attribute: c => new DescriptorBuilderAttribute<TSchema>()
+                attribute: c => new DescriptorBuilderAttribute<TSchema>
                 {
-                    Builder = cc => schema(c, cc),
-                    Filter = where
+                    Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
+                    Filter = where,
+                    Trace = c.Trace
                 },
                 when: c => c.Type.Has<ControllerModelAttribute>() && c.Parameter.Has<ParameterModelAttribute>() && when(c),
                 requiresIndex: false,
@@ -340,8 +348,9 @@ public static class ThemeExtensions
 
             conventions.AddTypeAttributeConfiguration<DescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (s, cc) => schema(s, c, cc),
-                    when: where
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -380,8 +389,9 @@ public static class ThemeExtensions
 
             conventions.AddPropertyAttributeConfiguration<DescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (s, cc) => schema(s, c, cc),
-                    when: where
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -420,8 +430,9 @@ public static class ThemeExtensions
 
             conventions.AddMethodAttributeConfiguration<DescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (s, cc) => schema(s, c, cc),
-                    when: where
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -460,8 +471,9 @@ public static class ThemeExtensions
 
             conventions.AddParameterAttributeConfiguration<DescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (s, cc) => schema(s, c, cc),
-                    when: where
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -505,10 +517,11 @@ public static class ThemeExtensions
             conventions.AddTypeAttribute(
                 apply: (c, add) =>
                 {
-                    add(c.Type, new ComponentDescriptorBuilderAttribute<TSchema>()
+                    add(c.Type, new ComponentDescriptorBuilderAttribute<TSchema>
                     {
-                        Builder = cc => component(c, cc),
-                        Filter = where
+                        Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
+                        Filter = where,
+                        Trace = c.Trace
                     });
                     add(c.Type, new ContextBasedComponentAttribute(typeof(TSchema))
                     {
@@ -570,10 +583,11 @@ public static class ThemeExtensions
             conventions.AddPropertyAttribute(
                 apply: (c, add) =>
                 {
-                    add(c.Property, new ComponentDescriptorBuilderAttribute<TSchema>()
+                    add(c.Property, new ComponentDescriptorBuilderAttribute<TSchema>
                     {
-                        Builder = cc => component(c, cc),
-                        Filter = where
+                        Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
+                        Filter = where,
+                        Trace = c.Trace
                     });
                     add(c.Property, new ContextBasedComponentAttribute(typeof(TSchema))
                     {
@@ -635,10 +649,11 @@ public static class ThemeExtensions
             conventions.AddMethodAttribute(
                 apply: (c, add) =>
                 {
-                    add(c.Method, new ComponentDescriptorBuilderAttribute<TSchema>()
+                    add(c.Method, new ComponentDescriptorBuilderAttribute<TSchema>
                     {
-                        Builder = cc => component(c, cc),
-                        Filter = where
+                        Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
+                        Filter = where,
+                        Trace = c.Trace
                     });
                     add(c.Method, new ContextBasedComponentAttribute(typeof(TSchema))
                     {
@@ -700,10 +715,11 @@ public static class ThemeExtensions
             conventions.AddParameterAttribute(
                 apply: (c, add) =>
                 {
-                    add(c.Parameter, new ComponentDescriptorBuilderAttribute<TSchema>()
+                    add(c.Parameter, new ComponentDescriptorBuilderAttribute<TSchema>
                     {
-                        Builder = cc => component(c, cc),
-                        Filter = where
+                        Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
+                        Filter = where,
+                        Trace = c.Trace
                     });
                     add(c.Parameter, new ContextBasedComponentAttribute(typeof(TSchema))
                     {
@@ -762,8 +778,9 @@ public static class ThemeExtensions
 
             conventions.AddTypeAttributeConfiguration<ComponentDescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (d, cc) => component(d, c, cc),
-                    when: where
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -804,8 +821,9 @@ public static class ThemeExtensions
 
             conventions.AddPropertyAttributeConfiguration<ComponentDescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (d, cc) => component(d, c, cc),
-                    when: where
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -846,8 +864,9 @@ public static class ThemeExtensions
 
             conventions.AddMethodAttributeConfiguration<ComponentDescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (d, cc) => component(d, c, cc),
-                    when: where
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -888,8 +907,9 @@ public static class ThemeExtensions
 
             conventions.AddParameterAttributeConfiguration<ComponentDescriptorBuilderAttribute<TSchema>>(
                 attribute: (attribute, c) => attribute.WrapBuilder(
+                    context: c,
                     apply: (d, cc) => component(d, c, cc),
-                    when: where
+                    where: where
                 ),
                 when: c => when(c),
                 order: order
@@ -948,14 +968,14 @@ public static class ThemeExtensions
 
                 if (!domain.Types[typeof(TDomainType)].TryGetMembers(out var members))
                 {
-                    throw DiagnosticsCode.RequiresBuildLevel.Exception(
+                    throw DiagnosticCode.RequiresBuildLevel.Exception(
                         $"{typeof(TDomainType).Name}.{methodName} cannot be used as a page source, because members of {typeof(TDomainType).Name} are not included in domain model"
                     );
                 }
 
                 if (!members.Methods.TryGetValue(methodName, out var method))
                 {
-                    throw DiagnosticsCode.MethodRequired.Exception(
+                    throw DiagnosticCode.MethodRequired.Exception(
                         $"{typeof(TDomainType).Name} does not have a method named '{methodName}'"
                     );
                 }
@@ -970,44 +990,13 @@ public static class ThemeExtensions
 
                 if (!domain.Types[typeof(TDomainType)].TryGetMetadata(out var metadata))
                 {
-                    throw DiagnosticsCode.RequiresBuildLevel.Exception(
+                    throw DiagnosticCode.RequiresBuildLevel.Exception(
                         $"{typeof(TDomainType).Name} cannot be used as a page source, because its metadata is not included in domain model"
                     );
                 }
 
                 return metadata.GetRequiredComponent<TPageSchema>(context.Drill(nameof(Page), typeof(TDomainType).Name));
             };
-    }
-
-    extension(Stubber giveMe)
-    {
-        public PageContext APageContext(
-            string? path = default,
-            string? title = default
-        )
-        {
-            path ??= "/";
-            title ??= "TEST PAGE";
-
-            return new()
-            {
-                Route = new(path, title),
-                Sitemap = [],
-                Domain = giveMe.TheDomainModel(),
-                NewLocaleKey = s => s
-            };
-        }
-
-        public ComponentContext AComponentContext(
-            object[]? paths = default
-        )
-        {
-            paths ??= [];
-
-            return giveMe
-                .APageContext()
-                .Drill(paths);
-        }
     }
 
     extension(IComponentSchema schema)
@@ -1032,7 +1021,7 @@ public static class ThemeExtensions
     {
         public void AddPages(IEnumerable<Route> routes, DomainModel domain, NewLocaleKey l,
             Action<DiagnosticsResult>? onComplete = default,
-            bool? debugComponentPaths = default
+            ComponentPath.Debug? debugComponentPaths = default
         )
         {
             using (Diagnostics.Start(nameof(PageDescriptors), onDispose: onComplete))
@@ -1052,9 +1041,9 @@ public static class ThemeExtensions
                     pages.Add(page);
                 }
 
-                if (debugComponentPaths == true)
+                if (debugComponentPaths is not null)
                 {
-                    Diagnostics.ReportInfo(ComponentPath.GetPathsAsTree());
+                    Diagnostics.Current.ReportInfo(ComponentPath.GetPathsAsTree(debugComponentPaths));
                 }
             }
         }
@@ -1076,26 +1065,32 @@ public static class ThemeExtensions
         // Filter is applied within the function because it is the only
         // way to access to the component context.
         void WrapBuilder(
-            Func<ComponentContext, bool> when,
+            DomainModelContext context,
+            Func<ComponentContext, bool> where,
             Action<TSchema, ComponentContext> apply
         )
         {
             var prev = attribute.Builder;
+            var trace = context.Trace;
 
             attribute.Builder = cc =>
             {
                 var result = prev(cc);
+                if (!where(cc)) { return result; }
 
-                if (when(cc))
-                {
-                    apply(result, cc);
-                }
-
-                return result;
+                return trace.CaptureDescriptor(context, cc, result, () => apply(result, cc));
             };
         }
 #pragma warning restore IDE0051
     }
+
+    // WARNING
+    //
+    // Do NOT remove this warning disable section unintentionally.
+    // Without this, GitHub Actions fails on dotnet format
+#pragma warning disable IDE0051
+    static bool WarnForMissingComponent => Environment.GetCommandLineArgs().Contains("--warn-for-missing-component");
+#pragma warning restore IDE0051
 
     extension(ICustomAttributesModel metadata)
     {
@@ -1114,7 +1109,7 @@ public static class ThemeExtensions
 
         public TSchema GetRequiredSchema<TSchema>(ComponentContext context) =>
             metadata.GetSchema<TSchema>(context) ??
-            throw DiagnosticsCode.MissingRequiredSchema.Exception(
+            throw DiagnosticCode.MissingRequiredSchema.Exception(
                 $"`{metadata.CustomAttributes.Name}` doesn't have descriptor for schema type `{typeof(TSchema).Name}` at path `{context.Path}`"
             );
 
@@ -1133,7 +1128,7 @@ public static class ThemeExtensions
 
         public ComponentDescriptor<T> GetRequiredComponent<T>(ComponentContext context) where T : IComponentSchema =>
             metadata.GetRequiredComponent(context, componentType: typeof(T), omitWarningMessage: true) as ComponentDescriptor<T> ??
-            throw DiagnosticsCode.MissingRequiredComponentOfType.Exception(
+            throw DiagnosticCode.MissingRequiredComponentOfType.Exception(
                 $"`{metadata.CustomAttributes.Name}` doesn't have a component descriptor of type `{typeof(T).Name}` at path `{context.Path}`"
             );
 
@@ -1152,8 +1147,8 @@ public static class ThemeExtensions
                     $"{(componentType is null ? string.Empty : $" of type {componentType.Name}")}" +
                     $" at path `{context.Path}`";
 
-                if (WarnForMissingComponent) { Diagnostics.ReportWarning(DiagnosticsCode.MissingRequiredComponent, message); }
-                else { Diagnostics.ReportError(DiagnosticsCode.MissingRequiredComponent, message); }
+                if (WarnForMissingComponent) { Diagnostics.Current.ReportWarning(DiagnosticCode.MissingRequiredComponent, message); }
+                else { Diagnostics.Current.ReportError(DiagnosticCode.MissingRequiredComponent, message); }
             }
 
             return DomainComponents.CustomAttributesMissingComponent(metadata, context, options: mc => mc.Component = componentType?.Name);
@@ -1186,11 +1181,212 @@ public static class ThemeExtensions
         }
     }
 
-    // WARNING
-    //
-    // Do NOT remove this warning disable section unintentionally.
-    // Without this, GitHub Actions fails on dotnet format
+    extension(Inspect inspect)
+    {
+        public void TypeComponent<T>(
+            Func<TypeModelMetadataContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? component = default
+        ) where T : IComponentSchema =>
+            inspect.Component(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                component: component
+            );
+
+        public void PropertyComponent<T>(
+            Func<PropertyModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? component = default
+        ) where T : IComponentSchema =>
+            inspect.Component(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                component: component
+            );
+
+        public void MethodComponent<T>(
+            Func<MethodModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? component = default
+        ) where T : IComponentSchema =>
+            inspect.Component(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                component: component
+            );
+
+        public void ParameterComponent<T>(
+            Func<ParameterModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? component = default
+        ) where T : IComponentSchema =>
+            inspect.Component(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                component: component
+            );
+
+        public void Component<T>(
+            Func<DomainModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? component = default
+        ) where T : IComponentSchema
+        {
+            component ??= x => x;
+
+            inspect.Schema(component.Compile(), component.ToString(),
+                when: when,
+                where: where
+            );
+        }
+
+        public void TypeSchema<T>(
+            Func<TypeModelMetadataContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? schema = default
+        ) => inspect.Schema(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                schema: schema
+            );
+
+        public void PropertySchema<T>(
+            Func<PropertyModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? schema = default
+        ) => inspect.Schema(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                schema: schema
+            );
+
+        public void MethodSchema<T>(
+            Func<MethodModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? schema = default
+        ) => inspect.Schema(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                schema: schema
+            );
+
+        public void ParameterSchema<T>(
+            Func<ParameterModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? schema = default
+        ) => inspect.Schema(
+                when: when.GeneralizeOrDefault(),
+                where: where,
+                schema: schema
+            );
+
+        public void Schema<T>(
+            Func<DomainModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Expression<Func<T, object?>>? schema = default
+        )
+        {
+            schema ??= x => x;
+
+            inspect.Schema(schema.Compile(), schema.ToString(),
+                when: when,
+                where: where
+            );
+        }
+
+        // WARNING
+        //
+        // Do NOT remove this warning disable section unintentionally.
+        // Without this, GitHub Actions fails on dotnet format
 #pragma warning disable IDE0051
-    static bool WarnForMissingComponent => Environment.GetCommandLineArgs().Contains("--warn-for-missing-component");
+        void Schema<T>(Func<T, object?> evaluate, string expression,
+            Func<DomainModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default
+        )
+        {
+            Inspection.Current = new(typeof(T), c => evaluate((T)c), expression);
+            if (when is not null) { Inspection.Current.AddFilter(nameof(when), when); }
+            if (where is not null) { Inspection.Current.AddFilter(nameof(where), where); }
+        }
 #pragma warning restore IDE0051
+    }
+
+    extension(Trace trace)
+    {
+        // WARNING
+        //
+        // Do NOT remove this warning disable section unintentionally.
+        // Without this, GitHub Actions fails on dotnet format
+#pragma warning disable IDE0051
+        static bool ShouldCapture(DomainModelContext c, ComponentContext cc, [NotNullWhen(true)] out Inspection? inspection)
+        {
+            inspection = Inspection.Current;
+
+            return
+                inspection is not null &&
+                (
+                    !inspection.TryGetFilter<Func<DomainModelContext, bool>>("when", out var when) ||
+                    when(c)
+                ) &&
+                (
+                    !inspection.TryGetFilter<Func<ComponentContext, bool>>("where", out var where) ||
+                    where(cc)
+                );
+        }
+#pragma warning restore IDE0051
+
+        public T CaptureDescriptor<T>(DomainModelContext c, ComponentContext cc, Func<T> create)
+        {
+            if (!ShouldCapture(c, cc, out var inspection))
+            {
+                return create();
+            }
+
+            return new Capture<T>(inspection, trace.StackTrace, create, new DescriptorCaptureType(cc)).Execute();
+        }
+
+        public T CaptureDescriptor<T>(DomainModelContext c, ComponentContext cc, T target, Action update)
+        {
+            if (!ShouldCapture(c, cc, out var inspection))
+            {
+                update();
+
+                return target;
+            }
+
+            return new Capture<T>(inspection, trace.StackTrace, update, new DescriptorCaptureType(cc), target).Execute();
+        }
+    }
+
+    extension(Stubber giveMe)
+    {
+        public PageContext APageContext(
+            string? path = default,
+            string? title = default
+        )
+        {
+            path ??= "/";
+            title ??= "TEST PAGE";
+
+            return new()
+            {
+                Route = new(path, title),
+                Sitemap = [],
+                Domain = giveMe.TheDomainModel(),
+                NewLocaleKey = s => s
+            };
+        }
+
+        public ComponentContext AComponentContext(
+            object[]? paths = default
+        )
+        {
+            paths ??= [];
+
+            return giveMe
+                .APageContext()
+                .Drill(paths);
+        }
+    }
 }

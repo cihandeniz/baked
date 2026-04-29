@@ -1,5 +1,6 @@
 ﻿using Baked.Architecture;
 using Baked.CodeGeneration;
+using Baked.Runtime;
 using Baked.Ui.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -14,6 +15,22 @@ public class UiLayer : LayerBase<GenerateCode>
     public const int MaxConventionOrder = ConventionOrderLimit;
 
     static bool NoUi => Environment.GetCommandLineArgs().Contains("--no-ui");
+    static JsonSerializerSettings JsonSettings { get; } = new()
+    {
+        ContractResolver = new AttributeAwareCamelCasePropertyNamesContractResolver(),
+        Converters = [new StringEnumConverter()],
+        NullValueHandling = NullValueHandling.Ignore,
+    };
+
+    static string ComponentExportsTemplate(IEnumerable<string> componentExports) => $$"""
+        import {
+            {{string.Join($",{Environment.NewLine}\t", componentExports)}}
+        } from "#components";
+
+        export {
+            {{string.Join($",{Environment.NewLine}\t", componentExports)}}
+        }
+        """;
 
     readonly AppDescriptor _appDescriptor = new();
     readonly ComponentExports _componentExports = new();
@@ -70,21 +87,4 @@ public class UiLayer : LayerBase<GenerateCode>
             files.AddAsJson($"{schema.Name}.page", page, outdir: Path.Combine("Ui", schema.Dir), settings: JsonSettings);
         }
     }
-
-    JsonSerializerSettings JsonSettings => new()
-    {
-        ContractResolver = new AttributeAwareCamelCasePropertyNamesContractResolver(),
-        Converters = [new StringEnumConverter()],
-        NullValueHandling = NullValueHandling.Ignore,
-    };
-
-    string ComponentExportsTemplate(IEnumerable<string> componentExports) => $$"""
-        import {
-            {{string.Join($",{Environment.NewLine}\t", componentExports)}}
-        } from "#components";
-
-        export {
-            {{string.Join($",{Environment.NewLine}\t", componentExports)}}
-        }
-        """;
 }

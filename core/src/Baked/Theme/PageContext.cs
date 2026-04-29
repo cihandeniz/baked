@@ -1,4 +1,5 @@
-﻿using Baked.Domain.Model;
+﻿using Baked.Domain.Inspection;
+using Baked.Domain.Model;
 using Baked.Ui;
 
 namespace Baked.Theme;
@@ -9,6 +10,10 @@ public record PageContext
     public required IReadOnlyList<Route> Sitemap { get; init; }
     public required DomainModel Domain { get; init; }
     public required NewLocaleKey NewLocaleKey { get; init; }
+
+    // NOTE this is intentionally left as null to make sure build fails if
+    // there is a bug in setting this value
+    public Trace Trace { get; internal set; } = null!;
 
     public void Deconstruct(out DomainModel domain, out NewLocaleKey l)
     {

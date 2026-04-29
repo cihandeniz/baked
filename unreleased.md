@@ -16,6 +16,9 @@
     instead it collects all errors and breaks the build with multiple errors to
     provide a better DX
   - All existing build errors are now documented under [Errors](../errors.md)
+- __Inspection:__ Baked now supports inspecting a specific attribute, component
+  and schema property where it lists all conventions and value change records
+  for the specified property
 
 ## Breaking Changes
 
@@ -23,8 +26,16 @@
   - It's recommended to implement a custom component per use case, when there is
     a need to switch between components based on its data
   - One of the `DataTableColumn()` overloads was using `Conditional`, removed
+- `GiveMe.TheMethod<T>` is now `GiveMe.TheMethodModel<T>` for consistency
 
 ## Improvements
 
 - `DefaultThemeFeature(debugComponentPaths:)` now prints a pretty formatted tree
   instead of a list of component paths
+
+## Library Upgrades
+
+| NuGet Package           | Old Version | New Version |
+| ---                     | ---         | ---         |
+| Spectre.Console         | new         | 0.52.0      |
+| Spectre.Console.Testing | new         | 0.52.0      |

@@ -2,6 +2,7 @@
 using Baked.CodeGeneration;
 using Baked.Domain.Configuration;
 using Baked.Domain.Export;
+using Baked.Domain.Inspection;
 using Humanizer;
 
 using static Baked.CodeGeneration.CodeGenerationLayer;
@@ -12,6 +13,7 @@ namespace Baked.Domain;
 
 public class DomainLayer : LayerBase<AddDomainTypes, GenerateCode, AddServices>
 {
+    readonly Inspect _inspect = new();
     readonly IDomainTypeCollection _domainTypes = new DomainTypeCollection();
     readonly DomainModelBuilderOptions _builderOptions = new();
     readonly DomainServiceCollection _domainServiceCollection = new();
@@ -20,6 +22,7 @@ public class DomainLayer : LayerBase<AddDomainTypes, GenerateCode, AddServices>
 
     protected override PhaseContext GetContext(AddDomainTypes phase) =>
         phase.CreateContextBuilder()
+            .Add(_inspect)
             .Add(_domainTypes)
             .Add(_builderOptions)
             .Build();

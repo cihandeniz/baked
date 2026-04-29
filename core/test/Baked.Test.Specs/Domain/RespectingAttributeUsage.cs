@@ -1,3 +1,4 @@
+using Baked.CodeGeneration.Diagnostics;
 using Baked.Domain.Configuration;
 using Baked.Domain.Conventions;
 using Baked.Domain.Model;
@@ -116,9 +117,9 @@ public class RespectingAttributeUsage : TestSpec
         addAll.ShouldNotThrow();
         addClass.ShouldNotThrow();
 
-        addMethod.ShouldThrow<DiagnosticsException>();
-        addParameter.ShouldThrow<DiagnosticsException>();
-        addProperty.ShouldThrow<DiagnosticsException>();
+        addMethod.ShouldThrow<DiagnosticException>();
+        addParameter.ShouldThrow<DiagnosticException>();
+        addProperty.ShouldThrow<DiagnosticException>();
     }
 
     [Test]
@@ -136,8 +137,8 @@ public class RespectingAttributeUsage : TestSpec
         addAll.ShouldNotThrow();
         addClass.ShouldNotThrow();
 
-        addMethod.ShouldThrow<DiagnosticsException>();
-        addParameter.ShouldThrow<DiagnosticsException>();
-        addProperty.ShouldThrow<DiagnosticsException>();
+        addMethod.ShouldThrow<DiagnosticException>();
+        addParameter.ShouldThrow<DiagnosticException>();
+        addProperty.ShouldThrow<DiagnosticException>();
     }
 }

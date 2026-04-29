@@ -10,7 +10,7 @@ public class DomainModelConventionContexts
         {
             foreach (var model in Models)
             {
-                Diagnostics.Diagnose(() =>
+                Diagnostics.Current.Diagnose(() =>
                 {
                     convention.Apply(model);
                 });

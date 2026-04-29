@@ -3,6 +3,7 @@ using Baked.Domain;
 using Baked.Domain.Configuration;
 using Baked.Domain.Conventions;
 using Baked.Domain.Export;
+using Baked.Domain.Inspection;
 using Baked.Domain.Model;
 using Baked.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,9 @@ public static class DomainExtensions
 {
     public class Configurator(LayerConfigurator _configurator)
     {
+        public void ConfigureInspect(Action<Inspect> configuration) =>
+            _configurator.Configure(configuration);
+
         public void ConfigureDomainTypeCollection(Action<IDomainTypeCollection> configuration) =>
             _configurator.Configure(configuration);
 
@@ -52,10 +56,10 @@ public static class DomainExtensions
             layers.Add(new DomainLayer());
     }
 
-    extension(DiagnosticsCode)
+    extension(DiagnosticCode)
     {
-        public static DiagnosticsCode AttributeTargetMismatch => new(301, "attribute-target-mismatch");
-        public static DiagnosticsCode AttributeDoesNotAllow => new(302, "attribute-does-not-allow");
+        public static DiagnosticCode AttributeTargetMismatch => new(301, "attribute-target-mismatch");
+        public static DiagnosticCode AttributeDoesNotAllow => new(302, "attribute-does-not-allow");
     }
 
     extension(ApplicationContext application)
@@ -211,7 +215,7 @@ public static class DomainExtensions
             var validOn = usages?.ValidOn ?? AttributeTargets.All;
             if (validOn.HasFlag(model.Target)) { return; }
 
-            throw DiagnosticsCode.AttributeTargetMismatch.Exception(
+            throw DiagnosticCode.AttributeTargetMismatch.Exception(
                 $"'{attribute.GetType().Name}' does not have '{model.Target}' target. Available targets: '{validOn}'"
             );
         }
@@ -248,52 +252,6 @@ public static class DomainExtensions
         }
     }
 
-    extension(Stubber giveMe)
-    {
-        public DomainModel TheDomainModel() =>
-            giveMe.Spec.GenerateContext.GetDomainModel();
-
-        public TypeModel TheTypeModel<T>() =>
-            giveMe.TheTypeModel(typeof(T));
-
-        public TypeModel TheTypeModel(Type type) =>
-            giveMe.TheDomainModel().Types[type];
-
-        public MethodModel TheMethod<T>(string name) =>
-            giveMe
-                .Spec.GenerateContext
-                .GetDomainModel().Types[typeof(T)]
-                .GetMembers().Methods[name];
-
-        public XmlNode? TheDocumentation<T>(
-            string? property = default,
-            string? method = default,
-            string? parameter = default
-        )
-        {
-            var domainModel = giveMe.Spec.GenerateContext.GetDomainModel();
-            var type = domainModel.Types[typeof(T)];
-            if (!type.TryGetMembers(out var members)) { return null; }
-
-            if (property is not null)
-            {
-                return members.Properties[property].Documentation;
-            }
-
-            if (method is not null)
-            {
-                if (parameter is not null)
-                {
-                    return members.Methods[method].DefaultOverload.Parameters[parameter].Documentation;
-                }
-
-                return members.Methods[method].Documentation;
-            }
-
-            return members.Documentation;
-        }
-    }
-
     extension(IDomainModelConventionCollection conventions)
     {
         public void Add(IDomainModelConvention convention,
@@ -313,7 +271,7 @@ public static class DomainExtensions
         public void SetTypeAttribute(Action<TypeModelMetadataContext, Action<ICustomAttributesModel, Attribute>> apply, Func<TypeModelMetadataContext, bool> when,
             bool requiresIndex = true,
             int order = default
-        ) => conventions.Add(new SetAttributeConvention<TypeModelMetadataContext>(apply, when, attributeRequiredIndex: requiresIndex), order);
+        ) => conventions.Add(new SetAttributeConvention<TypeModelMetadataContext>(apply, when, attributeRequiresIndex: requiresIndex), order);
 
         public void AddTypeAttribute(Func<Attribute> attribute, Func<TypeModelMetadataContext, bool> when,
             bool requiresIndex = true,
@@ -349,7 +307,7 @@ public static class DomainExtensions
         public void SetPropertyAttribute(Action<PropertyModelContext, Action<ICustomAttributesModel, Attribute>> apply, Func<PropertyModelContext, bool> when,
             bool requiresIndex = true,
             int order = default
-        ) => conventions.Add(new SetAttributeConvention<PropertyModelContext>(apply, when, attributeRequiredIndex: requiresIndex), order);
+        ) => conventions.Add(new SetAttributeConvention<PropertyModelContext>(apply, when, attributeRequiresIndex: requiresIndex), order);
 
         public void AddPropertyAttribute(Func<Attribute> attribute, Func<PropertyModelContext, bool> when,
             bool requiresIndex = true,
@@ -385,7 +343,7 @@ public static class DomainExtensions
         public void SetMethodAttribute(Action<MethodModelContext, Action<ICustomAttributesModel, Attribute>> apply, Func<MethodModelContext, bool> when,
             bool requiresIndex = true,
             int order = default
-        ) => conventions.Add(new SetAttributeConvention<MethodModelContext>(apply, when, attributeRequiredIndex: requiresIndex), order);
+        ) => conventions.Add(new SetAttributeConvention<MethodModelContext>(apply, when, attributeRequiresIndex: requiresIndex), order);
 
         public void AddMethodAttribute(Func<Attribute> attribute, Func<MethodModelContext, bool> when,
             bool requiresIndex = true,
@@ -421,7 +379,7 @@ public static class DomainExtensions
         public void SetParameterAttribute(Action<ParameterModelContext, Action<ICustomAttributesModel, Attribute>> apply, Func<ParameterModelContext, bool> when,
             bool requiresIndex = true,
             int order = default
-        ) => conventions.Add(new SetAttributeConvention<ParameterModelContext>(apply, when, attributeRequiredIndex: requiresIndex), order);
+        ) => conventions.Add(new SetAttributeConvention<ParameterModelContext>(apply, when, attributeRequiresIndex: requiresIndex), order);
 
         public void AddParameterAttribute(Func<Attribute> attribute, Func<ParameterModelContext, bool> when,
             bool requiresIndex = true,
@@ -603,6 +561,15 @@ public static class DomainExtensions
 #pragma warning restore IDE0051
     }
 
+    extension<TModelContext>(Func<TModelContext, bool>? when)
+        where TModelContext : DomainModelContext
+    {
+        public Func<DomainModelContext, bool>? GeneralizeOrDefault() =>
+            when is not null
+                ? c => c is TModelContext mc && when(mc)
+                : null;
+    }
+
 #pragma warning disable IDE0052
     static readonly string _xmlLeftIndent = new string(' ', 3 * 4);
 #pragma warning restore IDE0052
@@ -635,5 +602,58 @@ public static class DomainExtensions
             .Replace("\n", "\\n")
             .Replace("\r", "\\r")
             ;
+    }
+
+    extension(Stubber giveMe)
+    {
+        public DomainModel TheDomainModel() =>
+            giveMe.Spec.GenerateContext.GetDomainModel();
+
+        public TypeModel TheTypeModel<T>() =>
+            giveMe.TheTypeModel(typeof(T));
+
+        public TypeModel TheTypeModel(Type type) =>
+            giveMe.TheDomainModel().Types[type];
+
+        public MethodModel TheMethodModel<T>(string name) =>
+            giveMe
+                .Spec.GenerateContext
+                .GetDomainModel().Types[typeof(T)]
+                .GetMembers().Methods[name];
+
+        public TypeModelContext ATypeModelContext<T>() =>
+            new()
+            {
+                Domain = giveMe.TheDomainModel(),
+                Type = giveMe.TheTypeModel<T>()
+            };
+
+        public XmlNode? TheDocumentation<T>(
+            string? property = default,
+            string? method = default,
+            string? parameter = default
+        )
+        {
+            var domainModel = giveMe.Spec.GenerateContext.GetDomainModel();
+            var type = domainModel.Types[typeof(T)];
+            if (!type.TryGetMembers(out var members)) { return null; }
+
+            if (property is not null)
+            {
+                return members.Properties[property].Documentation;
+            }
+
+            if (method is not null)
+            {
+                if (parameter is not null)
+                {
+                    return members.Methods[method].DefaultOverload.Parameters[parameter].Documentation;
+                }
+
+                return members.Methods[method].Documentation;
+            }
+
+            return members.Documentation;
+        }
     }
 }

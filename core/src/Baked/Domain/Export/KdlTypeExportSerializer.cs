@@ -1,6 +1,7 @@
 ﻿using Humanizer;
 using KdlSharp;
 using KdlSharp.Values;
+using System.Globalization;
 
 namespace Baked.Domain.Export;
 
@@ -85,19 +86,19 @@ public class KdlTypeExportSerializer : ITypeExportSerializer
     }
 
     string GetTypeName(string type) =>
-        type.Kebaberize();
+        CultureInfo.UsingInvariantCulture(() => type.Kebaberize());
 
     string GetAttributeName(string attribute) =>
-        $"@{attribute.Replace("Attribute", string.Empty).Kebaberize()}";
+        $"@{CultureInfo.UsingInvariantCulture(() => attribute.Replace("Attribute", string.Empty).Kebaberize())}";
 
     string GetMethodName(string name) =>
-        name.Kebaberize();
+        CultureInfo.UsingInvariantCulture(() => name.Kebaberize());
 
     string GetParameterName(string name) =>
-        name.Kebaberize();
+        CultureInfo.UsingInvariantCulture(() => name.Kebaberize());
 
     string GetPropertyName(string name) =>
-        name.Kebaberize();
+        CultureInfo.UsingInvariantCulture(() => name.Kebaberize());
 
     KdlValue GetValue(object value) =>
         value.GetType() switch

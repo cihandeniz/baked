@@ -1,3 +1,4 @@
+using Baked.CodeGeneration.Diagnostics;
 using Baked.Domain.Model;
 
 namespace Baked.Test.Domain;
@@ -28,7 +29,7 @@ public class RespectingAllowMultiple : TestSpec
 
         var action = () => ((IMutableAttributeCollection)attributes).Add(new SingleAttribute());
 
-        action.ShouldThrow<DiagnosticsException>();
+        action.ShouldThrow<DiagnosticException>();
     }
 
     [Test]
@@ -48,7 +49,7 @@ public class RespectingAllowMultiple : TestSpec
 
         var action = () => ((IMutableAttributeCollection)attributes).Set(new MultipleAttribute());
 
-        action.ShouldThrow<DiagnosticsException>();
+        action.ShouldThrow<DiagnosticException>();
     }
 
     [Test]

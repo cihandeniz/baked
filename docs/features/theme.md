@@ -152,3 +152,100 @@ generate a page descriptor out of a domain model.
 ```csharp
 r => r.Root("/my-parent", "MyParent", "pi pi-user") with { Page = p => p.Generated(g => g.Type<MyParent, SimplePage>()) }
 ```
+
+### Debugging Page Generation
+
+We provide two tools to debug page generation process during a generate phase.
+
+#### Debugging Component Paths
+
+Enable path debugging to see which component paths get hit during page
+generation.
+
+To enable;
+
+```csharp
+debugComponentPaths: true
+```
+
+To filter a specfic path;
+
+```csharp
+debugComponentPaths: new() { Filter = path => path.EndsWith(...) }
+```
+
+To include full paths next to each node;
+
+```csharp
+debugComponentPaths: new() { IncludeFullPaths = true }
+```
+
+Combined;
+
+```csharp
+debugComponentPaths: new()
+{
+    Filter = path => path.EndsWith(...),
+    IncludeFullPaths = true
+}
+```
+
+#### Inspecting Values
+
+> [!WARNING]
+>
+> This feature is still in experimentation and might print false-negative
+> output, meaning it might not capture every change of the inspected component
+> or schema.
+>
+> E.g., A described page or component will not be inspected. If you describe a
+> child component or schema from the convention of parent component or schema it
+> won't be inspected.
+
+Configure an inspect to watch a property value of a component or a schema so
+that you can see which UX or Theme feature sets what value and in which order.
+
+```csharp
+configurator.Domain.ConfigureInspect(inspect =>
+{
+    // To inspect a component or a schema on types
+    inspect.TypeCompnent<MyComponent>( // or inspect.TypeSchema
+        when: c => c.Type..., // optional to inspect specific type models
+        where: cc => cc.Path..., // optional to inspect specific component paths
+        component: mc => mc.Value // optional to inspect just this value
+    );
+
+    // To inspect a component or a schema on properties
+    inspect.PropertyComponent<MyComponent>( // or inspect.PropertySchema
+        when: c => c.Property..., // optional to inspect specific property models
+        where: cc => cc.Path..., // optional to inspect specific component paths
+        component: mc => mc.Value // optional to inspect just this value
+    );
+
+    // To inspect a component or a schema on methods
+    inspect.MethodComponent<MyComponent>( // or inspect.MethodSchema
+        when: c => c.Method..., // optional to inspect specific method models
+        where: cc => cc.Path..., // optional to inspect specific component paths
+        component: mc => mc.Value // optional to inspect just this value
+    );
+
+    // To inspect a component or a schema on parameters
+    inspect.ParameterComponent<MyComponent>( // or inspect.ParameterSchema
+        when: c => c.Parameter..., // optional to inspect specific parameter models
+        where: cc => cc.Path..., // optional to inspect specific component path
+        component: mc => mc.Value // optional to inspect just this value
+    );
+
+    // To inspect a component or a schema on any member
+    inspect.Component<MyComponent>( // or inspect.Schema
+        when: c => c..., // optional to inspect specific members
+        where: cc => cc.Path..., // optional to inspect specific component paths
+        component: mc => mc.Value // optional to inspect just this value
+    );
+});
+```
+
+> [!WARNING]
+>
+> Only one inspect is taken into consideration. If you configure more than one,
+> only the last one will be set as current.

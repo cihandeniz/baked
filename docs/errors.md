@@ -180,6 +180,6 @@ that causes this requirement.
 
 ## `unknown`
 
-This indicates that reported error is not an diagnostics error, but some other
+This indicates that reported error is not a diagnostic error, but some other
 exception. These errors include a stack trace in the output to allow further
 inspection.

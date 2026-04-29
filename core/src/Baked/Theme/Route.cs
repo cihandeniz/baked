@@ -22,7 +22,7 @@ public record Route(
     public string? SideMenuTitle { get; set; } = Title;
 
     public IComponentDescriptor? BuildPage(PageContext context) =>
-        Diagnostics.Diagnose(() =>
+        Diagnostics.Current.Diagnose(() =>
         {
             return Page(new())?.Invoke(context);
         });

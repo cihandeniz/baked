@@ -60,3 +60,51 @@ This layer introduces following `Generate` phases to the application it is added
 >     var data = generatedContext.ReadFileAsJson<...>();
 > });
 > ```
+
+## Diagnostics
+
+To have a better error output during generation we provide a diagnostics
+mechanism.
+
+To define a known build error add an extension to `DiagnosticsCode`;
+
+```csharp
+extension(DiagnosticCode)
+{
+    public static DiagnosticCode MyCustomCode => new(1);
+}
+```
+
+And throw it from within conventions;
+
+```csharp
+throw DiagnosticCode.MyCustomCode.Exception(
+    "Some custom message..."
+);
+```
+
+This will print a single error line in build output during `Generate` task
+instead of printing a full stack trace;
+
+```bash
+error C0001: Some custom message...
+```
+
+### Reporting Custom Information
+
+It is also possible to report any build output in `error`, `warning` and `info`
+levels. To report a custom message simply call the corresponding report method
+of `Diagnostics.Current`;
+
+```csharp
+Diagnostics.Current.ReportError(myCode, myMessage);
+Diagnostics.Current.ReportWarning(myCode, myMessage);
+Diagnostics.Current.ReportInfo(myMessage);
+```
+
+To group together info messages that occur at different times you may use
+`group:` optional parameter;
+
+```csharp
+Diagnostics.Current.ReportInfo(myMessage, group: "my-group");
+```
