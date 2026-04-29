@@ -97,7 +97,12 @@ internal class Capture<T>
             string.Empty;
 
         var fileName = featureFrame.GetFileName();
-        if (fileName is null) { return true; }
+        if (fileName is null)
+        {
+            source += " [bold red]⠕[/]";
+
+            return true;
+        }
 
         var title = source;
         var url = new Uri(fileName).AbsoluteUri;

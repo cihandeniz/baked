@@ -245,7 +245,7 @@ configurator.Domain.ConfigureInspect(inspect =>
 });
 ```
 
-> [!WARNING]
+> [!NOTE]
 >
-> Only one inspect is taken into consideration. If you configure more than one,
-> only the last one will be set as current.
+> Only one inspect is allowed. If you configure more than one,
+> `InvalidOperationException` will be thrown

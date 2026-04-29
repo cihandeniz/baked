@@ -8,6 +8,20 @@ features while configuring configuration targets.
 app.Layers.AddDomain();
 ```
 
+> [!NOTE]
+>
+> The generated domain metadata files will be saved to `.baked` folder at
+> `$(ProjectDir)` of your application project.
+>
+>```xml
+> <Target Name="SetCopyComponentDescriptors" BeforeTargets="Generate">
+>   <PropertyGroup>
+>     <CopyExportFiles>true</CopyExportFiles>
+>     ...
+>   </PropertyGroup>
+> </Target>
+>```
+
 ## Configuration Targets
 
 This layer provides `IDomainTypeCollection` and `DomainModelBuilderOptions`
@@ -64,10 +78,10 @@ configurator.Domain.ConfigureInspect(inspect =>
 });
 ```
 
-> [!WARNING]
+> [!NOTE]
 >
-> Only one inspect is taken into consideration. If you configure more than one,
-> only the last one will be set as current.
+> Only one inspect is allowed. If you configure more than one,
+> `InvalidOperationException` will be thrown
 
 ### `IDomainTypeCollection`
 

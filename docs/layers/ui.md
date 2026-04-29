@@ -19,10 +19,12 @@ hierarchy containing `Type`, `Schema`, `Name` and `Data` properties.
 > generated files to given directory
 >
 >```xml
-> <PropertyGroup>
->   <CopyComponentDescriptors>true</CopyComponentDescriptors>
->   <UiAppDir>$(ProjectDir)..\admin</UiAppDir>
-> </PropertyGroup>
+> <Target Name="SetCopyComponentDescriptors" BeforeTargets="Generate">
+>   <PropertyGroup>
+>     <CopyComponentDescriptors>true</CopyComponentDescriptors>
+>     <UiAppDir>$(ProjectDir)..\admin</UiAppDir>
+>   </PropertyGroup>
+> </Target>
 >```
 
 ## Configuration Targets

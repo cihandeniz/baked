@@ -1,6 +1,6 @@
 ﻿namespace Baked.Theme.Default;
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+[AttributeUsage(AttributeTargets.Interface | AttributeTargets.Class | AttributeTargets.Method)]
 public class RouteAttribute(string _path)
     : Attribute()
 {
