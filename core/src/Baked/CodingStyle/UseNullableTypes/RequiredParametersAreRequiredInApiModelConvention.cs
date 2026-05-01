@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Baked.CodingStyle.UseNullableTypes;
 
-public class RequiredParameterModelsAreRequiredConvention : IDomainModelConvention<ParameterModelContext>
+public class RequiredParametersAreRequiredInApiModelConvention : IDomainModelConvention<ParameterModelContext>
 {
     public void Apply(ParameterModelContext context)
     {

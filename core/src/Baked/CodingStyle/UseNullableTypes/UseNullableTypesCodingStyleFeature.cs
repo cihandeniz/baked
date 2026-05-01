@@ -16,25 +16,25 @@ public class UseNullableTypesCodingStyleFeature : IFeature<CodingStyleConfigurat
         configurator.Domain.ConfigureDomainModelBuilder(builder =>
         {
             builder.Conventions.SetTypeAttribute(
-                attribute: () => new ApiInputAttribute(),
                 when: c =>
                     c.Type.IsAssignableTo(typeof(Nullable<>)) &&
                     c.Type.GenericTypeArguments.FirstOrDefault()?.Model.TryGetMetadata(out var genericArgumentMetadata) == true &&
                     genericArgumentMetadata.Has<ApiInputAttribute>(),
+                attribute: () => new ApiInputAttribute(),
                 order: RestApiLayer.MinConventionOrder
             );
             builder.Conventions.SetParameterAttribute(
-                attribute: () => new NotNullAttribute(),
                 when: c =>
                 {
-                    var nullable = false;
+                    var nullable = c.Parameter.ParameterType.IsAssignableTo(typeof(Nullable<>));
                     c.Parameter.Apply(p =>
                     {
-                        nullable = _nullability.Create(p).WriteState is NullabilityState.Nullable;
+                        nullable = nullable || _nullability.Create(p).WriteState is NullabilityState.Nullable;
                     });
 
                     return !nullable;
                 },
+                attribute: () => new NotNullAttribute(),
                 order: RestApiLayer.MinConventionOrder
             );
 
@@ -42,7 +42,7 @@ public class UseNullableTypesCodingStyleFeature : IFeature<CodingStyleConfigurat
                 when: c => !c.Parameter.IsOptional && !c.Parameter.IsNullable,
                 attribute: () => new RequiredAttribute()
             );
-            builder.Conventions.Add(new RequiredParameterModelsAreRequiredConvention());
+            builder.Conventions.Add(new RequiredParametersAreRequiredInApiModelConvention());
             builder.Conventions.Add(new SetDefaultValueForNullableEnumConvention());
         });
 
