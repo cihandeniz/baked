@@ -3,6 +3,8 @@ using Baked.Business;
 using Baked.Domain.Model;
 using Baked.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -84,6 +86,12 @@ public static class BusinessExtensions
 
             return services.AddSingleton(service, sp => sp.UsingCurrentScope().GetRequiredService(implementation));
         }
+    }
+
+    extension(Type type)
+    {
+        public Type SkipNullable() =>
+            Nullable.GetUnderlyingType(type) ?? type;
     }
 
     extension(TypeModel type)
@@ -199,6 +207,22 @@ public static class BusinessExtensions
             method.DefaultOverload.Parameters.Having<TAttribute>().FirstOrDefault(filter ?? (_ => true));
     }
 
+    extension(ParameterModel parameter)
+    {
+        public bool IsNullable =>
+            !parameter.Has<NotNullAttribute>();
+
+        public void ShouldBeRequired()
+        {
+            parameter.Has<RequiredAttribute>().ShouldBeTrue($"{parameter.Name} should have `[RequiredAttribute]`");
+        }
+
+        public void ShouldNotBeRequired()
+        {
+            parameter.Has<RequiredAttribute>().ShouldBeFalse($"{parameter.Name} should not have `[RequiredAttribute]`");
+        }
+    }
+
     extension(Stubber _)
     {
         public Id AnId(
@@ -211,11 +235,5 @@ public static class BusinessExtensions
 
             return Id.Parse($"{starts}{template[starts.Length..]}");
         }
-    }
-
-    extension(Type type)
-    {
-        public Type SkipNullable() =>
-            Nullable.GetUnderlyingType(type) ?? type;
     }
 }

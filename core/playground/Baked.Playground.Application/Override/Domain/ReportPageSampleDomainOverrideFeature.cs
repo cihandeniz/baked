@@ -44,7 +44,7 @@ public class ReportPageSampleDomainOverrideFeature : IFeature
 
             // Parameter overrides
             builder.Conventions.AddParameterComponent(
-                when: c => c.Type.Is<ReportPageSample>() && c.Method.Name == nameof(ReportPageSample.With) && !c.Parameter.IsOptional,
+                when: c => c.Type.Is<ReportPageSample>() && c.Method.Name == nameof(ReportPageSample.With) && !c.Parameter.IsNullable,
                 component: (c, cc) => ParameterSelect(c.Parameter, cc)
             );
             builder.Conventions.AddParameterComponent(

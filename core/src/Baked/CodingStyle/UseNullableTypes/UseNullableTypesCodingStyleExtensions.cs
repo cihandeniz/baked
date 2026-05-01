@@ -17,17 +17,21 @@ public static class UseNullableTypesCodingStyleExtensions
 
     extension(ParameterModelAttribute parameter)
     {
+        public bool HasRequiredAttributes =>
+            parameter.AdditionalAttributes.Contains(nameof(BindRequiredAttribute)) ||
+            parameter.AdditionalAttributes.Contains(nameof(RequiredAttribute));
+
         public void AddRequiredAttributes(bool isValueType)
         {
             if (parameter.FromRoute || parameter.FromServices) { return; }
 
             if (isValueType)
             {
-                parameter.AdditionalAttributes.Add($"{nameof(BindRequiredAttribute)}");
+                parameter.AdditionalAttributes.Add(nameof(BindRequiredAttribute));
             }
             else
             {
-                parameter.AdditionalAttributes.Add($"{nameof(RequiredAttribute)}");
+                parameter.AdditionalAttributes.Add(nameof(RequiredAttribute));
             }
 
             parameter.AdditionalAttributes.Add($"{nameof(JsonPropertyAttribute)}(Required = {nameof(Required)}.{Required.Always})");

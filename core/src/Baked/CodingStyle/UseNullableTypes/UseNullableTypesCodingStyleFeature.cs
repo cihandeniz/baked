@@ -1,6 +1,7 @@
 ﻿using Baked.Architecture;
 using Baked.RestApi;
 using Baked.RestApi.Model;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -33,10 +34,15 @@ public class UseNullableTypesCodingStyleFeature : IFeature<CodingStyleConfigurat
                     });
 
                     return !nullable;
-                }
+                },
+                order: RestApiLayer.MinConventionOrder
             );
 
-            builder.Conventions.Add(new NonOptionalNotNullParametersAreRequiredConvention());
+            builder.Conventions.SetParameterAttribute(
+                when: c => !c.Parameter.IsOptional && !c.Parameter.IsNullable,
+                attribute: () => new RequiredAttribute()
+            );
+            builder.Conventions.Add(new RequiredParameterModelsAreRequiredConvention());
             builder.Conventions.Add(new SetDefaultValueForNullableEnumConvention());
         });
 

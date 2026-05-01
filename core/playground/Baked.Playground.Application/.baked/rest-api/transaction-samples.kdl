@@ -7,9 +7,7 @@ transaction-samples @controller-model {
   }
   commit-nullable {
     @action-model route="POST /transaction-samples/commit-nullable" required-claims="BaseA, BaseB"
-    entity {
-      @parameter-model required=#true
-    }
+    entity @parameter-model
     string {
       @parameter-model required=#true
     }
