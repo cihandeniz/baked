@@ -97,7 +97,7 @@ public class RestBindingFeature : IFeature<BindingConfigurator>
             ]);
             properties.Set<ParameterModelAttribute>(parameter =>
             [
-                new("required", !parameter.IsOptional),
+                new("required", parameter.FromRoute || parameter.HasRequiredAttributes),
                 new("in", Value: parameter.FromBodyOrForm ? null : $"{parameter.From}".Kebaberize())
             ]);
         });

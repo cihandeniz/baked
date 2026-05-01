@@ -17,6 +17,7 @@ public record DataTable : IComponentSchema
     public IComponentDescriptor? Sort { get; set; }
 
     public record Column(string Key)
+        : IOrderableSchema
     {
         public string Key { get; set; } = Key;
         public IComponentDescriptor Component { get; set; } = Components.Text();

@@ -463,6 +463,18 @@
             }
           },
           {
+            "title": "Form Page",
+            "component": {
+              "type": "CardLink",
+              "schema": {
+                "route": "/specs/form-page",
+                "icon": "pi pi-microchip",
+                "title": "Form Page",
+                "description": "Renders a form as a page"
+              }
+            }
+          },
+          {
             "title": "Menu Page",
             "component": {
               "type": "CardLink",

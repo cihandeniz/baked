@@ -24,7 +24,11 @@ public class FormSampleDomainOverrideFeature : IFeature
             );
             builder.Conventions.AddMethodComponentConfiguration<FormPage>(
                 when: c => c.Type.Is<FormSample>() && c.Method.Name == nameof(FormSample.NewParent),
-                component: fp => fp.Schema.Inputs.Move("name", 0)
+                component: fp =>
+                {
+                    fp.Schema.SingleColumn = true;
+                    fp.Schema.Inputs.Move("name", toTop: true);
+                }
             );
 
             builder.Conventions.AddMethodAttributeConfiguration<ActionAttribute>(

@@ -49,6 +49,19 @@
         }
       }
     ],
+    "sections": [
+      {
+        "key": "Default",
+        "label": "Default",
+        "inputs": [
+          "surname",
+          "name"
+        ]
+      }
+    ],
+    "groups": {},
+    "wide": [],
+    "singleColumn": true,
     "path": "form-sample/parents/new"
   },
   "action": {

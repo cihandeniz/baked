@@ -30,7 +30,9 @@ public class ReportPageSample
     public string GetRight() =>
         $"RIGHT: {Value}";
 
-    public async Task<List<ReportRow>> GetFirst(CountOptions count = CountOptions.Default)
+    public async Task<List<ReportRow>> GetFirst(
+        CountOptions count = CountOptions.Default
+    )
     {
         await Task.Delay(200);
 
@@ -42,7 +44,9 @@ public class ReportPageSample
         ];
     }
 
-    public async Task<List<ReportRow>> GetSecond(CountOptions count = CountOptions.Default)
+    public async Task<List<ReportRow>> GetSecond(
+        CountOptions count = CountOptions.Default
+    )
     {
         await Task.Delay(200);
 

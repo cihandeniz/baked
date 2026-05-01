@@ -248,6 +248,7 @@
                 "inputs": [
                   {
                     "name": "count",
+                    "required": true,
                     "default": {
                       "type": "Inline",
                       "value": "Default"
@@ -405,6 +406,7 @@
                 "inputs": [
                   {
                     "name": "count",
+                    "required": true,
                     "default": {
                       "type": "Inline",
                       "value": "Default"

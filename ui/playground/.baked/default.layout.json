@@ -287,6 +287,12 @@
             "title": "Error Page",
             "parentRoute": "/specs"
           },
+          "/specs/form-page": {
+            "route": "/specs/form-page",
+            "icon": "pi pi-microchip",
+            "title": "Form Page",
+            "parentRoute": "/specs"
+          },
           "/specs/menu-page": {
             "route": "/specs/menu-page",
             "icon": "pi pi-microchip",

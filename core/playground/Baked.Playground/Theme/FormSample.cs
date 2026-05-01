@@ -6,9 +6,7 @@ namespace Baked.Playground.Theme;
 [AllowAnonymous]
 public class FormSample(Parents _parents, Func<Parent> _newParent)
 {
-    public void NewParent(string surname,
-        string? name = default
-    )
+    public void NewParent(string surname, string? name)
     {
         name ??= "Dr.";
 

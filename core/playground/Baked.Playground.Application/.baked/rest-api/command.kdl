@@ -2,7 +2,7 @@ clear-command @controller-model {
   execute {
     @action-model route="DELETE /command" required-claims="BaseA, BaseB"
     execute-param {
-      @parameter-model required=#true in="query"
+      @parameter-model in="query"
     }
   }
 }

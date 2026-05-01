@@ -67,47 +67,49 @@ public class CustomThemeFeature(IEnumerable<Func<Router, Route>> routes)
 Below you can find the rules that comes with this theme. For other user
 experiences, see [UX Feature](ux.md)
 
-| Group      | Rules                                                                                    |
-| ---        | ---                                                                                      |
-| Type       | `TabbedPage` and `SimplePage` is added for any type at component path `/page/*`          |
-|            | `[id]` route parameter is mapped to first data property with `IdAttribute`               |
-| Property   | All public properties get a `DataAttribute` with a camelized name and titleized label    |
-|            | `IdAttribute` is added to properties named as `Id`                                       |
-|            | Id properties are set to be hidden                                                       |
-|            | Configures `Text` component to display properties;                                       |
-|            | &nbsp; ↳ with type `string` or `Guid`                                                    |
-|            | &nbsp; ↳ or with type that has `LocatableAttribute`                                      |
-|            | &nbsp; ↳ or with type that has `ValueTypeAttribute`                                      |
-| Method     | All actions with `ActionModelAttribute` get `ActionAttribute` and `TabNameAttribute`     |
-|            | `FormPage` is added for any method at component path `/page/*/*`                         |
-|            | `Content` schema is added to any method                                                  |
-|            | Each method is wired as a remote data and remote action                                  |
-|            | Remote data of locatable types include `route.params` in their route                     |
-|            | For method with parameters `Context.Model` is set as remote action body by default       |
-| Parameter  | Parameters are rendered as `Input` list under `SimpleForm` and `FormPage` inputs         |
-|            | Parameters with `ParameterModelAttribute` use `Input` schema                             |
-|            | Required and default values are taken from the attribute                                 |
-|            | `string` parameters render using `InputText`                                             |
-|            | parameters with type that has `ValueTypeAttribute` render using `InputText`              |
-|            | `int` and `long` parameters render using `InputNumber`                                   |
-| Enum       | Enum types render inline with `EnumInline`                                               |
-| Page Title | `PageTitle` is added for any type at component path `/page/*/*page/title`                |
-|            | `PageTitle` is added for any method at component path `/page/*/*/*page/title`            |
-|            | Actions of type is added to actions section of page title component                      |
-|            | Page title actions of locatable types include `route.params` in their route              |
-| Error Page | Error page includes safe links for routes with `ErrorSafeLink`                           |
-|            | Predefined error messages:                                                               |
-|            | &nbsp; ↳ `403` Access Denied                                                             |
-|            | &nbsp; ↳ `404` Page Not Found                                                            |
-|            | &nbsp; ↳ `500` Unexpected Error                                                          |
-|            | Messages can be customized with `errorPageOptions:`                                      |
-| Layouts    | `DefaultLayout` includes                                                                 |
-|            | &nbsp; ↳ Side menu with routes marked for `SideMenu`                                     |
-|            | &nbsp; ↳ Header sitemap with enabled routes                                              |
-|            | Both side menu and header can be customized with `sideMenuOptions:` and `headerOptions:` |
-|            | `ModalLayout` also included                                                              |
-| Pages      | Builds pages from routes using domain model and localization                             |
-|            | Each route becomes a page if it can be resolved                                          |
+| Group        | Rules                                                                                    |
+| ---          | ---                                                                                      |
+| Type         | `TabbedPage` and `SimplePage` is added for any type at component path `/page/*`          |
+|              | `[id]` route parameter is mapped to first data property with `IdAttribute`               |
+| Property     | All public properties get a `DataAttribute` with a camelized name and titleized label    |
+|              | `IdAttribute` is added to properties named as `Id`                                       |
+|              | Id properties are set to be hidden                                                       |
+|              | Configures `Text` component to display properties;                                       |
+|              | &nbsp; ↳ with type `string` or `Guid`                                                    |
+|              | &nbsp; ↳ or with type that has `LocatableAttribute`                                      |
+|              | &nbsp; ↳ or with type that has `ValueTypeAttribute`                                      |
+| Method       | All actions with `ActionModelAttribute` get `ActionAttribute` and `TabNameAttribute`     |
+|              | `FormPage` is added for any method at component path `/page/*/*`                         |
+|              | `Content` schema is added to any method                                                  |
+|              | Each method is wired as a remote data and remote action                                  |
+|              | Remote data of locatable types include `route.params` in their route                     |
+|              | For method with parameters `Context.Model` is set as remote action body by default       |
+| Parameter    | Parameters are rendered as `Input` list under `SimpleForm` and `FormPage` inputs         |
+|              | Parameters with `ParameterModelAttribute` use `Input` schema                             |
+|              | Required and default values are taken from the attribute                                 |
+|              | `string` parameters render using `InputText`                                             |
+|              | parameters with type that has `ValueTypeAttribute` render using `InputText`              |
+|              | `int` and `long` parameters render using `InputNumber`                                   |
+| Enum         | Enum types render inline with `EnumInline`                                               |
+| Page Title   | `PageTitle` is added for any type at component path `/page/*/*page/title`                |
+|              | `PageTitle` is added for any method at component path `/page/*/*/*page/title`            |
+|              | Actions of type is added to actions section of page title component                      |
+|              | Page title actions of locatable types include `route.params` in their route              |
+| Select       | Show clear is set to true for nullable parameters                                        |
+| SelectButton | Allow empty is set to true for nullable parameters                                       |
+| Error Page   | Error page includes safe links for routes with `ErrorSafeLink`                           |
+|              | Predefined error messages:                                                               |
+|              | &nbsp; ↳ `403` Access Denied                                                             |
+|              | &nbsp; ↳ `404` Page Not Found                                                            |
+|              | &nbsp; ↳ `500` Unexpected Error                                                          |
+|              | Messages can be customized with `errorPageOptions:`                                      |
+| Layouts      | `DefaultLayout` includes                                                                 |
+|              | &nbsp; ↳ Side menu with routes marked for `SideMenu`                                     |
+|              | &nbsp; ↳ Header sitemap with enabled routes                                              |
+|              | Both side menu and header can be customized with `sideMenuOptions:` and `headerOptions:` |
+|              | `ModalLayout` also included                                                              |
+| Pages        | Builds pages from routes using domain model and localization                             |
+|              | Each route becomes a page if it can be resolved                                          |
 
 ### Menu and Routes
 

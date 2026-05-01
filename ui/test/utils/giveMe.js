@@ -387,7 +387,11 @@ export default {
       schema: {
         title,
         submit,
-        inputs
+        inputs,
+        sections: [{ name: "Default", inputs: inputs.map(i => i.name) }],
+        groups: {},
+        wide: [],
+        singleColumn: true
       },
       action
     };

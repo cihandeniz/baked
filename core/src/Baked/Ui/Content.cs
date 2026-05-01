@@ -1,6 +1,7 @@
 ﻿namespace Baked.Ui;
 
 public record Content(IComponentDescriptor Component, string Key)
+    : IOrderableSchema
 {
     public IComponentDescriptor Component { get; set; } = Component;
     public string Key { get; set; } = Key;

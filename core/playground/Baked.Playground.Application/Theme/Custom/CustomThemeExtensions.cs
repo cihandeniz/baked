@@ -69,6 +69,7 @@ public static class CustomThemeExtensions
 
                 // Page
                 r => r.Child("/specs/error-page", "Error Page", "/specs") with { Icon = "pi pi-microchip", Description = "Displays errors in full page", Section = "Page" },
+                r => r.Child("/specs/form-page", "Form Page", "/specs") with { Icon = "pi pi-microchip", Description = "Renders a form as a page", Section = "Page" },
                 r => r.Child("/specs/menu-page", "Menu Page", "/specs") with { Icon = "pi pi-microchip", Description = "Renders navigation pages", Section = "Page" },
                 r => r.Child("/specs/simple-page", "Simple Page", "/specs") with { Icon = "pi pi-microchip", Description = "Renders a basic page with a title and contents", Section = "Page" },
                 r => r.Child("/specs/tabbed-page", "Tabbed Page", "/specs") with { Icon = "pi pi-microchip", Description = "Renders more complicated pages with input in title and tab panel support", Section = "Page" },

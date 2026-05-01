@@ -47,6 +47,12 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                 }
             );
 
+            // Enum Data
+            builder.Conventions.AddTypeSchema(
+                when: c => c.Type.SkipNullable().IsEnum,
+                schema: (c, cc) => EnumInline(c.Type, cc)
+            );
+
             // Property defaults
             builder.Index.Property.Add<DataAttribute>();
             builder.Conventions.SetPropertyAttribute(
@@ -123,30 +129,42 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                 }
             );
             builder.Conventions.AddMethodComponentConfiguration<FormPage>(
-                component: (sf, c, cc) =>
+                component: (fp, c, cc) =>
                 {
+                    var (_, l) = cc;
                     cc = cc.Drill(nameof(FormPage), nameof(FormPage.Inputs));
 
                     foreach (var parameter in c.Method.DefaultOverload.Parameters)
                     {
-                        sf.Schema.Inputs.Add(
+                        fp.Schema.Inputs.Add(
                             parameter.GetRequiredSchema<Input>(cc)
                         );
+
+                        if (!parameter.TryGet<GroupAttribute>(out var group))
+                        {
+                            group = new();
+                        }
+
+                        var section = fp.Schema.Sections.FirstOrDefault(s => s.Key == group.Name);
+                        if (section is null)
+                        {
+                            fp.Schema.Sections.Add(section = new(group.Name, l(group.Name.Titleize())));
+                        }
+
+                        section.Inputs.Add(parameter.Name);
                     }
                 }
             );
+
             builder.Conventions.AddParameterSchema(
                 when: c => c.Parameter.Has<ParameterModelAttribute>(),
                 schema: (c, cc) => ParameterInput(c.Parameter, cc)
             );
             builder.Conventions.AddParameterSchemaConfiguration<Input>(
-                when: c => c.Parameter.Has<ParameterModelAttribute>(),
                 schema: (p, c) =>
                 {
-                    var api = c.Parameter.Get<ParameterModelAttribute>();
-
-                    p.Required = !api.IsOptional ? true : null;
-                    p.DefaultValue = api.DefaultValue;
+                    p.Required = !c.Parameter.IsNullable ? true : null;
+                    p.DefaultValue = c.Parameter.DefaultValue;
                 }
             );
             builder.Conventions.AddParameterComponent(
@@ -195,10 +213,14 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                 schema: ra => ra.Params = Computed.UseRoute("params")
             );
 
-            // Enum Data
-            builder.Conventions.AddTypeSchema(
-                when: c => c.Type.SkipNullable().IsEnum,
-                schema: (c, cc) => EnumInline(c.Type, cc)
+            // `Select` defaults
+            builder.Conventions.AddParameterComponentConfiguration<Select>(
+                component: (s, c) => s.Schema.ShowClear = c.Parameter.IsNullable ? true : null
+            );
+
+            // `SelectButton` defaults
+            builder.Conventions.AddParameterComponentConfiguration<SelectButton>(
+                component: (s, c) => s.Schema.AllowEmpty = c.Parameter.IsNullable ? true : null
             );
         });
 

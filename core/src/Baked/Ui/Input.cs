@@ -1,6 +1,7 @@
 ﻿namespace Baked.Ui;
 
 public record Input(string Name, IComponentDescriptor Component)
+    : IOrderableSchema
 {
     public string Name { get; set; } = Name;
     public bool? Required { get; set; }
@@ -10,4 +11,5 @@ public record Input(string Name, IComponentDescriptor Component)
     public IComponentDescriptor Component { get; set; } = Component;
 
     public object? DefaultValue { set => Default = value is not null && value != DBNull.Value ? Datas.Inline(value) : null; }
+    string IOrderableSchema.Key => Name;
 }
