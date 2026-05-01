@@ -1,7 +1,7 @@
 ﻿namespace Baked.Ui;
 
 public record Tab(string Id)
-    : ISupportsReaction
+    : ISupportsReaction, IOrderableSchema
 {
     public string Id { get; set; } = Id;
     public string? Title { get; set; }
@@ -9,4 +9,6 @@ public record Tab(string Id)
     public bool? FullScreen { get; set; }
     public IComponentDescriptor? Icon { get; set; }
     public Dictionary<string, ITrigger>? Reactions { get; set; }
+
+    string IOrderableSchema.Key => Id;
 }

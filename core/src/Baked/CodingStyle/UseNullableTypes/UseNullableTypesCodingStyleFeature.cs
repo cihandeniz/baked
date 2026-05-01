@@ -23,6 +23,7 @@ public class UseNullableTypesCodingStyleFeature : IFeature<CodingStyleConfigurat
                 attribute: () => new ApiInputAttribute(),
                 order: RestApiLayer.MinConventionOrder
             );
+
             builder.Conventions.SetParameterAttribute(
                 when: c =>
                 {
@@ -42,6 +43,7 @@ public class UseNullableTypesCodingStyleFeature : IFeature<CodingStyleConfigurat
                 when: c => !c.Parameter.IsOptional && !c.Parameter.IsNullable,
                 attribute: () => new RequiredAttribute()
             );
+
             builder.Conventions.Add(new RequiredParametersAreRequiredInApiModelConvention());
             builder.Conventions.Add(new SetDefaultValueForNullableEnumConvention());
         });

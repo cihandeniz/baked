@@ -3,6 +3,7 @@
 namespace Baked.Ui;
 
 public record Field(string Key, string Label)
+    : IOrderableSchema
 {
     public string Key { get; set; } = Key;
     public string Label { get; set; } = Label;
