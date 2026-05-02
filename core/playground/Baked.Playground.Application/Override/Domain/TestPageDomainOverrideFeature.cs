@@ -24,7 +24,7 @@ public class TestPageDomainOverrideFeature : IFeature
             builder.Conventions.AddTypeComponentConfiguration<TabbedPage>(
                 when: c => c.Type.Is<TestPage>(),
                 component: (tp, c, cc) => tp.Schema.Tabs.AddRange(
-                    c.Type.GetSchemas<Tab>(cc.Drill(nameof(TabbedPage.Tabs)))
+                    c.Type.GenerateSchemas<Tab>(cc.Drill(nameof(TabbedPage.Tabs)))
                 )
             );
             builder.Conventions.AddTypeSchema(
@@ -37,14 +37,14 @@ public class TestPageDomainOverrideFeature : IFeature
                 schema: (t, c, cc) => t.Contents.Add(
                     c.Type
                         .GetMethod(nameof(TestPage.GetData))
-                        .GetRequiredSchema<Content>(cc.Drill(t.Id, nameof(Tab.Contents), 0))
+                        .GenerateRequiredSchema<Content>(cc.Drill(t.Id, nameof(Tab.Contents), 0))
                 )
             );
 
             builder.Conventions.AddMethodSchema(
                 when: c => c.Type.Is<TestPage>() && c.Method.Name == nameof(TestPage.GetData),
                 where: cc => cc.Path.EndsWith(nameof(Tab.Contents), 0),
-                schema: (c, cc) => B.Content(component: c.Method.GetRequiredComponent(cc.Drill(nameof(Content.Component))), c.Method.Name.Kebaberize())
+                schema: (c, cc) => B.Content(component: c.Method.GenerateRequiredComponent(cc.Drill(nameof(Content.Component))), c.Method.Name.Kebaberize())
             );
             builder.Conventions.AddMethodSchemaConfiguration<Content>(
                 when: c => c.Type.Is<TestPage>() && c.Method.Name == nameof(TestPage.GetData),

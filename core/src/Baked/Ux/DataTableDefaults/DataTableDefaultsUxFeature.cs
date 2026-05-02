@@ -70,7 +70,7 @@ public class DataTableDefaultsUxFeature : IFeature<UxConfigurator>
 
             // Export
             builder.Conventions.AddMethodSchema(
-                when: c => c.Method.Has<ComponentDescriptorBuilderAttribute<DataTable>>(),
+                when: c => c.Method.Has<ComponentGeneratorAttribute<DataTable>>(),
                 schema: (c, cc) => MethodDataTableExport(c.Method, cc),
                 order: 10
             );

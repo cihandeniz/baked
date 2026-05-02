@@ -22,7 +22,7 @@ public class PropertiesAsFieldsetUxFeature : IFeature<UxConfigurator>
                 {
                     cc = cc.Drill(nameof(SimplePage), nameof(SimplePage.Contents));
 
-                    var content = c.Type.GetSchema<Content>(cc.Drill("Fields"));
+                    var content = c.Type.GenerateSchema<Content>(cc.Drill("Fields"));
                     if (content is null) { return; }
 
                     sp.Schema.Contents.Add(content);
@@ -53,7 +53,7 @@ public class PropertiesAsFieldsetUxFeature : IFeature<UxConfigurator>
 
                     foreach (var property in c.Type.GetMembers().Properties.GetDataProperties())
                     {
-                        var field = property.GetSchema<Field>(cc.Drill(f.Schema.Fields.Count));
+                        var field = property.GenerateSchema<Field>(cc.Drill(f.Schema.Fields.Count));
                         if (field is null) { continue; }
 
                         f.Schema.Fields.Add(field);

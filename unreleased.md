@@ -7,11 +7,15 @@
   - `configurator.CodeGeneration` is now `configurator.Buildtime`
   - `CodeGenerationLayer` is now `BuildtimeLayer`
   - Anything under `Baked.CodeGeneration` is now under `Baked.Buildtime`
+- `DescriptorBuilderAttribute` and `ComponentDescriptorBuilderAttribute` are
+  renamed as `GeneratorAttribute` and `ComponentGeneratorAttribute` respectively
+  - `Build` method is renamed as `Generate`
+- `GetSchema`, `GetSchemas`, `GetRequiredSchema`, `GetComponent` and
+  `GetRequiredComponent` extension methods are renamed as `GenerateSchema`,
+  `GenerateSchemas`, `GenerateRequiredSchema`, `GenerateComponent` and
+  `GenerateRequiredComponent` respectively
 - `FormPage` schema is completely redesigned, migrate your existing
   configurations to match the new one
-- `configurator.Domain.ConfigureInspect` is now removed, `Inspect` instance can
-  now be accessed directly from `builder.Inspect` within
-  `ConfigureDomainModelBuilder(builder => ...)`
 - `TabNameAttribute` is now removed, use `GroupAttribute` instead
 
 ## Improvements

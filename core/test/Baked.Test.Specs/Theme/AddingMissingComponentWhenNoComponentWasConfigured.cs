@@ -15,7 +15,7 @@ public class AddingMissingComponentWhenNoComponentWasConfigured : TestSpec
         var type = GiveMe.TheTypeModel<TestPage>().GetMetadata();
         var componentContext = GiveMe.AComponentContext(paths: ["page", "with-no-config"]);
 
-        var component = type.GetRequiredComponent(componentContext);
+        var component = type.GenerateRequiredComponent(componentContext);
 
         component.ShouldBeOfType<ComponentDescriptor<MissingComponent>>();
     }
@@ -29,7 +29,7 @@ public class AddingMissingComponentWhenNoComponentWasConfigured : TestSpec
             var type = GiveMe.TheTypeModel<TestPage>().GetMetadata();
             var componentContext = GiveMe.AComponentContext(paths: ["page", "with-no-config"]);
 
-            type.GetRequiredComponent(componentContext);
+            type.GenerateRequiredComponent(componentContext);
         }
 
         result?.Messages.ShouldContain(m =>
@@ -48,7 +48,7 @@ public class AddingMissingComponentWhenNoComponentWasConfigured : TestSpec
         var type = GiveMe.TheTypeModel<TestPage>().GetMetadata();
         var componentContext = GiveMe.AComponentContext(paths: ["page", "with-no-config"]);
 
-        var component = type.GetRequiredComponent(componentContext);
+        var component = type.GenerateRequiredComponent(componentContext);
 
         var missingComponent = component.ShouldBeOfType<ComponentDescriptor<MissingComponent>>();
         missingComponent.Schema.Path.ShouldBe(["page", "with-no-config"]);
@@ -61,7 +61,7 @@ public class AddingMissingComponentWhenNoComponentWasConfigured : TestSpec
         var type = GiveMe.TheTypeModel<TestPage>().GetMetadata();
         var componentContext = GiveMe.AComponentContext(paths: ["page", "with-no-config"]);
 
-        var component = type.GetRequiredComponent(componentContext);
+        var component = type.GenerateRequiredComponent(componentContext);
 
         var missingComponent = component.ShouldBeOfType<ComponentDescriptor<MissingComponent>>();
         missingComponent.Schema.Source?.Type.ShouldBe(nameof(TypeModelMembers));
@@ -76,7 +76,7 @@ public class AddingMissingComponentWhenNoComponentWasConfigured : TestSpec
         var property = type.Properties[nameof(Record.Text)];
         var componentContext = GiveMe.AComponentContext(paths: ["page", "with-no-config"]);
 
-        var component = property.GetRequiredComponent(componentContext);
+        var component = property.GenerateRequiredComponent(componentContext);
 
         var missingComponent = component.ShouldBeOfType<ComponentDescriptor<MissingComponent>>();
         missingComponent.Schema.Source?.Type.ShouldBe(nameof(PropertyModel));
@@ -91,7 +91,7 @@ public class AddingMissingComponentWhenNoComponentWasConfigured : TestSpec
         var method = type.Methods[nameof(TestPage.GetData)];
         var componentContext = GiveMe.AComponentContext(paths: ["page", "with-no-config"]);
 
-        var component = method.GetRequiredComponent(componentContext);
+        var component = method.GenerateRequiredComponent(componentContext);
 
         var missingComponent = component.ShouldBeOfType<ComponentDescriptor<MissingComponent>>();
         missingComponent.Schema.Source?.Type.ShouldBe(nameof(MethodModel));
@@ -107,7 +107,7 @@ public class AddingMissingComponentWhenNoComponentWasConfigured : TestSpec
         var parameter = method.DefaultOverload.Parameters["panel"];
         var componentContext = GiveMe.AComponentContext(paths: ["page", "with-no-config"]);
 
-        var component = parameter.GetRequiredComponent(componentContext);
+        var component = parameter.GenerateRequiredComponent(componentContext);
 
         var missingComponent = component.ShouldBeOfType<ComponentDescriptor<MissingComponent>>();
         missingComponent.Schema.Source?.Type.ShouldBe(nameof(ParameterModel));

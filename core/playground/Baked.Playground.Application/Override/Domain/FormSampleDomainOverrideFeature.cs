@@ -52,7 +52,7 @@ public class FormSampleDomainOverrideFeature : IFeature
                     dt.ReloadOn(nameof(FormSample.ClearParents).Kebaberize());
                     dt.ReloadOn("page-changed");
                     dt.Schema.Paginator = false;
-                    dt.Schema.Sort = c.Method.DefaultOverload.Parameters["sort"].GetComponent(cc.Drill(nameof(DataTable.Sort)));
+                    dt.Schema.Sort = c.Method.DefaultOverload.Parameters["sort"].GenerateComponent(cc.Drill(nameof(DataTable.Sort)));
 
                     if (dt.Schema.Sort is not null && dt.Schema.Sort.Schema is ISelect select)
                     {

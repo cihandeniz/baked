@@ -121,9 +121,9 @@ public static class ThemeExtensions
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
             conventions.AddTypeAttribute(
-                attribute: c => new DescriptorBuilderAttribute<TSchema>
+                attribute: c => new GeneratorAttribute<TSchema>
                 {
-                    Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
+                    Generator = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
                     Filter = where,
                     Trace = c.Trace
                 },
@@ -139,7 +139,7 @@ public static class ThemeExtensions
         {
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
-            conventions.RemoveTypeAttribute<DescriptorBuilderAttribute<TSchema>>(when: when,
+            conventions.RemoveTypeAttribute<GeneratorAttribute<TSchema>>(when: when,
                 requiresIndex: false,
                 order: order
             );
@@ -178,9 +178,9 @@ public static class ThemeExtensions
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
             conventions.AddPropertyAttribute(
-                attribute: c => new DescriptorBuilderAttribute<TSchema>
+                attribute: c => new GeneratorAttribute<TSchema>
                 {
-                    Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
+                    Generator = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
                     Filter = where,
                     Trace = c.Trace
                 },
@@ -196,7 +196,7 @@ public static class ThemeExtensions
         {
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
-            conventions.RemovePropertyAttribute<DescriptorBuilderAttribute<TSchema>>(when: when,
+            conventions.RemovePropertyAttribute<GeneratorAttribute<TSchema>>(when: when,
                 requiresIndex: false,
                 order: order
             );
@@ -235,9 +235,9 @@ public static class ThemeExtensions
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
             conventions.AddMethodAttribute(
-                attribute: c => new DescriptorBuilderAttribute<TSchema>
+                attribute: c => new GeneratorAttribute<TSchema>
                 {
-                    Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
+                    Generator = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
                     Filter = where,
                     Trace = c.Trace
                 },
@@ -253,7 +253,7 @@ public static class ThemeExtensions
         {
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
-            conventions.RemoveMethodAttribute<DescriptorBuilderAttribute<TSchema>>(when: when,
+            conventions.RemoveMethodAttribute<GeneratorAttribute<TSchema>>(when: when,
                 requiresIndex: false,
                 order: order
             );
@@ -292,9 +292,9 @@ public static class ThemeExtensions
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
             conventions.AddParameterAttribute(
-                attribute: c => new DescriptorBuilderAttribute<TSchema>
+                attribute: c => new GeneratorAttribute<TSchema>
                 {
-                    Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
+                    Generator = cc => cc.Trace.CaptureDescriptor(c, cc, () => schema(c, cc)),
                     Filter = where,
                     Trace = c.Trace
                 },
@@ -310,7 +310,7 @@ public static class ThemeExtensions
         {
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
-            conventions.RemoveParameterAttribute<DescriptorBuilderAttribute<TSchema>>(when: when,
+            conventions.RemoveParameterAttribute<GeneratorAttribute<TSchema>>(when: when,
                 requiresIndex: false,
                 order: order
             );
@@ -346,8 +346,8 @@ public static class ThemeExtensions
             where ??= _ => true;
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit * 2;
 
-            conventions.AddTypeAttributeConfiguration<DescriptorBuilderAttribute<TSchema>>(
-                attribute: (attribute, c) => attribute.WrapBuilder(
+            conventions.AddTypeAttributeConfiguration<GeneratorAttribute<TSchema>>(
+                attribute: (attribute, c) => attribute.WrapGenerator(
                     context: c,
                     apply: (s, cc) => schema(s, c, cc),
                     where: where
@@ -387,8 +387,8 @@ public static class ThemeExtensions
             where ??= _ => true;
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit * 2;
 
-            conventions.AddPropertyAttributeConfiguration<DescriptorBuilderAttribute<TSchema>>(
-                attribute: (attribute, c) => attribute.WrapBuilder(
+            conventions.AddPropertyAttributeConfiguration<GeneratorAttribute<TSchema>>(
+                attribute: (attribute, c) => attribute.WrapGenerator(
                     context: c,
                     apply: (s, cc) => schema(s, c, cc),
                     where: where
@@ -428,8 +428,8 @@ public static class ThemeExtensions
             where ??= _ => true;
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit * 2;
 
-            conventions.AddMethodAttributeConfiguration<DescriptorBuilderAttribute<TSchema>>(
-                attribute: (attribute, c) => attribute.WrapBuilder(
+            conventions.AddMethodAttributeConfiguration<GeneratorAttribute<TSchema>>(
+                attribute: (attribute, c) => attribute.WrapGenerator(
                     context: c,
                     apply: (s, cc) => schema(s, c, cc),
                     where: where
@@ -469,8 +469,8 @@ public static class ThemeExtensions
             where ??= _ => true;
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit * 2;
 
-            conventions.AddParameterAttributeConfiguration<DescriptorBuilderAttribute<TSchema>>(
-                attribute: (attribute, c) => attribute.WrapBuilder(
+            conventions.AddParameterAttributeConfiguration<GeneratorAttribute<TSchema>>(
+                attribute: (attribute, c) => attribute.WrapGenerator(
                     context: c,
                     apply: (s, cc) => schema(s, c, cc),
                     where: where
@@ -517,9 +517,9 @@ public static class ThemeExtensions
             conventions.AddTypeAttribute(
                 apply: (c, add) =>
                 {
-                    add(c.Type, new ComponentDescriptorBuilderAttribute<TSchema>
+                    add(c.Type, new ComponentGeneratorAttribute<TSchema>
                     {
-                        Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
+                        Generator = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
                         Filter = where,
                         Trace = c.Trace
                     });
@@ -540,7 +540,7 @@ public static class ThemeExtensions
         {
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
-            conventions.RemoveTypeAttribute<ComponentDescriptorBuilderAttribute<TSchema>>(when,
+            conventions.RemoveTypeAttribute<ComponentGeneratorAttribute<TSchema>>(when,
                 requiresIndex: false,
                 order: order
             );
@@ -583,9 +583,9 @@ public static class ThemeExtensions
             conventions.AddPropertyAttribute(
                 apply: (c, add) =>
                 {
-                    add(c.Property, new ComponentDescriptorBuilderAttribute<TSchema>
+                    add(c.Property, new ComponentGeneratorAttribute<TSchema>
                     {
-                        Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
+                        Generator = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
                         Filter = where,
                         Trace = c.Trace
                     });
@@ -606,7 +606,7 @@ public static class ThemeExtensions
         {
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
-            conventions.RemovePropertyAttribute<ComponentDescriptorBuilderAttribute<TSchema>>(when,
+            conventions.RemovePropertyAttribute<ComponentGeneratorAttribute<TSchema>>(when,
                 requiresIndex: false,
                 order: order
             );
@@ -649,9 +649,9 @@ public static class ThemeExtensions
             conventions.AddMethodAttribute(
                 apply: (c, add) =>
                 {
-                    add(c.Method, new ComponentDescriptorBuilderAttribute<TSchema>
+                    add(c.Method, new ComponentGeneratorAttribute<TSchema>
                     {
-                        Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
+                        Generator = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
                         Filter = where,
                         Trace = c.Trace
                     });
@@ -672,7 +672,7 @@ public static class ThemeExtensions
         {
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
-            conventions.RemoveMethodAttribute<ComponentDescriptorBuilderAttribute<TSchema>>(when,
+            conventions.RemoveMethodAttribute<ComponentGeneratorAttribute<TSchema>>(when,
                 requiresIndex: false,
                 order: order
             );
@@ -715,9 +715,9 @@ public static class ThemeExtensions
             conventions.AddParameterAttribute(
                 apply: (c, add) =>
                 {
-                    add(c.Parameter, new ComponentDescriptorBuilderAttribute<TSchema>
+                    add(c.Parameter, new ComponentGeneratorAttribute<TSchema>
                     {
-                        Builder = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
+                        Generator = cc => cc.Trace.CaptureDescriptor(c, cc, () => component(c, cc)),
                         Filter = where,
                         Trace = c.Trace
                     });
@@ -738,7 +738,7 @@ public static class ThemeExtensions
         {
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit;
 
-            conventions.RemoveParameterAttribute<ComponentDescriptorBuilderAttribute<TSchema>>(when,
+            conventions.RemoveParameterAttribute<ComponentGeneratorAttribute<TSchema>>(when,
                 requiresIndex: false,
                 order: order
             );
@@ -776,8 +776,8 @@ public static class ThemeExtensions
             where ??= _ => true;
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit * 2;
 
-            conventions.AddTypeAttributeConfiguration<ComponentDescriptorBuilderAttribute<TSchema>>(
-                attribute: (attribute, c) => attribute.WrapBuilder(
+            conventions.AddTypeAttributeConfiguration<ComponentGeneratorAttribute<TSchema>>(
+                attribute: (attribute, c) => attribute.WrapGenerator(
                     context: c,
                     apply: (d, cc) => component(d, c, cc),
                     where: where
@@ -819,8 +819,8 @@ public static class ThemeExtensions
             where ??= _ => true;
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit * 2;
 
-            conventions.AddPropertyAttributeConfiguration<ComponentDescriptorBuilderAttribute<TSchema>>(
-                attribute: (attribute, c) => attribute.WrapBuilder(
+            conventions.AddPropertyAttributeConfiguration<ComponentGeneratorAttribute<TSchema>>(
+                attribute: (attribute, c) => attribute.WrapGenerator(
                     context: c,
                     apply: (d, cc) => component(d, c, cc),
                     where: where
@@ -862,8 +862,8 @@ public static class ThemeExtensions
             where ??= _ => true;
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit * 2;
 
-            conventions.AddMethodAttributeConfiguration<ComponentDescriptorBuilderAttribute<TSchema>>(
-                attribute: (attribute, c) => attribute.WrapBuilder(
+            conventions.AddMethodAttributeConfiguration<ComponentGeneratorAttribute<TSchema>>(
+                attribute: (attribute, c) => attribute.WrapGenerator(
                     context: c,
                     apply: (d, cc) => component(d, c, cc),
                     where: where
@@ -905,8 +905,8 @@ public static class ThemeExtensions
             where ??= _ => true;
             order += RestApiLayer.MaxConventionOrder + LayerBase.ConventionOrderLimit * 2;
 
-            conventions.AddParameterAttributeConfiguration<ComponentDescriptorBuilderAttribute<TSchema>>(
-                attribute: (attribute, c) => attribute.WrapBuilder(
+            conventions.AddParameterAttributeConfiguration<ComponentGeneratorAttribute<TSchema>>(
+                attribute: (attribute, c) => attribute.WrapGenerator(
                     context: c,
                     apply: (d, cc) => component(d, c, cc),
                     where: where
@@ -980,7 +980,7 @@ public static class ThemeExtensions
                     );
                 }
 
-                return method.GetRequiredComponent<TPageSchema>(context.Drill(nameof(Page), typeof(TDomainType).Name, method.Name));
+                return method.GenerateRequiredComponent<TPageSchema>(context.Drill(nameof(Page), typeof(TDomainType).Name, method.Name));
             };
 
         public PageBuilder Type<TDomainType, TPageSchema>() where TPageSchema : IPageSchema =>
@@ -995,7 +995,7 @@ public static class ThemeExtensions
                     );
                 }
 
-                return metadata.GetRequiredComponent<TPageSchema>(context.Drill(nameof(Page), typeof(TDomainType).Name));
+                return metadata.GenerateRequiredComponent<TPageSchema>(context.Drill(nameof(Page), typeof(TDomainType).Name));
             };
     }
 
@@ -1049,7 +1049,7 @@ public static class ThemeExtensions
         }
     }
 
-    extension<TSchema>(DescriptorBuilderAttribute<TSchema> attribute)
+    extension<TSchema>(GeneratorAttribute<TSchema> attribute)
     {
         // WARNING
         //
@@ -1059,21 +1059,21 @@ public static class ThemeExtensions
         // NOTE
         //
         // This is refactored to remove duplication in below conventions but
-        // compromises code readability. It basically wraps the given builder
+        // compromises code readability. It basically wraps the given generator
         // and applies given function only when given filter (`when`) passes.
         //
         // Filter is applied within the function because it is the only
         // way to access to the component context.
-        void WrapBuilder(
+        void WrapGenerator(
             DomainModelContext context,
             Func<ComponentContext, bool> where,
             Action<TSchema, ComponentContext> apply
         )
         {
-            var prev = attribute.Builder;
+            var prev = attribute.Generator;
             var trace = context.Trace;
 
-            attribute.Builder = cc =>
+            attribute.Generator = cc =>
             {
                 var result = prev(cc);
                 if (!where(cc)) { return result; }
@@ -1094,50 +1094,50 @@ public static class ThemeExtensions
 
     extension(ICustomAttributesModel metadata)
     {
-        public List<TSchema> GetSchemas<TSchema>(ComponentContext context)
+        public List<TSchema> GenerateSchemas<TSchema>(ComponentContext context)
         {
-            if (!metadata.TryGetAll<DescriptorBuilderAttribute<TSchema>>(out var builders)) { return []; }
+            if (!metadata.TryGetAll<GeneratorAttribute<TSchema>>(out var generators)) { return []; }
 
             return
             [
-                .. builders
+                .. generators
                     .WhereAppliesTo(context)
-                    .Cast<IComponentContextBasedBuilder<TSchema>>()
-                    .Select(b => b.Build(context))
+                    .Cast<IComponentContextBasedGenerator<TSchema>>()
+                    .Select(b => b.Generate(context))
             ];
         }
 
-        public TSchema GetRequiredSchema<TSchema>(ComponentContext context) =>
-            metadata.GetSchema<TSchema>(context) ??
+        public TSchema GenerateRequiredSchema<TSchema>(ComponentContext context) =>
+            metadata.GenerateSchema<TSchema>(context) ??
             throw DiagnosticCode.MissingRequiredSchema.Exception(
                 $"`{metadata.CustomAttributes.Name}` doesn't have descriptor for schema type `{typeof(TSchema).Name}` at path `{context.Path}`"
             );
 
-        public TSchema? GetSchema<TSchema>(ComponentContext context)
+        public TSchema? GenerateSchema<TSchema>(ComponentContext context)
         {
-            if (!metadata.TryGetAll<DescriptorBuilderAttribute<TSchema>>(out var builders)) { return default; }
+            if (!metadata.TryGetAll<GeneratorAttribute<TSchema>>(out var generators)) { return default; }
 
-            var builder = builders
+            var generator = generators
                 .WhereAppliesTo(context)
-                .Cast<IComponentContextBasedBuilder<TSchema>>()
+                .Cast<IComponentContextBasedGenerator<TSchema>>()
                 .LastOrDefault();
-            if (builder is null) { return default; }
+            if (generator is null) { return default; }
 
-            return builder.Build(context);
+            return generator.Generate(context);
         }
 
-        public ComponentDescriptor<T> GetRequiredComponent<T>(ComponentContext context) where T : IComponentSchema =>
-            metadata.GetRequiredComponent(context, componentType: typeof(T), omitWarningMessage: true) as ComponentDescriptor<T> ??
+        public ComponentDescriptor<T> GenerateRequiredComponent<T>(ComponentContext context) where T : IComponentSchema =>
+            metadata.GenerateRequiredComponent(context, componentType: typeof(T), omitWarningMessage: true) as ComponentDescriptor<T> ??
             throw DiagnosticCode.MissingRequiredComponentOfType.Exception(
                 $"`{metadata.CustomAttributes.Name}` doesn't have a component descriptor of type `{typeof(T).Name}` at path `{context.Path}`"
             );
 
-        public IComponentDescriptor GetRequiredComponent(ComponentContext context,
+        public IComponentDescriptor GenerateRequiredComponent(ComponentContext context,
             Type? componentType = default,
             bool omitWarningMessage = false
         )
         {
-            var result = metadata.GetComponent(context, componentType: componentType);
+            var result = metadata.GenerateComponent(context, componentType: componentType);
             if (result is not null) { return result; }
 
             if (!omitWarningMessage)
@@ -1154,10 +1154,10 @@ public static class ThemeExtensions
             return DomainComponents.CustomAttributesMissingComponent(metadata, context, options: mc => mc.Component = componentType?.Name);
         }
 
-        public ComponentDescriptor<T>? GetComponent<T>(ComponentContext context) where T : IComponentSchema =>
-            metadata.GetComponent(context, componentType: typeof(T)) as ComponentDescriptor<T>;
+        public ComponentDescriptor<T>? GenerateComponent<T>(ComponentContext context) where T : IComponentSchema =>
+            metadata.GenerateComponent(context, componentType: typeof(T)) as ComponentDescriptor<T>;
 
-        public IComponentDescriptor? GetComponent(ComponentContext context,
+        public IComponentDescriptor? GenerateComponent(ComponentContext context,
             Type? componentType = default
         )
         {
@@ -1165,16 +1165,16 @@ public static class ThemeExtensions
 
             foreach (var contextBasedComponent in contextBasedComponents.WhereAppliesTo(context).Where(cbc => componentType is null || cbc.SchemaType == componentType).Reverse())
             {
-                var builderType = typeof(ComponentDescriptorBuilderAttribute<>).MakeGenericType(contextBasedComponent.SchemaType);
-                if (!metadata.TryGetAll(builderType, out var builders)) { continue; }
+                var generatorType = typeof(ComponentGeneratorAttribute<>).MakeGenericType(contextBasedComponent.SchemaType);
+                if (!metadata.TryGetAll(generatorType, out var generators)) { continue; }
 
-                var builder = builders
-                    .Cast<IComponentContextBasedBuilder<IComponentDescriptor>>()
+                var generator = generators
+                    .Cast<IComponentContextBasedGenerator<IComponentDescriptor>>()
                     .WhereAppliesTo(context)
                     .LastOrDefault();
-                if (builder is null) { continue; }
+                if (generator is null) { continue; }
 
-                return builder.Build(context);
+                return generator.Generate(context);
             }
 
             return default;

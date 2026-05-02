@@ -24,7 +24,9 @@ public class Trace(StackTrace? stackTrace)
             );
     }
 
-    public StackTrace StackTrace => stackTrace ?? new();
+    public StackTrace StackTrace =>
+        stackTrace ??
+        throw new InvalidOperationException("StackTrace is unavailable when Inspection.Current is not set");
 
     public TTarget CaptureAttribute<TModelContext, TTarget>(TModelContext context, Func<TTarget> create)
         where TModelContext : DomainModelContext

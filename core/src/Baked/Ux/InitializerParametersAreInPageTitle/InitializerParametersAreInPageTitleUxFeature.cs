@@ -20,7 +20,7 @@ public class InitializerParametersAreInPageTitleUxFeature : IFeature<UxConfigura
                     tp.Schema.Inputs.AddRange(
                         initializer
                             .DefaultOverload.Parameters
-                            .Select(p => p.GetRequiredSchema<Input>(cc.Drill(nameof(TabbedPage), nameof(TabbedPage.Inputs))))
+                            .Select(p => p.GenerateRequiredSchema<Input>(cc.Drill(nameof(TabbedPage), nameof(TabbedPage.Inputs))))
                     );
                 },
                 when: c => c.Type.Has<TransientAttribute>() && c.Type.HasMembers()

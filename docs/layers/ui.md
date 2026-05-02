@@ -106,14 +106,14 @@ configurator.Ui.ConfigurePageDescriptors(pages =>
 > });
 > ```
 
-## Descriptor Builder System
+## Generator System
 
-To generate a page descriptor from a domain model, we provide a descriptor
-builder system that is added through domain model conventions. There are two
-builder attributes for this purpose;
+To generate a page descriptor from a domain model, we provide a generator system
+that is added through domain model conventions. There are two generator
+attributes for this purpose;
 
-1. `ComponentDescriptorBuilderAttribute<TComponentSchema>`
-2. `DescriptorBuilderAttribute<TSchema>`
+1. `ComponentGeneratorAttribute<TComponentSchema>`
+2. `GeneratorAttribute<TSchema>`
 
 The page generator starts with a `Page` component path to render a domain model
 into a `ComponentDescriptor<TComponentSchema>` instance. To add a component to a
@@ -136,8 +136,8 @@ configurator.Domain.ConfigureDomainModelBuilder(builder =>
 - `where:` is a predicate funtion that takes `ComponentContext cc` as a
   parameter and is a selector that determines at which component path this
   convention should be applied
-- `component:` is a builder function that takes `TypeModelMetadataContext c` and
-  `ComponentContext cc` as parameters, and is expected to return a
+- `component:` is a generator function that takes `TypeModelMetadataContext c`
+  and `ComponentContext cc` as parameters, and is expected to return a
   `ComponentDescriptor<TComponentSchema>` instance, such as
   `ComponentDescriptor<TabbedPage>`
 
@@ -146,11 +146,12 @@ extensions works the same way.
 
 Once you add a component for a domain model at a specific component path, it
 will return that component instance when asked at that component path. You may
-use `GetComponent` extension to ask for a component during a component build.
-For example, below call asks for a component at `../title` path for the `type`;
+use `GenerateComponent` extension to ask for a child component during a page
+generation. For example, below call asks for a component at `../title` path for
+the `type`;
 
 ```csharp
-type.GetComponent(cc.Drill("Title"))
+type.GenerateComponent(cc.Drill("Title"))
 ```
 
 > [!NOTE]
@@ -160,9 +161,9 @@ type.GetComponent(cc.Drill("Title"))
 
 > [!TIP]
 >
-> `GetRequiredComponent` is also provided to ensure that a component exists at
-> the speficied path for the domain model. Otherwise, it will cause a generation
-> error during post-build phase of `dotnet build`.
+> `GenerateRequiredComponent` is also provided to ensure that a component exists
+> at the speficied path for the domain model. Otherwise, it will cause a
+> generation error during post-build phase of `dotnet build`.
 
 For non-component schemas, similar extensions are provided for domain models;
 
@@ -173,13 +174,13 @@ For non-component schemas, similar extensions are provided for domain models;
 
 Use these extensions to associate domain models with non-component schemas such
 as `Tab` or `Input`. Once you add a schema for a domain model, you can access it
-using `GetSchema<TSchema>` or `GetSchemas<TSchema>` extension methods.
+using `GenerateSchema<TSchema>` or `GenerateSchemas<TSchema>` extension methods.
 
 > [!TIP]
 >
-> `GetRequiredSchema<TSchema>` is also provided to ensure that a schema exists
-> at that path for that domain model. Otherwise, it will cause a generation
-> error during post-build phase of `dotnet build`.
+> `GenerateRequiredSchema<TSchema>` is also provided to ensure that a schema
+> exists at that path for that domain model. Otherwise, it will cause a
+> generation error during post-build phase of `dotnet build`.
 
 ### Configuring Existing Schemas
 

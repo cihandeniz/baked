@@ -29,7 +29,7 @@ public class ActionsAreContentsUxFeature : IFeature<UxConfigurator>
                         if (!method.TryGet<ActionModelAttribute>(out var action)) { continue; }
                         if (action.Method != HttpMethod.Get) { continue; }
 
-                        var content = method.GetSchema<Content>(cc.Drill(sp.Schema.Contents.Count));
+                        var content = method.GenerateSchema<Content>(cc.Drill(sp.Schema.Contents.Count));
                         if (content is null) { continue; }
 
                         sp.Schema.Contents.Add(content);
@@ -58,7 +58,7 @@ public class ActionsAreContentsUxFeature : IFeature<UxConfigurator>
                             tabs.Add(tabName.Value, t = TypeTab(c.Type, cc, tabName.Value));
                         }
 
-                        var content = method.GetSchema<Content>(cc.Drill(tabName.Value, nameof(Tab.Contents), t.Contents.Count));
+                        var content = method.GenerateSchema<Content>(cc.Drill(tabName.Value, nameof(Tab.Contents), t.Contents.Count));
                         if (content is null) { continue; }
 
                         t.Contents.Add(content);

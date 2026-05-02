@@ -116,7 +116,7 @@ public class ActionsAsButtonsUxFeature : IFeature<UxConfigurator>
             builder.Conventions.AddMethodComponentConfiguration<FormPage>(
                 component: (fp, c, cc) =>
                 {
-                    var back = c.Method.GetComponent(cc.Drill(nameof(FormPage), nameof(FormPage.Title), nameof(FormPage.Title.Actions), "Back"));
+                    var back = c.Method.GenerateComponent(cc.Drill(nameof(FormPage), nameof(FormPage.Title), nameof(FormPage.Title.Actions), "Back"));
                     if (back is null) { return; }
 
                     fp.Schema.Title.Actions.Add(back);

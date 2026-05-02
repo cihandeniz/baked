@@ -11,7 +11,7 @@ public static class DomainComponents
     public static ComponentDescriptor<Text> MethodText(MethodModel method, ComponentContext context,
         Action<Text>? options = default
     ) => B.Text(
-        data: method.GetSchema<RemoteData>(context.Drill(nameof(IComponentDescriptor.Data))),
+        data: method.GenerateSchema<RemoteData>(context.Drill(nameof(IComponentDescriptor.Data))),
         options: options
     );
 }

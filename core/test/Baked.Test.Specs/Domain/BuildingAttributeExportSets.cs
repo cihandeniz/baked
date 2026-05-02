@@ -41,17 +41,17 @@ public class BuildingAttributeExportSets : TestSpec
     {
         var attributeExport = new ExportConfiguration("Test");
         attributeExport.Include<EntityAttribute>();
-        attributeExport.Include<ComponentDescriptorBuilderAttribute<Text>>();
+        attributeExport.Include<ComponentGeneratorAttribute<Text>>();
 
         attributeExport.Name.ShouldBe("Test");
         attributeExport.Type.ShouldContain<EntityAttribute>();
-        attributeExport.Type.ShouldContain<ComponentDescriptorBuilderAttribute<Text>>();
+        attributeExport.Type.ShouldContain<ComponentGeneratorAttribute<Text>>();
         attributeExport.Method.ShouldNotContain<EntityAttribute>();
-        attributeExport.Method.ShouldContain<ComponentDescriptorBuilderAttribute<Text>>();
+        attributeExport.Method.ShouldContain<ComponentGeneratorAttribute<Text>>();
         attributeExport.Parameter.ShouldNotContain<EntityAttribute>();
-        attributeExport.Parameter.ShouldContain<ComponentDescriptorBuilderAttribute<Text>>();
+        attributeExport.Parameter.ShouldContain<ComponentGeneratorAttribute<Text>>();
         attributeExport.Property.ShouldNotContain<EntityAttribute>();
-        attributeExport.Property.ShouldContain<ComponentDescriptorBuilderAttribute<Text>>();
+        attributeExport.Property.ShouldContain<ComponentGeneratorAttribute<Text>>();
     }
 
     [Test]

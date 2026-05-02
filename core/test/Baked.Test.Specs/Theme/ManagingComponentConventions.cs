@@ -11,7 +11,7 @@ public class ManagingComponentConventions : TestSpec
         var type = GiveMe.TheTypeModel<TestPage>().GetMetadata();
         var componentContext = GiveMe.AComponentContext(paths: ["page"]);
 
-        var component = type.GetRequiredComponent(componentContext);
+        var component = type.GenerateRequiredComponent(componentContext);
 
         var page = component.ShouldBeOfType<ComponentDescriptor<TabbedPage>>();
         page.Schema.Path.ShouldBe("test-page");
@@ -24,7 +24,7 @@ public class ManagingComponentConventions : TestSpec
         var type = GiveMe.TheTypeModel<TestPage>().GetMetadata();
         var componentContext = GiveMe.AComponentContext(paths: ["page", "tabs"]);
 
-        var tabs = type.GetSchemas<Tab>(componentContext);
+        var tabs = type.GenerateSchemas<Tab>(componentContext);
 
         tabs.Count.ShouldBe(1);
         tabs[0].Id.ShouldBe("default");
@@ -37,7 +37,7 @@ public class ManagingComponentConventions : TestSpec
         var method = type.Methods[nameof(TestPage.GetData)];
         var componentContext = GiveMe.AComponentContext(paths: ["page", "tabs", "default", "contents", "0"]);
 
-        var content = method.GetSchema<Content>(componentContext);
+        var content = method.GenerateSchema<Content>(componentContext);
 
         content.ShouldNotBeNull();
         content.Narrow.GetValueOrDefault().ShouldBeTrue();
@@ -50,7 +50,7 @@ public class ManagingComponentConventions : TestSpec
         var method = type.Methods[nameof(TestPage.GetData)];
         var componentContext = GiveMe.AComponentContext(paths: ["page", "tabs", "default", "contents", "0", "component"]);
 
-        var component = method.GetRequiredComponent(componentContext);
+        var component = method.GenerateRequiredComponent(componentContext);
 
         var @string = component.ShouldBeOfType<ComponentDescriptor<Text>>();
         @string.Schema.MaxLength.ShouldBe(20);

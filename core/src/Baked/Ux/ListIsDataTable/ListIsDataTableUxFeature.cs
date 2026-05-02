@@ -30,7 +30,7 @@ public class ListIsDataTableUxFeature : IFeature<UxConfigurator>
                     var members = c.Method.DefaultOverload.ReturnType.SkipTask().GetElementType().GetMembers();
                     foreach (var property in members.Properties.GetDataProperties())
                     {
-                        var column = property.GetSchema<DataTable.Column>(cc.Drill(nameof(DataTable.Columns)));
+                        var column = property.GenerateSchema<DataTable.Column>(cc.Drill(nameof(DataTable.Columns)));
                         if (column is null) { continue; }
 
                         dt.Schema.Columns.Add(column);
@@ -67,7 +67,7 @@ public class ListIsDataTableUxFeature : IFeature<UxConfigurator>
                         if (method.Has<InitializerAttribute>()) { continue; }
                         if (method.GetAction().Method == HttpMethod.Get) { continue; }
 
-                        var component = method.GetComponent(cc.Drill(method.Name));
+                        var component = method.GenerateComponent(cc.Drill(method.Name));
                         if (component is null) { continue; }
 
                         col.Component += component;

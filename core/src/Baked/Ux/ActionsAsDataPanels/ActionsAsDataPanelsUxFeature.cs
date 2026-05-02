@@ -27,7 +27,7 @@ public class ActionsAsDataPanelsUxFeature : IFeature<UxConfigurator>
                     foreach (var parameter in c.Method.DefaultOverload.Parameters)
                     {
                         dp.Schema.Inputs.Add(
-                            parameter.GetRequiredSchema<Input>(cc.Drill(nameof(DataPanel), nameof(DataPanel.Inputs)))
+                            parameter.GenerateRequiredSchema<Input>(cc.Drill(nameof(DataPanel), nameof(DataPanel.Inputs)))
                         );
                     }
                 }

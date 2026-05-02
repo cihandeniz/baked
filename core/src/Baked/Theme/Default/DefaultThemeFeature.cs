@@ -123,7 +123,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                     foreach (var parameter in c.Method.DefaultOverload.Parameters)
                     {
                         sf.Schema.Inputs.Add(
-                            parameter.GetRequiredSchema<Input>(cc)
+                            parameter.GenerateRequiredSchema<Input>(cc)
                         );
                     }
                 }
@@ -137,7 +137,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                     foreach (var parameter in c.Method.DefaultOverload.Parameters)
                     {
                         fp.Schema.Inputs.Add(
-                            parameter.GetRequiredSchema<Input>(cc)
+                            parameter.GenerateRequiredSchema<Input>(cc)
                         );
 
                         if (!parameter.TryGet<GroupAttribute>(out var group))
@@ -200,7 +200,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                         if (action.Method == HttpMethod.Get) { continue; }
                         if (method.Has<InitializerAttribute>()) { continue; }
 
-                        var actionComponent = method.GetComponent(cc.Drill(nameof(PageTitle.Actions), method.Name));
+                        var actionComponent = method.GenerateComponent(cc.Drill(nameof(PageTitle.Actions), method.Name));
                         if (actionComponent is null) { continue; }
 
                         pt.Schema.Actions.Add(actionComponent);
