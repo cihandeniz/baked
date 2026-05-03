@@ -79,16 +79,10 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
 
             // Method defaults
             builder.Index.Method.Add<ActionAttribute>();
-            builder.Index.Method.Add<TabNameAttribute>();
             builder.Index.Method.Add<RouteAttribute>();
             builder.Conventions.SetMethodAttribute(
                 when: c => c.Method.Has<ActionModelAttribute>(),
                 attribute: () => new ActionAttribute(),
-                order: RestApiLayer.MaxConventionOrder + 10
-            );
-            builder.Conventions.SetMethodAttribute(
-                when: c => c.Method.Has<ActionModelAttribute>(),
-                attribute: () => new TabNameAttribute(),
                 order: RestApiLayer.MaxConventionOrder + 10
             );
             builder.Conventions.AddMethodComponent(

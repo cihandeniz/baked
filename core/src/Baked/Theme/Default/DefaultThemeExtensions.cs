@@ -152,5 +152,6 @@ public static class DefaultThemeExtensions
     {
         public string SectionKey { get => group[nameof(FormPage.Section)]; set => group[nameof(FormPage.Section)] = value; }
         public string InputGroupKey { get => group[nameof(FormPage.InputGroup)]; set => group[nameof(FormPage.InputGroup)] = value; }
+        public string TabName { get => group[nameof(Tab)]; set => group[nameof(Tab)] = value; }
     }
 }

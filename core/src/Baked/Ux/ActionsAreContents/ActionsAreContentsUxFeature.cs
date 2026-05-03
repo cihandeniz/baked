@@ -1,7 +1,6 @@
 ﻿using Baked.Architecture;
 using Baked.Business;
 using Baked.RestApi.Model;
-using Baked.Theme.Default;
 using Baked.Ui;
 using Humanizer;
 
@@ -46,19 +45,19 @@ public class ActionsAreContentsUxFeature : IFeature<UxConfigurator>
                     var tabs = new Dictionary<string, Tab>();
 
                     var members = c.Type.GetMembers();
-                    foreach (var method in members.Methods.Having<TabNameAttribute>())
+                    foreach (var method in members.Methods.Having<ActionModelAttribute>())
                     {
                         if (method.Has<InitializerAttribute>()) { continue; }
                         if (!method.TryGet<ActionModelAttribute>(out var action)) { continue; }
                         if (action.Method != HttpMethod.Get) { continue; }
 
-                        var tabName = method.Get<TabNameAttribute>();
-                        if (!tabs.TryGetValue(tabName.Value, out var t))
+                        var tabName = method.Get<GroupAttribute>().TabName;
+                        if (!tabs.TryGetValue(tabName, out var t))
                         {
-                            tabs.Add(tabName.Value, t = TypeTab(c.Type, cc, tabName.Value));
+                            tabs.Add(tabName, t = TypeTab(c.Type, cc, tabName));
                         }
 
-                        var content = method.GenerateSchema<Content>(cc.Drill(tabName.Value, nameof(Tab.Contents), t.Contents.Count));
+                        var content = method.GenerateSchema<Content>(cc.Drill(tabName, nameof(Tab.Contents), t.Contents.Count));
                         if (content is null) { continue; }
 
                         t.Contents.Add(content);
