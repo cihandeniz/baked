@@ -115,7 +115,7 @@ public class InspectingAttributes : TestSpec
             _trace.CaptureAttribute(c, () => new CustomAttribute());
         }
 
-        _messages.ShouldContain(m => m.Message.Contains("<this>"));
+        _messages.ShouldContain(m => m.Message.Contains("<self>"));
     }
 
     [Test]
@@ -244,7 +244,7 @@ public class InspectingAttributes : TestSpec
     public void Reports_attribute_type_and_property_name()
     {
         _inspect.Attribute<CustomAttribute>(
-            attribute: d => d.Value
+            attribute: c => c.Value
         );
         var c = new TypeModelContext { Domain = GiveMe.TheDomainModel(), Type = GiveMe.TheTypeModel<Parent>() };
 
@@ -255,6 +255,22 @@ public class InspectingAttributes : TestSpec
 
         _messages.ShouldContain(m => m.Message.Contains("[[Custom]]"));
         _messages.ShouldContain(m => m.Message.Contains("[darkgoldenrod]Value:[/] Test"));
+    }
+
+    [Test]
+    public void Reports_value_even_if_initial_value_is_null()
+    {
+        _inspect.Attribute<CustomAttribute>(
+            attribute: c => c.NullableValue
+        );
+        var c = new TypeModelContext { Domain = GiveMe.TheDomainModel(), Type = GiveMe.TheTypeModel<Parent>() };
+
+        using (_diagnostics)
+        {
+            _trace.CaptureAttribute(c, () => new CustomAttribute());
+        }
+
+        _messages.ShouldContain(m => m.Message.Contains("[darkgoldenrod]NullableValue:[/] [gray]<null>[/]"));
     }
 
     [Test]
@@ -308,6 +324,24 @@ public class InspectingAttributes : TestSpec
         }
 
         _messages.Count(ca => ca.Message.Contains("updated")).ShouldBe(1);
+    }
+
+    [Test]
+    public void Null_updates_are_in_gray_color()
+    {
+        _inspect.Attribute<CustomAttribute>(
+            attribute: ca => ca.NullableValue
+        );
+        var c = GiveMe.ATypeModelContext<Parent>();
+
+        using (_diagnostics)
+        {
+            var ca = new CustomAttribute { NullableValue = "initial" };
+
+            _trace.CaptureAttribute(c, ca, () => ca.NullableValue = null);
+        }
+
+        _messages.ShouldContain(m => m.Message.Contains("[darkgoldenrod]NullableValue:[/] [gray]<null>[/]"));
     }
 
     [Test]
@@ -380,11 +414,11 @@ public class InspectingAttributes : TestSpec
 
         using (_diagnostics)
         {
-            var ca = _trace.CaptureAttribute(c, () => new CustomAttribute { SecondValue = "create" });
-            _trace.CaptureAttribute(c, ca, () => ca.SecondValue = "update");
+            var ca = _trace.CaptureAttribute(c, () => new CustomAttribute { NullableValue = "create" });
+            _trace.CaptureAttribute(c, ca, () => ca.NullableValue = "update");
         }
 
-        _messages.Count(m => m.Message.Contains($"SecondValue")).ShouldBe(0);
+        _messages.Count(m => m.Message.Contains($"NullableValue")).ShouldBe(0);
     }
 
     [Test]

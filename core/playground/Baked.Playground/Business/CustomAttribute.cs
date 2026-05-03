@@ -4,5 +4,5 @@
 public class CustomAttribute : Attribute
 {
     public string Value { get; set; } = string.Empty;
-    public string? SecondValue { get; set; }
+    public string? NullableValue { get; set; }
 }

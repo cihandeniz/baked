@@ -32,11 +32,6 @@ public class CustomThemeFeature(IEnumerable<Func<Router, Route>> routes)
     {
         base.Configure(configurator);
 
-        configurator.Domain.ConfigureInspect(inspect =>
-        {
-            inspect.Attribute<DataAttribute>(attribute: a => a.Prop);
-        });
-
         configurator.Domain.ConfigureDomainModelBuilder(builder =>
         {
             // Custom theme CSV formatter settings

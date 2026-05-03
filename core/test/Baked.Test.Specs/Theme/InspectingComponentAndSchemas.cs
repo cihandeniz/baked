@@ -117,7 +117,13 @@ public class InspectingComponentAndSchemas : TestSpec
     [Test]
     public void Allows_inspecting_a_schema_without_any_property()
     {
-        _inspect.Schema<DataTable.Column>();
+        _inspect.Schema<DataTable.Column>(
+            schema: dtc => new
+            {
+                dtc.Key,
+                Component = dtc.Component.Type
+            }
+        );
         var c = GiveMe.ATypeModelContext<Parent>();
         var cc = GiveMe.AComponentContext();
 
@@ -127,12 +133,9 @@ public class InspectingComponentAndSchemas : TestSpec
         }
 
         _messages.ShouldContain(m => m.Message.Contains("""
-        [darkgoldenrod]<this>:[/] {
+        [darkgoldenrod]Key = dtc.Key, Component = dtc.Component.Type:[/] {
           "key": "test-key",
-          "component": {
-            "type": "Text",
-            "schema": {}
-          }
+          "component": "Text"
         }
         """), customMessage: _messages.Join(", "));
     }
@@ -140,7 +143,7 @@ public class InspectingComponentAndSchemas : TestSpec
     [Test]
     public void Allows_inspecting_a_component_without_any_property()
     {
-        _inspect.Schema<Text>();
+        _inspect.Component<Text>();
         var c = GiveMe.ATypeModelContext<Parent>();
         var cc = GiveMe.AComponentContext();
 
@@ -149,7 +152,7 @@ public class InspectingComponentAndSchemas : TestSpec
             _trace.CaptureDescriptor(c, cc, () => B.Text());
         }
 
-        _messages.ShouldContain(m => m.Message.Contains("[darkgoldenrod]<this>:[/] {}"));
+        _messages.ShouldContain(m => m.Message.Contains("[darkgoldenrod]<self>:[/] Text"));
     }
 
     [Test]

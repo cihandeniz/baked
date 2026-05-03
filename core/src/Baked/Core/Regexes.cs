@@ -42,7 +42,7 @@ internal static partial class Regexes
                 )
                 .Trim();
 
-            return result == string.Empty ? "<this>" : result;
+            return result == string.Empty ? "<self>" : result;
         }
     }
 }
