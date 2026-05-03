@@ -387,11 +387,17 @@ export default {
       schema: {
         title,
         submit,
-        inputs,
-        sections: [{ name: "Default", inputs: inputs.map(i => i.name) }],
-        groups: {},
-        wide: [],
-        singleColumn: true
+        sections: [
+          {
+            key: "default",
+            label: "Default",
+            inputGroups: inputs.map(input => ({
+              key: input.name,
+              inputs: [input],
+              wide: true
+            }))
+          }
+        ]
       },
       action
     };

@@ -1,4 +1,5 @@
-﻿using Baked.Domain;
+﻿using Baked.Business;
+using Baked.Domain;
 using Baked.Domain.Model;
 using Baked.Theme;
 using Baked.Theme.Default;
@@ -145,5 +146,11 @@ public static class DefaultThemeExtensions
                 attribute: c => new RouteAttribute(routePath)
             );
         }
+    }
+
+    extension(GroupAttribute group)
+    {
+        public string SectionKey { get => group[nameof(FormPage.Section)]; set => group[nameof(FormPage.Section)] = value; }
+        public string InputGroupKey { get => group[nameof(FormPage.InputGroup)]; set => group[nameof(FormPage.InputGroup)] = value; }
     }
 }

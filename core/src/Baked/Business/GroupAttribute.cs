@@ -3,5 +3,19 @@ namespace Baked.Business;
 [AttributeUsage(AttributeTargets.All)]
 public class GroupAttribute : Attribute
 {
-    public string Name { get; set; } = "Default";
+    Dictionary<string, string> NameByContext { get; } = [];
+
+    public string this[string context]
+    {
+        get
+        {
+            if (!NameByContext.TryGetValue(context, out var result))
+            {
+                return "default";
+            }
+
+            return result;
+        }
+        set => NameByContext[context] = value;
+    }
 }

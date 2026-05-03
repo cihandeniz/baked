@@ -38,22 +38,6 @@ public static class UiExtensions
             layers.Add(new UiLayer());
     }
 
-    extension(ComponentExports exports)
-    {
-        public void AddFromExtensions(Type type)
-        {
-            var extensions = type.GetMethods(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public) ?? [];
-            var componentTypes = extensions
-                .Where(m =>
-                    m.ReturnType.IsAssignableTo(typeof(IComponentDescriptor)) &&
-                    !m.GetGenericArguments().Any()
-                )
-                .Select(m => m.Name);
-
-            exports.AddRange(componentTypes);
-        }
-    }
-
     extension(ISupportsReaction source)
     {
         public void ReloadOn(string @event,

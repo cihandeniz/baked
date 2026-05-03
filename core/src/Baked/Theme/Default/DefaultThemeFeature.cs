@@ -128,30 +128,33 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                     }
                 }
             );
+
+            builder.Conventions.AddParameterAttributeConfiguration<GroupAttribute>(
+                attribute: (group, c) => group.InputGroupKey = c.Parameter.Name
+            );
             builder.Conventions.AddMethodComponentConfiguration<FormPage>(
                 component: (fp, c, cc) =>
                 {
                     var (_, l) = cc;
-                    cc = cc.Drill(nameof(FormPage), nameof(FormPage.Inputs));
+                    cc = cc.Drill(nameof(FormPage), nameof(FormPage.Sections));
 
                     foreach (var parameter in c.Method.DefaultOverload.Parameters)
                     {
-                        fp.Schema.Inputs.Add(
-                            parameter.GenerateRequiredSchema<Input>(cc)
-                        );
-
                         if (!parameter.TryGet<GroupAttribute>(out var group))
                         {
                             group = new();
                         }
 
-                        var section = fp.Schema.Sections.FirstOrDefault(s => s.Key == group.Name);
+                        var section = fp.Schema.Sections.FirstOrDefault(s => s.Key == group.SectionKey);
                         if (section is null)
                         {
-                            fp.Schema.Sections.Add(section = new(group.Name, l(group.Name.Titleize())));
+                            fp.Schema.Sections.Add(section = new(group.SectionKey, l(group.SectionKey.Titleize())));
                         }
 
-                        section.Inputs.Add(parameter.Name);
+                        var parameterCc = cc.Drill(group.SectionKey, nameof(FormPage.Section.InputGroups), group.InputGroupKey, nameof(FormPage.InputGroup.Inputs));
+                        section.InputGroups.Add(
+                            new(group.InputGroupKey) { Inputs = [parameter.GenerateRequiredSchema<Input>(parameterCc)] }
+                        );
                     }
                 }
             );

@@ -26,8 +26,8 @@ public class FormSampleDomainOverrideFeature : IFeature
                 when: c => c.Type.Is<FormSample>() && c.Method.Name == nameof(FormSample.NewParent),
                 component: fp =>
                 {
-                    fp.Schema.SingleColumn = true;
-                    fp.Schema.Inputs.Move("name", toTop: true);
+                    fp.Schema.ForEachInputGroup(g => g.Wide = true);
+                    fp.Schema.Sections[0].InputGroups.Move("name", toTop: true);
                 }
             );
 

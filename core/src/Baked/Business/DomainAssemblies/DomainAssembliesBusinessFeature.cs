@@ -69,6 +69,27 @@ public class DomainAssembliesBusinessFeature(
             builder.Index.Property.Add<LabelAttribute>();
 
             builder.Conventions.SetTypeAttribute(
+                when: _ => true,
+                attribute: () => new GroupAttribute(),
+                order: int.MinValue + 10
+            );
+            builder.Conventions.SetPropertyAttribute(
+                when: _ => true,
+                attribute: () => new GroupAttribute(),
+                order: int.MinValue + 10
+            );
+            builder.Conventions.SetMethodAttribute(
+                when: _ => true,
+                attribute: () => new GroupAttribute(),
+                order: int.MinValue + 10
+            );
+            builder.Conventions.SetParameterAttribute(
+                when: _ => true,
+                attribute: () => new GroupAttribute(),
+                order: int.MinValue + 10
+            );
+
+            builder.Conventions.SetTypeAttribute(
                 attribute: context =>
                 {
                     var @namespace = context.Type.Namespace ?? string.Empty;
@@ -98,6 +119,7 @@ public class DomainAssembliesBusinessFeature(
                     c.Type.TryGetMembers(out var members) &&
                     !members.Methods.Contains("<Clone>$") // if type is record
             );
+
             builder.Conventions.SetMethodAttribute(
                 attribute: () => new ExternalAttribute(),
                 when: c =>
@@ -105,6 +127,7 @@ public class DomainAssembliesBusinessFeature(
                     c.Method.DefaultOverload.DeclaringType.TryGetMetadata(out var metadata) &&
                     !metadata.Has<ServiceAttribute>()
             );
+
             builder.Conventions.SetMethodAttribute(
                 attribute: () => new ExternalAttribute(),
                 when: c =>
@@ -113,6 +136,7 @@ public class DomainAssembliesBusinessFeature(
                     c.Method.DefaultOverload.BaseDefinition.DeclaringType.TryGetMetadata(out var metadata) &&
                     !metadata.Has<ServiceAttribute>()
             );
+
             builder.Conventions.SetTypeAttribute(
                 attribute: () => new CasterAttribute(),
                 when: c => c.Type.IsClass && !c.Type.IsAbstract && c.Type.IsAssignableTo(typeof(ICasts<,>))

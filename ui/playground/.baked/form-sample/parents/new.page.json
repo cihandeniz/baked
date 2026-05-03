@@ -28,40 +28,45 @@
       "label": "Save",
       "severity": "primary"
     },
-    "inputs": [
-      {
-        "name": "name",
-        "component": {
-          "type": "InputText",
-          "schema": {
-            "label": "Name"
-          }
-        }
-      },
-      {
-        "name": "surname",
-        "required": true,
-        "component": {
-          "type": "InputText",
-          "schema": {
-            "label": "Surname"
-          }
-        }
-      }
-    ],
     "sections": [
       {
-        "key": "Default",
+        "key": "default",
         "label": "Default",
-        "inputs": [
-          "surname",
-          "name"
+        "inputGroups": [
+          {
+            "key": "name",
+            "inputs": [
+              {
+                "name": "name",
+                "component": {
+                  "type": "InputText",
+                  "schema": {
+                    "label": "Name"
+                  }
+                }
+              }
+            ],
+            "wide": true
+          },
+          {
+            "key": "surname",
+            "inputs": [
+              {
+                "name": "surname",
+                "required": true,
+                "component": {
+                  "type": "InputText",
+                  "schema": {
+                    "label": "Surname"
+                  }
+                }
+              }
+            ],
+            "wide": true
+          }
         ]
       }
     ],
-    "groups": {},
-    "wide": [],
-    "singleColumn": true,
     "path": "form-sample/parents/new"
   },
   "action": {

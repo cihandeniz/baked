@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-8">
     <PageTitle :schema="title">
       <template
-        v-if="inputs.length > 0"
+        v-if="sections.length > 0"
         #actions
       >
         <Button
@@ -15,12 +15,12 @@
     <div class="flex justify-center">
       <Contents class="gap-6">
         <div
-          v-for="section in sectionsWithGroups"
+          v-for="section in sections"
           :key="section.key"
           class="w-full col-span-2 grid gap-4"
         >
           <div
-            v-if="sectionsWithGroups.length > 1"
+            v-if="sections.length > 1"
             class="
               pb-2 border-b-2
               border-zinc-100 dark:border-zinc-900
@@ -37,27 +37,26 @@
           </div>
           <div
             class="
-              grid grid-flow-col
+              grid grid-cols-2 grid-flow-col
               gap-4 items-start
               max-md:flex max-md:flex-col
             "
-            :class="{ 'grid-cols-2': !singleColumn }"
-            :style="{ 'grid-template-rows': `repeat(${section.rowCount}, auto)` }"
+            :style="{ 'grid-template-rows': `repeat(${calculateRowCount(section)}, auto)` }"
           >
             <div
-              v-for="sGroup in section.groups"
-              :key="sGroup.name"
-              :class="{ 'col-span-2': !singleColumn && sGroup.wide }"
+              v-for="inputGroup in section.inputGroups"
+              :key="inputGroup.key"
+              :class="{ 'col-span-2': inputGroup.wide }"
               class="w-full"
             >
               <div
                 class="flex gap-2 max-md:flex-col"
-                :class="{ 'narrow': sGroup.inputs.length > 1 }"
+                :class="{ 'reset-min-w': inputGroup.inputs.length > 1 }"
               >
                 <Inputs
-                  :inputs="sGroup.inputs"
+                  :inputs="inputGroup.inputs"
                   input-class="w-full"
-                  @ready="(value) => onReady(`${section.key}_${sGroup.name}`, value)"
+                  @ready="(value) => onReady(`${section.key}_${inputGroup.key}`, value)"
                   @changed="onChanged"
                 />
               </div>
@@ -80,56 +79,16 @@ const { schema } = defineProps({
 });
 const emit = defineEmits(["submit"]);
 
-const { title, submit, inputs, sections, groups, wide, singleColumn } = schema;
+const { title, submit, sections } = schema;
 
 const formData = ref({});
 const readyData = ref({});
 const ready = computed(() => Object.values(readyData.value).every(v => v));
 
-const group = {};
-for(const groupName in groups) {
-  for(const inputName of groups[groupName]) {
-    group[inputName] = groupName;
-  }
-}
+function calculateRowCount(section) {
+  const cellCount = section.inputGroups.reduce((sum, group) => sum + !!group.wide + 1, 0);
 
-const inputsByName = {};
-for(let i = 0; i < inputs.length; i++) {
-  const input = inputs[i];
-  inputsByName[input.name] = { input, i };
-}
-
-const sectionsWithGroups = [];
-for(const section of sections) {
-  const sectionWithGroups = {
-    key: section.key,
-    label: section.label,
-    groups: [],
-    groupsByName: {}
-  };
-
-  const sortedInputNames = [...section.inputs].sort((l, r) => inputsByName[l].i - inputsByName[r].i);
-  for(const name of sortedInputNames) {
-    const input = inputsByName[name].input;
-    const inputGroupName = group[name] || name;
-    let inputGroup = sectionWithGroups.groupsByName[inputGroupName];
-    if(!inputGroup) {
-      inputGroup = {
-        name: inputGroupName,
-        inputs: [],
-        wide: wide.includes(inputGroupName)
-      };
-
-      sectionWithGroups.groups.push(inputGroup);
-      sectionWithGroups.groupsByName[inputGroupName] = inputGroup;
-    }
-
-    inputGroup.inputs.push(input);
-  }
-
-  const cellCount = sectionWithGroups.groups.reduce((sum, group) => sum + group.wide + 1, 0);
-  sectionWithGroups.rowCount = singleColumn ? cellCount : Math.ceil(cellCount / 2);
-  sectionsWithGroups.push(sectionWithGroups);
+  return Math.ceil(cellCount / 2);
 }
 
 function onReady(key, value) {
@@ -148,7 +107,7 @@ function onSubmit() {
 </script>
 <style>
 .b-component--FormPage {
-  .narrow * {
+  .reset-min-w * {
     @apply min-w-0;
   }
 }
