@@ -17,9 +17,9 @@ internal class Capture<T>
     };
 
     static string FormatValue(object? value) =>
-        value is string || value?.GetType().SkipNullable().IsValueType == true
-            ? $"{value}"
-            : JsonConvert.SerializeObject(value, Formatting.Indented, SerializerSettings);
+        value?.GetType().IsAnonymous == true
+            ? JsonConvert.SerializeObject(value, Formatting.Indented, SerializerSettings)
+            : $"{value}";
 
     readonly Inspection _inspection;
     readonly StackTrace _stackTrace;
@@ -44,7 +44,7 @@ internal class Capture<T>
         _initial = initial;
     }
 
-    string Property => Markup.Escape(_inspection.Expression.StripLambdaFromASingleMemberAccessExpression());
+    string Property => Markup.Escape(_inspection.Expression.StripNoiseFromExpressionString());
 
     public T Execute()
     {

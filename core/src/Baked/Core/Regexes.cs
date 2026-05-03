@@ -19,17 +19,28 @@ internal static partial class Regexes
     [GeneratedRegex(@"^\w+ => (Convert\()?\w+\.?")]
     public static partial Regex LambdaOfASingleMemberAccessExpression { get; }
 
-    [GeneratedRegex(@",\s*\w+\)$")]
-    public static partial Regex TrailingConvertSuffix { get; }
+    [GeneratedRegex(@"(,\s*\w+)?\)$")]
+    public static partial Regex ExpressionEndNoise { get; }
+
+    [GeneratedRegex(@"<>.*AnonymousType.*\(")]
+    public static partial Regex AnonymousTypeNoise { get; }
 
     extension(string expression)
     {
-        public string StripLambdaFromASingleMemberAccessExpression()
+        public string StripNoiseFromExpressionString()
         {
-            var result = TrailingConvertSuffix.Replace(
-                LambdaOfASingleMemberAccessExpression.Replace(expression, string.Empty),
-                string.Empty
-            );
+            var result =
+                ExpressionEndNoise.Replace(
+                    AnonymousTypeNoise.Replace(
+                        LambdaOfASingleMemberAccessExpression.Replace(
+                            expression,
+                            string.Empty
+                        ),
+                        string.Empty
+                    ),
+                    string.Empty
+                )
+                .Trim();
 
             return result == string.Empty ? "<this>" : result;
         }

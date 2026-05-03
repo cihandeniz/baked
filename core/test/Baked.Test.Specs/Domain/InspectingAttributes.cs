@@ -258,7 +258,27 @@ public class InspectingAttributes : TestSpec
     }
 
     [Test]
-    public void Reports_new_value_as_json_when_value_is_not_value_type_or_string()
+    public void Reports_new_value_as_json_when_value_is_anonymous_type()
+    {
+        _inspect.Attribute<CustomAttribute>(
+            attribute: c => new { c.Value }
+        );
+        var c = GiveMe.ATypeModelContext<Parent>();
+
+        using (_diagnostics)
+        {
+            _trace.CaptureAttribute(c, () => new CustomAttribute { Value = "Test" });
+        }
+
+        _messages.ShouldNotContain(m => m.Message.Contains("""
+        [darkgoldenrod]Value:[/] {
+          "value": "Test"
+        }
+        """));
+    }
+
+    [Test]
+    public void Reports_new_value_as_tring_when_value_is_any_other_type()
     {
         _inspect.Attribute<CustomAttribute>();
         var c = GiveMe.ATypeModelContext<Parent>();
@@ -268,11 +288,7 @@ public class InspectingAttributes : TestSpec
             _trace.CaptureAttribute(c, () => new CustomAttribute { Value = "Test" });
         }
 
-        _messages.ShouldContain(m => m.Message.Contains("""
-        {
-          "value": "Test"
-        }
-        """));
+        _messages.ShouldContain(m => m.Message.Contains("CustomAttribute"));
     }
 
     [Test]

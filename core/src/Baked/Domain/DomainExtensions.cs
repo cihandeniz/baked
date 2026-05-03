@@ -106,6 +106,13 @@ public static class DomainExtensions
                 .Cast<AttributeUsageAttribute>()
                 .FirstOrDefault()
                 ?.AllowMultiple == true;
+
+        public bool IsAnonymous =>
+            type.Namespace == null &&
+            type.IsSealed &&
+            type.IsGenericType &&
+            type.Name.Contains("AnonymousType") &&
+            Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute));
     }
 
     extension(ICollection<TypeBuildLevelFilter> filters)
