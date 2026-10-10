@@ -8,8 +8,6 @@ using Humanizer;
 
 using static Baked.Ui.Actions;
 
-using B = Baked.Ui.Components;
-
 namespace Baked;
 
 public static class DefaultThemeExtensions
@@ -39,27 +37,32 @@ public static class DefaultThemeExtensions
 
                 if (context.Route.Index)
                 {
-                    return B.MenuPage(context.Route.Name,
-                        options: mp => mp.Sections.Add(new()
+                    return new MenuPage
+                    {
+                        Sections =
                         {
-                            Links =
-                            [
-                                ..context.Sitemap
-                                    .Where(smp => smp.SideMenu && !smp.Index)
-                                    .Select(smp => smp.AsCardLink(l))
-                                    .Select(l => new Filterable { Component = l })
-                            ]
-                        })
-                    );
+                            new()
+                            {
+                                Links =
+                                [
+                                    ..context.Sitemap
+                                        .Where(smp => smp.SideMenu && !smp.Index)
+                                        .Select(smp => smp.AsCardLink(l))
+                                        .Select(l => new Filterable { Component = l })
+                                ]
+                            }
+                        }
+                    }.Describe();
                 }
 
                 var sections = context.Sitemap.GroupBy(smp => smp.Section);
                 if (sections.Count() <= 1)
                 {
-                    return B.MenuPage(context.Route.Name,
-                        options: mp =>
+                    return new MenuPage
+                    {
+                        Sections =
                         {
-                            mp.Sections.Add(new()
+                            new()
                             {
                                 Links =
                                 [
@@ -68,45 +71,45 @@ public static class DefaultThemeExtensions
                                         .Select(r => r.AsCardLink(l))
                                         .Select(l => new Filterable { Component = l })
                                 ]
-                            });
-                            mp.Header = B.PageTitle(options: pt =>
-                            {
-                                pt.LocalizeTitle = true;
-                                pt.Description = l(context.Route.Description);
-                            });
-                            mp.Header.Data = Datas.Inline(l(context.Route.Title));
-                        }
-                    );
+                            }
+                        },
+                        Header = new PageTitle
+                        {
+                            LocalizeTitle = true,
+                            Description = l(context.Route.Description)
+                        }.Describe(data: Datas.Inline(l(context.Route.Title)))
+                    }.Describe();
                 }
 
-                return B.MenuPage(context.Route.Name,
-                    options: mp =>
+                return new MenuPage
+                {
+                    FilterEvent = "filter-changed",
+                    Header = new PageTitle
                     {
-                        mp.Header = B.PageTitle(options: pt =>
+                        LocalizeTitle = true,
+                        Description = l(context.Route.Description),
+                        Actions =
                         {
-                            pt.LocalizeTitle = true;
-                            pt.Description = l(context.Route.Description);
-                            pt.Actions.Add(B.Filter(
-                                options: f => f.Placeholder = l("Filter"),
-                                action: Publish.Event("filter-changed")
-                            ));
-                        });
-                        mp.Header.Data = Datas.Inline(context.Route.Title);
-                        mp.FilterEvent = "filter-changed";
-                        mp.Sections.AddRange(
-                            sections.Select(g => B.MenuPageSection(
-                                options: mps =>
-                                {
-                                    mps.Title = l(g.Key);
-                                    mps.Links.AddRange(g
+                            new Filter { Placeholder = l("Filter") }
+                                .Describe(action: Publish.Event("filter-changed"))
+                        }
+                    }.Describe(data: Datas.Inline(context.Route.Title)),
+                    Sections =
+                    [
+                        ..sections
+                            .Select(g => new MenuPage.Section
+                            {
+                                Title = l(g.Key),
+                                Links =
+                                [
+                                    ..g
                                         .Where(r => r.ParentPath == context.Route.Path)
                                         .Select(r => new Filterable { Component = r.AsCardLink(l), Title = l(r.Title) })
-                                    );
-                                }
-                            )).Where(s => s.Links.Any())
-                        );
-                    }
-                );
+                                ]
+                            })
+                            .Where(s => s.Links.Any())
+                    ]
+                }.Describe();
             };
     }
 
@@ -124,19 +127,22 @@ public static class DefaultThemeExtensions
             });
 
         public SideMenu.Item AsSideMenuItem(NewLocaleKey l) =>
-            B.SideMenuItem(route.Path, route.Icon ?? throw new($"Icon is required for pages in side menu: `{route.Path}`"), options: smi =>
+            new()
             {
-                smi.Title = l(route.SideMenuTitle);
-                smi.Disabled = route.Disabled ? true : null;
-            });
+                Route = route.Path,
+                Icon = route.Icon ?? throw new($"Icon is required for pages in side menu: `{route.Path}`"),
+                Title = l(route.SideMenuTitle),
+                Disabled = route.Disabled ? true : null
+            };
 
         public Header.Item AsHeaderItem(NewLocaleKey l) =>
-            B.HeaderItem(route.Path, options: hi =>
+            new()
             {
-                hi.Title = l(route.HeaderTitle);
-                hi.Icon = route.Icon;
-                hi.ParentRoute = route.ParentPath;
-            });
+                Route = route.Path,
+                Title = l(route.HeaderTitle),
+                Icon = route.Icon,
+                ParentRoute = route.ParentPath
+            };
     }
 
     extension(ModelCollection<PropertyModel> properties)

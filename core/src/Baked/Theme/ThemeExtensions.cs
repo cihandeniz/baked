@@ -15,8 +15,6 @@ using System.Linq.Expressions;
 
 using static Baked.Ui.Datas;
 
-using B = Baked.Ui.Components;
-
 namespace Baked;
 
 public static class ThemeExtensions
@@ -1085,6 +1083,11 @@ public static class ThemeExtensions
                     });
                     if (page is null) { continue; }
 
+                    if (page.Schema is IPageSchema generated && string.IsNullOrWhiteSpace(generated.Path))
+                    {
+                        generated.Path = route.Name;
+                    }
+
                     pages.Add(page);
                 }
 
@@ -1199,15 +1202,16 @@ public static class ThemeExtensions
                 else { Diagnostics.Current.ReportError(DiagnosticCode.MissingRequiredComponent, message); }
             }
 
-            return B.MissingComponent(options: mc =>
+            return new MissingComponent
             {
-                mc.Path.AddRange(context.Path.GetParts());
-                mc.Source = B.MissingComponentDomainSource(metadata.GetType().Name, options: mcds =>
+                Path = [.. context.Path.GetParts()],
+                Source = new()
                 {
-                    mcds.Path.AddRange(metadata.CustomAttributes.Name.Split('.'));
-                });
-                mc.Component = componentType?.Name;
-            });
+                    Type = metadata.GetType().Name,
+                    Path = [.. metadata.CustomAttributes.Name.Split('.')]
+                },
+                Component = componentType?.Name
+            }.Describe();
         }
 
         public ComponentDescriptor<T>? GenerateComponent<T>(ComponentContext context) where T : IComponentSchema =>

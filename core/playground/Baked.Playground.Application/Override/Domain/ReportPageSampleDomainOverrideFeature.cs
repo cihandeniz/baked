@@ -30,13 +30,25 @@ public class ReportPageSampleDomainOverrideFeature : IFeature
             conventions.AddTypeComponent(
                 when: c => c.Type.Is<ReportPageSample>(),
                 where: cc => cc.Path.EndsWith("single-value", "icon"),
-                component: () => B.Icon(options: i => i.IconClass = "pi-box"),
+                component: () => B.Icon(),
+                order: Order.At.Override
+            );
+            conventions.EditTypeComponent<Icon>(
+                when: c => c.Type.Is<ReportPageSample>(),
+                where: cc => cc.Path.EndsWith("single-value", "icon"),
+                component: cd => cd.Schema.IconClass = "pi-box",
                 order: Order.At.Override
             );
             conventions.AddTypeComponent(
                 when: c => c.Type.Is<ReportPageSample>(),
                 where: cc => cc.Path.EndsWith("data-table", "icon"),
-                component: () => B.Icon(options: i => i.IconClass = "pi-table"),
+                component: () => B.Icon(),
+                order: Order.At.Override
+            );
+            conventions.EditTypeComponent<Icon>(
+                when: c => c.Type.Is<ReportPageSample>(),
+                where: cc => cc.Path.EndsWith("data-table", "icon"),
+                component: cd => cd.Schema.IconClass = "pi-table",
                 order: Order.At.Override
             );
 

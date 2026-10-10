@@ -2,8 +2,7 @@
 
 namespace Baked.Ui;
 
-public record TabbedPage(string Path)
-    : PageSchemaBase(Path)
+public record TabbedPage : PageSchemaBase
 {
     public IComponentDescriptor Title { get; set; } = B.MissingComponent();
     public List<Input> Inputs { get; init; } = [];

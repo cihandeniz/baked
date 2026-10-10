@@ -1,7 +1,7 @@
 ﻿namespace Baked.Ui;
 
-public record ModalLayout(string Path)
+public record ModalLayout
     : IGeneratedComponentSchema
 {
-    public string Path { get; set; } = Path;
+    public string Path { get; set; } = string.Empty;
 }

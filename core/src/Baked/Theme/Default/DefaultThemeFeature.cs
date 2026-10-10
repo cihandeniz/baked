@@ -54,7 +54,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             // adds simple page to types
             conventions.AddTypeComponent(
                 where: cc => cc.Path.Is("page", "*"),
-                component: (_, cc) => B.SimplePage(cc.Route.Path)
+                component: (_, cc) => B.SimplePage()
             );
             conventions.EditTypeComponent<SimplePage>(
                 component: (sp, c, cc) => sp.Schema.Title = c.Type.GenerateRequiredComponent(cc.Drill("simple-page", "title")),
@@ -64,7 +64,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             // adds tabbed page to types
             conventions.AddTypeComponent(
                 where: cc => cc.Path.Is("page", "*"),
-                component: (_, cc) => B.TabbedPage(cc.Route.Path)
+                component: (_, cc) => B.TabbedPage()
             );
             conventions.EditTypeComponent<TabbedPage>(
                 component: (sp, c, cc) => sp.Schema.Title = c.Type.GenerateRequiredComponent(cc.Drill("tabbed-page", "title")),
@@ -250,14 +250,24 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             // adds date to date only properties
             conventions.AddPropertyComponent(
                 when: c => c.Property.PropertyType.SkipNullable().Is<DateOnly>(),
-                component: () => B.Date(options: td => td.Format = "dd-MM-yyyy"),
+                component: () => B.Date(),
+                order: Order.At.Min
+            );
+            conventions.EditPropertyComponent<Date>(
+                when: c => c.Property.PropertyType.SkipNullable().Is<DateOnly>(),
+                component: cd => cd.Schema.Format = "dd-MM-yyyy",
                 order: Order.At.Min
             );
 
             // adds date to date time properties
             conventions.AddPropertyComponent(
                 when: c => c.Property.PropertyType.SkipNullable().Is<DateTime>(),
-                component: () => B.Date(options: td => td.Format = "dd-MM-yyyy HH:mm:ss"),
+                component: () => B.Date(),
+                order: Order.At.Min
+            );
+            conventions.EditPropertyComponent<Date>(
+                when: c => c.Property.PropertyType.SkipNullable().Is<DateTime>(),
+                component: cd => cd.Schema.Format = "dd-MM-yyyy HH:mm:ss",
                 order: Order.At.Min
             );
 
@@ -362,7 +372,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             // adds form page to methods
             conventions.AddMethodComponent(
                 where: cc => cc.Path.Is("page", "*", "*"),
-                component: (_, cc) => B.FormPage(cc.Route.Path)
+                component: (_, cc) => B.FormPage()
             );
             conventions.EditMethodComponent<FormPage>(
                 component: (fp, c, cc) =>
@@ -719,11 +729,16 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             // add input date to date only parameters
             conventions.AddParameterComponent(
                 when: c => c.Parameter.ParameterType.SkipNullable().Is<DateOnly>(),
-                component: () => B.InputDate(options: id =>
+                component: () => B.InputDate(),
+                order: Order.At.Min
+            );
+            conventions.EditParameterComponent<InputDate>(
+                when: c => c.Parameter.ParameterType.SkipNullable().Is<DateOnly>(),
+                component: cd =>
                 {
-                    id.Format = "dd/mm/yy";
-                    id.UsePicker = true;
-                }),
+                    cd.Schema.Format = "dd/mm/yy";
+                    cd.Schema.UsePicker = true;
+                },
                 order: Order.At.Min
             );
 
@@ -818,34 +833,33 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
         {
             configurator.Ui.UsingLocalization(l =>
             {
-                app.Error = B.ErrorPage(
-                    options: ep =>
+                var error = new ErrorPage
+                {
+                    SafeLinks = [.. _routes.Where(r => r.ErrorSafeLink).Select(r => r.AsCardLink(l))],
+                    ErrorInfos =
                     {
-                        ep.SafeLinks.AddRange([.. _routes.Where(r => r.ErrorSafeLink).Select(r => r.AsCardLink(l))]);
-                        ep.ErrorInfos[403] = new(
+                        [403] = new(
                             Title: l("Access Denied"),
                             Message: l("You do not have the permission to view the address or data specified.")
                         )
-                        { ShowSafeLinks = true };
-                        ep.ErrorInfos[404] = new(
+                        { ShowSafeLinks = true },
+                        [404] = new(
                             Title: l("Page Not Found"),
                             Message: l("The page you want to view is either deleted or outdated.")
                         )
-                        { ShowSafeLinks = true };
-                        ep.ErrorInfos[500] = new(l("Unexpected Error"), l("Please contact system administrator."));
-                        ep.ErrorInfos[999] = new(l("Application Error"), l("Please contact system administrator."));
-
-                        _errorPageOptions.Apply(ep);
-                    },
-                    data: Computed.UseError()
-                );
-                app.InlineError = B.Message(
-                    options: m =>
-                    {
-                        m.Icon = "pi pi-exclamation-circle";
-                        m.Severity = "error";
+                        { ShowSafeLinks = true },
+                        [500] = new(l("Unexpected Error"), l("Please contact system administrator.")),
+                        [999] = new(l("Application Error"), l("Please contact system administrator."))
                     }
-                );
+                };
+                _errorPageOptions.Apply(error);
+
+                app.Error = error.Describe(data: Computed.UseError());
+                app.InlineError = new Message
+                {
+                    Icon = "pi pi-exclamation-circle",
+                    Severity = "error"
+                }.Describe();
             });
         });
 
@@ -853,34 +867,31 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
         {
             configurator.Ui.UsingLocalization(l =>
             {
-                layouts.Add(B.DefaultLayout("default", options: dl =>
+                var sideMenu = new SideMenu
                 {
-                    dl.SideMenu = B.SideMenu(
-                        options: sm =>
-                        {
-                            sm.Menu.AddRange([.. _routes.Where(r => r.SideMenu).Select(r => r.AsSideMenuItem(l))]);
+                    Menu = [.. _routes.Where(r => r.SideMenu).Select(r => r.AsSideMenuItem(l))]
+                };
+                _sideMenuOptions.Apply(sideMenu);
 
-                            _sideMenuOptions.Apply(sm);
-                        }
-                    );
-                    dl.SideMenu.Data = Computed.UseRoute();
+                var header = new Header();
+                foreach (var route in _routes)
+                {
+                    if (route.Disabled) { continue; }
 
-                    dl.Header = B.Header(options: h =>
-                    {
-                        foreach (var route in _routes)
-                        {
-                            if (route.Disabled) { continue; }
+                    header.Sitemap[route.Path] = route.AsHeaderItem(l);
+                }
 
-                            h.Sitemap[route.Path] = route.AsHeaderItem(l);
-                        }
+                _headerOptions.Apply(header);
 
-                        _headerOptions.Apply(h);
-                    });
-                    dl.Header.Data = Computed.UseRoute();
-                }));
+                layouts.AddLayout(new DefaultLayout
+                {
+                    Path = "default",
+                    SideMenu = sideMenu.Describe(data: Computed.UseRoute()),
+                    Header = header.Describe(data: Computed.UseRoute())
+                });
             });
 
-            layouts.Add(B.ModalLayout("modal"));
+            layouts.AddLayout(new ModalLayout { Path = "modal" });
         });
 
         configurator.Ui.ConfigurePageDescriptors(pages =>

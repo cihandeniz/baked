@@ -16,13 +16,14 @@ public class TestPageDomainOverrideFeature : IFeature
             conventions.AddTypeComponent(
                 when: c => c.Type.Is<TestPage>(),
                 where: cc => cc.Path.EndsWith("page"),
-                component: () => B.TabbedPage("test-page"),
+                component: () => new TabbedPage().Describe(),
                 order: Order.At.Override
             );
             conventions.EditTypeComponent<TabbedPage>(
                 when: c => c.Type.Is<TestPage>(),
                 component: (tp, c, cc) =>
                 {
+                    tp.Schema.Path = "test-page";
                     tp.Schema.Title?.Data = Datas.Inline("Test Page");
                     tp.Schema.Tabs.Add(
                         c.Type.GenerateRequiredSchema<Tab>(cc.Drill("tabs", "default"))

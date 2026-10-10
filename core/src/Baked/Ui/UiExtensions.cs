@@ -155,4 +155,13 @@ public static class UiExtensions
         public void AddComposable(string name) =>
             validations.Add(new(name));
     }
+
+    extension<TSchema>(TSchema schema) where TSchema : IComponentSchema
+    {
+        public ComponentDescriptor<TSchema> Describe(
+            IData? data = default,
+            IAction? action = default,
+            Action<ComponentDescriptor<TSchema>>? options = default
+        ) => options.Apply(new(schema) { Data = data, Action = action });
+    }
 }

@@ -2,8 +2,7 @@
 
 namespace Baked.Ui;
 
-public record FormPage(string Path)
-    : PageSchemaBase(Path)
+public record FormPage : PageSchemaBase
 {
     public IComponentDescriptor Title { get; set; } = B.MissingComponent();
     public Button Submit { get; set; } = new();

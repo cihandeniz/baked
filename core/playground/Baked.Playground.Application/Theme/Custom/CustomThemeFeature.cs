@@ -93,10 +93,10 @@ public class CustomThemeFeature(IEnumerable<Func<Router, Route>> routes)
 
         configurator.Ui.ConfigurePageDescriptors(pages =>
         {
-            pages.Add(C.LoginPage("login", options: lp => lp.Layout = "modal"));
-            pages.Add(C.RoutedPage("page/with/route/pageWithRoute", lp => lp.Layout = "default"));
-            pages.Add(C.RoutedPage("first/[id]", lp => lp.Layout = "default"));
-            pages.Add(C.RoutedPage("first/[firstId]/second/[secondId]", lp => lp.Layout = "default"));
+            pages.AddPage(new LoginPage { Path = "login", Layout = "modal" });
+            pages.AddPage(new RoutedPage { Path = "page/with/route/pageWithRoute", Layout = "default" });
+            pages.AddPage(new RoutedPage { Path = "first/[id]", Layout = "default" });
+            pages.AddPage(new RoutedPage { Path = "first/[firstId]/second/[secondId]", Layout = "default" });
         });
     }
 }
