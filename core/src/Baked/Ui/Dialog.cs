@@ -2,7 +2,7 @@
 
 public record Dialog : IComponentSchema
 {
-    public IComponentDescriptor Content { get; set; } = MissingComponent.Default;
+    public IComponentDescriptor Content { get; set; } = MissingComponent.Empty;
     public Button Open { get; set; } = new();
     public string Header { get; set; } = string.Empty;
     public Button? Submit { get; set; }

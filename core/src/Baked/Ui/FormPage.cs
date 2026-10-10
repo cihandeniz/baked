@@ -2,7 +2,7 @@
 
 public record FormPage : PageSchemaBase
 {
-    public IComponentDescriptor Title { get; set; } = MissingComponent.Default;
+    public IComponentDescriptor Title { get; set; } = MissingComponent.Empty;
     public Button Submit { get; set; } = new();
     public List<Section> Sections { get; init; } = [];
     public List<ValidationComposable>? Validations { get; set; }
