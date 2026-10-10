@@ -102,8 +102,7 @@ public static class DefaultThemeExtensions
                                 Title = l(g.Key),
                                 Links =
                                 [
-                                    ..g
-                                        .Where(r => r.ParentPath == context.Route.Path)
+                                    .. g.Where(r => r.ParentPath == context.Route.Path)
                                         .Select(r => new Filterable { Component = r.AsCardLink(l), Title = l(r.Title) })
                                 ]
                             })
