@@ -6,9 +6,9 @@ public static class Components
         Action<Button>? options = default
     ) => new(options.Apply(new()));
 
-    public static ComponentDescriptor<CardLink> CardLink(string route, string title,
+    public static ComponentDescriptor<CardLink> CardLink(
         Action<CardLink>? options = default
-    ) => new(options.Apply(new(route, title)));
+    ) => new(options.Apply(new()));
 
     public static ComponentDescriptor<Check> Check() =>
         new(new());
@@ -70,10 +70,6 @@ public static class Components
         IData? data = default
     ) => new(options.Apply(new())) { Data = data };
 
-    public static ErrorPage.Info ErrorPageInfo(string title, string message,
-        Action<ErrorPage.Info>? options = default
-    ) => options.Apply(new(title, message));
-
     public static Field Field(
         Action<Field>? options = default
     ) => options.Apply(new());
@@ -87,34 +83,25 @@ public static class Components
         IAction? action = default
     ) => new(options.Apply(new())) { Action = action };
 
-    public static Filterable Filterable(IComponentDescriptor component,
-        Action<Filterable>? options = default
-    ) => options.Apply(new(component));
-
     public static ComponentDescriptor<FormPage> FormPage(string path,
         Action<FormPage>? options = default
     ) => new(options.Apply(new(path)));
-
-    public static FormPage.Section FormPageSection(string key, string label,
-        Action<FormPage.Section>? options = default
-    ) => options.Apply(new(key, label));
 
     public static FormPage.InputGroup FormPageInputGroup(
         Action<FormPage.InputGroup>? options = default
     ) => options.Apply(new());
 
     public static ComponentDescriptor<Header> Header(
-        Action<Header>? options = default,
-        IData? data = default
-    ) => new(options.Apply(new())) { Data = data ?? Datas.Computed.UseRoute() };
+        Action<Header>? options = default
+    ) => new(options.Apply(new()));
 
     public static Header.Item HeaderItem(string route,
         Action<Header.Item>? options = default
     ) => options.Apply(new(route));
 
-    public static ComponentDescriptor<Icon> Icon(string iconClass,
+    public static ComponentDescriptor<Icon> Icon(
         Action<Icon>? options = default
-    ) => new(options.Apply(new(iconClass)));
+    ) => new(options.Apply(new()));
 
     public static Input Input(
         Action<Input>? options = default
@@ -156,16 +143,6 @@ public static class Components
         Action<LanguageSwitcher>? options = default
     ) => new(options.Apply(new()));
 
-    public static ComponentDescriptor<MenuPage> MenuPage(string path, IEnumerable<IComponentDescriptor> links,
-        Action<MenuPage>? options = default
-    ) => MenuPage(path,
-        options: s =>
-        {
-            s.Sections.Add(MenuPageSection(options: s => s.Links.AddRange(links.Select(l => Filterable(l)))));
-            options.Apply(s);
-        }
-    );
-
     public static ComponentDescriptor<MenuPage> MenuPage(string path,
         Action<MenuPage>? options = default
     ) => new(options.Apply(new(path)));
@@ -175,17 +152,8 @@ public static class Components
     ) => options.Apply(new());
 
     public static ComponentDescriptor<Message> Message(
-        Action<Message>? options = default,
-        string? data = default
-    ) => Message(
-        options: options,
-        data: data is not null ? Datas.Inline(data) : null
-    );
-
-    public static ComponentDescriptor<Message> Message(
-        Action<Message>? options = default,
-        IData? data = default
-    ) => new(options.Apply(new() { LocalizeMessage = data?.RequireLocalization })) { Data = data };
+        Action<Message>? options = default
+    ) => new(options.Apply(new()));
 
     public static ComponentDescriptor<ModalLayout> ModalLayout(string name,
         Action<ModalLayout>? options = default
@@ -244,9 +212,8 @@ public static class Components
     ) => new(options.Apply(new()));
 
     public static ComponentDescriptor<SideMenu> SideMenu(
-        Action<SideMenu>? options = default,
-        IData? data = default
-    ) => new(options.Apply(new())) { Data = data ?? Datas.Computed.UseRoute() };
+        Action<SideMenu>? options = default
+    ) => new(options.Apply(new()));
 
     public static SideMenu.Item SideMenuItem(string route, string icon,
         Action<SideMenu.Item>? options = default

@@ -20,11 +20,11 @@ public class CustomThemeFeature(IEnumerable<Func<Router, Route>> routes)
         _sideMenuOptions: sm => sm.Footer = B.LanguageSwitcher(),
         _errorPageOptions: ep =>
         {
-            ep.ErrorInfos[503] = B.ErrorPageInfo(
-                title: "Service Unavailable",
-                message: "The service is currently unavailable. Please try again later.",
-                options: epi => epi.CustomMessage = true
-            );
+            ep.ErrorInfos[503] = new(
+                Title: "Service Unavailable",
+                Message: "The service is currently unavailable. Please try again later."
+            )
+            { CustomMessage = true };
         }
     )
 {

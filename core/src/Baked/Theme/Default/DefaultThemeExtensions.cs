@@ -40,9 +40,16 @@ public static class DefaultThemeExtensions
                 if (context.Route.Index)
                 {
                     return B.MenuPage(context.Route.Name,
-                        links: context.Sitemap
-                            .Where(smp => smp.SideMenu && !smp.Index)
-                            .Select(smp => smp.AsCardLink(l))
+                        options: mp => mp.Sections.Add(new()
+                        {
+                            Links =
+                            [
+                                ..context.Sitemap
+                                    .Where(smp => smp.SideMenu && !smp.Index)
+                                    .Select(smp => smp.AsCardLink(l))
+                                    .Select(l => new Filterable { Component = l })
+                            ]
+                        })
                     );
                 }
 
@@ -50,11 +57,18 @@ public static class DefaultThemeExtensions
                 if (sections.Count() <= 1)
                 {
                     return B.MenuPage(context.Route.Name,
-                        links: context.Sitemap
-                            .Where(r => r.ParentPath == context.Route.Path)
-                            .Select(r => r.AsCardLink(l)),
                         options: mp =>
                         {
+                            mp.Sections.Add(new()
+                            {
+                                Links =
+                                [
+                                    ..context.Sitemap
+                                        .Where(r => r.ParentPath == context.Route.Path)
+                                        .Select(r => r.AsCardLink(l))
+                                        .Select(l => new Filterable { Component = l })
+                                ]
+                            });
                             mp.Header = B.PageTitle(options: pt =>
                             {
                                 pt.LocalizeTitle = true;
@@ -86,7 +100,7 @@ public static class DefaultThemeExtensions
                                     mps.Title = l(g.Key);
                                     mps.Links.AddRange(g
                                         .Where(r => r.ParentPath == context.Route.Path)
-                                        .Select(r => B.Filterable(r.AsCardLink(l), options: f => f.Title = l(r.Title)))
+                                        .Select(r => new Filterable { Component = r.AsCardLink(l), Title = l(r.Title) })
                                     );
                                 }
                             )).Where(s => s.Links.Any())
@@ -99,12 +113,14 @@ public static class DefaultThemeExtensions
     extension(Route route)
     {
         public IComponentDescriptor AsCardLink(NewLocaleKey l) =>
-            B.CardLink(route.Path, l(route.Title), options: cl =>
+            new ComponentDescriptor<CardLink>(new CardLink
             {
-                cl.Icon = route.Icon;
-                cl.Description = l(route.Description);
-                cl.Disabled = route.Disabled ? true : null;
-                cl.DisabledReason = l(route.DisabledReason);
+                Route = route.Path,
+                Title = l(route.Title),
+                Icon = route.Icon,
+                Description = l(route.Description),
+                Disabled = route.Disabled ? true : null,
+                DisabledReason = l(route.DisabledReason)
             });
 
         public SideMenu.Item AsSideMenuItem(NewLocaleKey l) =>

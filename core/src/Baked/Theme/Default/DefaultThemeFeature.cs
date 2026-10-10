@@ -553,7 +553,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                         var section = fp.Schema.Sections.FirstOrDefault(s => s.Key == parameter.SectionKey);
                         if (section is null)
                         {
-                            section = B.FormPageSection(parameter.SectionKey, l(parameter.SectionKey.Titleize()));
+                            section = new FormPage.Section(parameter.SectionKey, l(parameter.SectionKey.Titleize()));
+
                             fp.Schema.Sections.Add(section);
                         }
 
@@ -821,25 +822,24 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                     options: ep =>
                     {
                         ep.SafeLinks.AddRange([.. _routes.Where(r => r.ErrorSafeLink).Select(r => r.AsCardLink(l))]);
-                        ep.ErrorInfos[403] = B.ErrorPageInfo(
-                            title: l("Access Denied"),
-                            message: l("You do not have the permission to view the address or data specified."),
-                            options: epi => epi.ShowSafeLinks = true
-                        );
-                        ep.ErrorInfos[404] = B.ErrorPageInfo(
-                            title: l("Page Not Found"),
-                            message: l("The page you want to view is either deleted or outdated."),
-                            options: epi => epi.ShowSafeLinks = true
-                        );
-                        ep.ErrorInfos[500] = B.ErrorPageInfo(l("Unexpected Error"), l("Please contact system administrator."));
-                        ep.ErrorInfos[999] = B.ErrorPageInfo(l("Application Error"), l("Please contact system administrator."));
+                        ep.ErrorInfos[403] = new(
+                            Title: l("Access Denied"),
+                            Message: l("You do not have the permission to view the address or data specified.")
+                        )
+                        { ShowSafeLinks = true };
+                        ep.ErrorInfos[404] = new(
+                            Title: l("Page Not Found"),
+                            Message: l("The page you want to view is either deleted or outdated.")
+                        )
+                        { ShowSafeLinks = true };
+                        ep.ErrorInfos[500] = new(l("Unexpected Error"), l("Please contact system administrator."));
+                        ep.ErrorInfos[999] = new(l("Application Error"), l("Please contact system administrator."));
 
                         _errorPageOptions.Apply(ep);
                     },
                     data: Computed.UseError()
                 );
                 app.InlineError = B.Message(
-                    data: default(IData),
                     options: m =>
                     {
                         m.Icon = "pi pi-exclamation-circle";
@@ -863,6 +863,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                             _sideMenuOptions.Apply(sm);
                         }
                     );
+                    dl.SideMenu.Data = Computed.UseRoute();
+
                     dl.Header = B.Header(options: h =>
                     {
                         foreach (var route in _routes)
@@ -874,6 +876,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
 
                         _headerOptions.Apply(h);
                     });
+                    dl.Header.Data = Computed.UseRoute();
                 }));
             });
 

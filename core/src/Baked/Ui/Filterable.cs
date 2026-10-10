@@ -1,8 +1,9 @@
-﻿namespace Baked.Ui;
+﻿using B = Baked.Ui.Components;
 
-public record Filterable(IComponentDescriptor Component)
-    : IComponentSchema
+namespace Baked.Ui;
+
+public record Filterable
 {
     public string Title { get; set; } = string.Empty;
-    public IComponentDescriptor Component { get; set; } = Component;
+    public IComponentDescriptor Component { get; set; } = B.MissingComponent();
 }
