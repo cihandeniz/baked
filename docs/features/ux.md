@@ -23,7 +23,7 @@ c => c.ActionsAsButtons()
 ```
 
 - Parameterized actions are rendered as forms in dialogs
-  - When an action has `Route` attribute, it is rendered as a `Button` that
+  - When an action has `UiRoute` attribute, it is rendered as a `Button` that
     routes to the indicated path
 - Submit buttons are rendered using `primary` severity
 - Cancel and back buttons are rendered using `text` variant
@@ -72,7 +72,7 @@ c => c.DataTableDefaults()
 ```
 
 - Sets row count to 5 and adds paginator
-- Adds properties with `Data` attribute as columns
+- Adds properties with `UiData` attribute as columns
   - For locatable properties, uses the first label (or id) property as component
     data, e.g., `row.parent.name`
   - Otherwise, sets the property value as component data, e.g., `row.name`
@@ -85,9 +85,9 @@ c => c.DataTableDefaults()
 ## Description Property
 
 Marks properties and parameters that ends with or equal to `Description` using
-`Description` attribute and treats properties and parameters with `Description`
-attribute special attention to allow more UI space when under a `DataTable`,
-`Fieldset` or `FormPage`.
+`UiDescription` attribute and treats properties and parameters with
+`UiDescription` attribute special attention to allow more UI space when under
+a `DataTable`, `Fieldset` or `FormPage`.
 
 - Set `Field.Wide` to `true` to have a full width under a fieldset
 - Set `FormPage.InputGroup.Wide` to `true` to have a full width under a form
@@ -145,7 +145,7 @@ display in `DataTable` columns.
 c => c.LabelsAreFrozen()
 ```
 
-- Brings label columns before other columns via `Data.Order`
+- Brings label columns before other columns via `UiData.Order`
 - Label columns in a `DataTable` are frozen and have minimum width
 - The first label column is used as the table’s data key if no key is set
 
@@ -251,14 +251,14 @@ c => c.QueryActionAsDataContainer(
 
 ## Routed Types as Nav Links
 
-Configures `NavLink` component for types that have `Route` under data table
-columns.
+Configures `NavLink` component for types that have `UiRoute` attribute under
+data table columns.
 
 ```csharp
 c => c.RoutedTypesAsNavLinks()
 ```
 
-- Converts label properties to a `NavLink` using `Route` route params
+- Converts label properties to a `NavLink` using `UiRoute` route params
 
 > [!NOTE]
 >

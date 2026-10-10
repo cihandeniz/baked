@@ -144,7 +144,7 @@ experiences, see [UX Feature](ux.md)
 | ---          | ---                                                                                      |
 | Type         | `TabbedPage` and `SimplePage` is added for any type at component path `/page/*`          |
 |              | `[id]` route parameter is mapped to first data property with `IdProperty` attribute      |
-| Property     | All public properties get a `Data` attribute with a camelized name and titleized label   |
+| Property     | All public properties get a `UiData` attribute with a camelized name and titleized label |
 |              | `IdProperty` attribute is added to properties named as `Id`                              |
 |              | Id properties are set to be hidden                                                       |
 |              | Configures `Text` component to display properties;                                       |
