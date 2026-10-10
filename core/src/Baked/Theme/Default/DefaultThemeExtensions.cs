@@ -47,12 +47,12 @@ public static class DefaultThemeExtensions
                                 [
                                     ..context.Sitemap
                                         .Where(smp => smp.SideMenu && !smp.Index)
-                                        .Select(smp => smp.AsCardLink(l))
+                                        .Select(smp => smp.ToCardLink(l))
                                         .Select(l => new Filterable { Component = l })
                                 ]
                             }
                         }
-                    }.Describe();
+                    }.ToDescriptor();
                 }
 
                 var sections = context.Sitemap.GroupBy(smp => smp.Section);
@@ -68,7 +68,7 @@ public static class DefaultThemeExtensions
                                 [
                                     ..context.Sitemap
                                         .Where(r => r.ParentPath == context.Route.Path)
-                                        .Select(r => r.AsCardLink(l))
+                                        .Select(r => r.ToCardLink(l))
                                         .Select(l => new Filterable { Component = l })
                                 ]
                             }
@@ -77,8 +77,8 @@ public static class DefaultThemeExtensions
                         {
                             LocalizeTitle = true,
                             Description = l(context.Route.Description)
-                        }.Describe(data: Datas.Inline(l(context.Route.Title)))
-                    }.Describe();
+                        }.ToDescriptor(data: Datas.Inline(l(context.Route.Title)))
+                    }.ToDescriptor();
                 }
 
                 return new MenuPage
@@ -91,9 +91,9 @@ public static class DefaultThemeExtensions
                         Actions =
                         {
                             new Filter { Placeholder = l("Filter") }
-                                .Describe(action: Publish.Event("filter-changed"))
+                                .ToDescriptor(action: Publish.Event("filter-changed"))
                         }
-                    }.Describe(data: Datas.Inline(context.Route.Title)),
+                    }.ToDescriptor(data: Datas.Inline(context.Route.Title)),
                     Sections =
                     [
                         ..sections
@@ -103,18 +103,18 @@ public static class DefaultThemeExtensions
                                 Links =
                                 [
                                     .. g.Where(r => r.ParentPath == context.Route.Path)
-                                        .Select(r => new Filterable { Component = r.AsCardLink(l), Title = l(r.Title) })
+                                        .Select(r => new Filterable { Component = r.ToCardLink(l), Title = l(r.Title) })
                                 ]
                             })
                             .Where(s => s.Links.Any())
                     ]
-                }.Describe();
+                }.ToDescriptor();
             };
     }
 
     extension(Route route)
     {
-        public IComponentDescriptor AsCardLink(NewLocaleKey l) =>
+        public IComponentDescriptor ToCardLink(NewLocaleKey l) =>
             new ComponentDescriptor<CardLink>(new CardLink
             {
                 Route = route.Path,
@@ -125,7 +125,7 @@ public static class DefaultThemeExtensions
                 DisabledReason = l(route.DisabledReason)
             });
 
-        public SideMenu.Item AsSideMenuItem(NewLocaleKey l) =>
+        public SideMenu.Item ToSideMenuItem(NewLocaleKey l) =>
             new()
             {
                 Route = route.Path,
@@ -134,7 +134,7 @@ public static class DefaultThemeExtensions
                 Disabled = route.Disabled ? true : null
             };
 
-        public Header.Item AsHeaderItem(NewLocaleKey l) =>
+        public Header.Item ToHeaderItem(NewLocaleKey l) =>
             new()
             {
                 Route = route.Path,

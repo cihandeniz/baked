@@ -158,7 +158,7 @@ public static class UiExtensions
 
     extension<TSchema>(TSchema schema) where TSchema : IComponentSchema
     {
-        public ComponentDescriptor<TSchema> Describe(
+        public ComponentDescriptor<TSchema> ToDescriptor(
             IData? data = default,
             IAction? action = default,
             Action<ComponentDescriptor<TSchema>>? options = default

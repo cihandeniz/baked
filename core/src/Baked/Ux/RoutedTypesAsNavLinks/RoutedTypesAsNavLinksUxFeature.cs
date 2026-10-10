@@ -5,8 +5,6 @@ using Baked.Ui;
 
 using static Baked.Ui.Datas;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Ux.RoutedTypesAsNavLinks;
 
 public class RoutedTypesAsNavLinksUxFeature : IFeature<UxConfigurator>
@@ -16,10 +14,9 @@ public class RoutedTypesAsNavLinksUxFeature : IFeature<UxConfigurator>
         configurator.Domain.ConfigureConventions(conventions =>
         {
             // adds navlink to types with route
-            conventions.AddTypeComponent(
+            conventions.AddTypeComponent<NavLink>(
                 when: c => c.Type.Has<UiRoute>(),
-                where: cc => cc.Path.EndsWith("data-table", "columns", "*", "component"),
-                component: () => B.NavLink()
+                where: cc => cc.Path.EndsWith("data-table", "columns", "*", "component")
             );
 
             // renders property as navlink when it is a label property for the types that has route

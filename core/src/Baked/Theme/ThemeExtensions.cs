@@ -141,6 +141,17 @@ public static class ThemeExtensions
             );
         }
 
+        public void AddTypeSchema<TSchema>(
+            Func<TypeModelMetadataContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Order order = default
+        ) where TSchema : new() => conventions.AddTypeSchema(
+            schema: _ => new TSchema(),
+            when: when,
+            where: where,
+            order: order
+        );
+
         public void AddTypeSchema<TSchema>(Func<TSchema> schema,
             Func<TypeModelMetadataContext, bool>? when = default,
             Func<ComponentContext, bool>? where = default,
@@ -195,6 +206,17 @@ public static class ThemeExtensions
                 order: order.ThemeDefault.Add
             );
         }
+
+        public void AddPropertySchema<TSchema>(
+            Func<PropertyModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Order order = default
+        ) where TSchema : new() => conventions.AddPropertySchema(
+            schema: _ => new TSchema(),
+            when: when,
+            where: where,
+            order: order
+        );
 
         public void AddPropertySchema<TSchema>(Func<TSchema> schema,
             Func<PropertyModelContext, bool>? when = default,
@@ -251,6 +273,17 @@ public static class ThemeExtensions
             );
         }
 
+        public void AddMethodSchema<TSchema>(
+            Func<MethodModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Order order = default
+        ) where TSchema : new() => conventions.AddMethodSchema(
+            schema: _ => new TSchema(),
+            when: when,
+            where: where,
+            order: order
+        );
+
         public void AddMethodSchema<TSchema>(Func<TSchema> schema,
             Func<MethodModelContext, bool>? when = default,
             Func<ComponentContext, bool>? where = default,
@@ -305,6 +338,17 @@ public static class ThemeExtensions
                 order: order.ThemeDefault.Add
             );
         }
+
+        public void AddParameterSchema<TSchema>(
+            Func<ParameterModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Order order = default
+        ) where TSchema : new() => conventions.AddParameterSchema(
+            schema: _ => new TSchema(),
+            when: when,
+            where: where,
+            order: order
+        );
 
         public void AddParameterSchema<TSchema>(Func<TSchema> schema,
             Func<ParameterModelContext, bool>? when = default,
@@ -529,6 +573,18 @@ public static class ThemeExtensions
             );
         }
 
+        public void AddTypeComponent<TSchema>(
+            Func<TypeModelMetadataContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Order order = default
+        ) where TSchema : IComponentSchema, new() =>
+            conventions.AddTypeComponent(
+                component: _ => new TSchema().ToDescriptor(),
+                when: when,
+                where: where,
+                order: order
+            );
+
         public void AddTypeComponent<TSchema>(Func<ComponentDescriptor<TSchema>> component,
             Func<TypeModelMetadataContext, bool>? when = default,
             Func<ComponentContext, bool>? where = default,
@@ -592,6 +648,18 @@ public static class ThemeExtensions
                 order: order.ThemeDefault.Add
             );
         }
+
+        public void AddPropertyComponent<TSchema>(
+            Func<PropertyModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Order order = default
+        ) where TSchema : IComponentSchema, new() =>
+            conventions.AddPropertyComponent(
+                component: _ => new TSchema().ToDescriptor(),
+                when: when,
+                where: where,
+                order: order
+            );
 
         public void AddPropertyComponent<TSchema>(Func<ComponentDescriptor<TSchema>> component,
             Func<PropertyModelContext, bool>? when = default,
@@ -657,6 +725,18 @@ public static class ThemeExtensions
             );
         }
 
+        public void AddMethodComponent<TSchema>(
+            Func<MethodModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Order order = default
+        ) where TSchema : IComponentSchema, new() =>
+            conventions.AddMethodComponent(
+                component: _ => new TSchema().ToDescriptor(),
+                when: when,
+                where: where,
+                order: order
+            );
+
         public void AddMethodComponent<TSchema>(Func<ComponentDescriptor<TSchema>> component,
             Func<MethodModelContext, bool>? when = default,
             Func<ComponentContext, bool>? where = default,
@@ -720,6 +800,18 @@ public static class ThemeExtensions
                 order: order.ThemeDefault.Add
             );
         }
+
+        public void AddParameterComponent<TSchema>(
+            Func<ParameterModelContext, bool>? when = default,
+            Func<ComponentContext, bool>? where = default,
+            Order order = default
+        ) where TSchema : IComponentSchema, new() =>
+            conventions.AddParameterComponent(
+                component: _ => new TSchema().ToDescriptor(),
+                when: when,
+                where: where,
+                order: order
+            );
 
         public void AddParameterComponent<TSchema>(Func<ComponentDescriptor<TSchema>> component,
             Func<ParameterModelContext, bool>? when = default,
@@ -1211,7 +1303,7 @@ public static class ThemeExtensions
                     Path = [.. metadata.CustomAttributes.Name.Split('.')]
                 },
                 Component = componentType?.Name
-            }.Describe();
+            }.ToDescriptor();
         }
 
         public ComponentDescriptor<T>? GenerateComponent<T>(ComponentContext context) where T : IComponentSchema =>

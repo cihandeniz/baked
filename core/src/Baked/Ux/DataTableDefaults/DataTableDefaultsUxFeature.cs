@@ -7,8 +7,6 @@ using Baked.Ui;
 
 using static Baked.Ui.Datas;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Ux.DataTableDefaults;
 
 public class DataTableDefaultsUxFeature : IFeature<UxConfigurator>
@@ -26,9 +24,8 @@ public class DataTableDefaultsUxFeature : IFeature<UxConfigurator>
             );
 
             // Columns
-            conventions.AddPropertySchema(
-                when: c => c.Property.Has<UiData>(),
-                schema: () => B.DataTableColumn()
+            conventions.AddPropertySchema<DataTable.Column>(
+                when: c => c.Property.Has<UiData>()
             );
             conventions.EditPropertySchema<DataTable.Column>(
                 when: c => c.Property.PropertyType.TryGetMetadata(out var metadata) && metadata.Has<Locatable>(),
@@ -69,9 +66,8 @@ public class DataTableDefaultsUxFeature : IFeature<UxConfigurator>
             );
 
             // Export
-            conventions.AddMethodSchema(
+            conventions.AddMethodSchema<DataTable.Export>(
                 when: c => c.Method.Has<ComponentGenerator<DataTable>>(),
-                schema: () => B.DataTableExport(),
                 order: 10
             );
 

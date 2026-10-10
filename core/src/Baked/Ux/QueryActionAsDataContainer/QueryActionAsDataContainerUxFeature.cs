@@ -6,8 +6,6 @@ using Baked.Ui;
 using static Baked.Ui.Actions;
 using static Baked.Ui.Datas;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Ux.QueryActionAsDataContainer;
 
 public class QueryActionAsDataContainerUxFeature(int[] _pageSizeOptions)
@@ -21,16 +19,14 @@ public class QueryActionAsDataContainerUxFeature(int[] _pageSizeOptions)
         configurator.Domain.ConfigureConventions(conventions =>
         {
             // Order is set to -10 to allow DataPanel override
-            conventions.AddMethodComponent(
+            conventions.AddMethodComponent<DataContainer>(
                 when: c => c.Method.Has<QueryMethod>(),
                 where: cc => cc.Path.EndsWith("contents", "*", "*", "component"),
-                component: () => B.DataContainer(),
                 order: -10
             );
-            conventions.AddMethodComponent(
+            conventions.AddMethodComponent<DataContainer>(
                 when: c => c.Method.Has<QueryMethod>(),
-                where: cc => cc.Path.EndsWith("data-panel", "content"),
-                component: () => B.DataContainer()
+                where: cc => cc.Path.EndsWith("data-panel", "content")
             );
 
             // Add sort and paging parameters to RemoteData query
@@ -115,9 +111,8 @@ public class QueryActionAsDataContainerUxFeature(int[] _pageSizeOptions)
             );
 
             // Skip
-            conventions.AddParameterComponent(
-                when: c => c.Parameter.TryGet<Paging>(out var paging) && paging.IsSkip,
-                component: () => B.Paginator()
+            conventions.AddParameterComponent<Paginator>(
+                when: c => c.Parameter.TryGet<Paging>(out var paging) && paging.IsSkip
             );
             conventions.EditParameterComponent<Paginator>(
                 component: (p, c) =>
@@ -154,16 +149,15 @@ public class QueryActionAsDataContainerUxFeature(int[] _pageSizeOptions)
             );
 
             // Take
-            conventions.AddParameterComponent(
-                when: c => c.Parameter.TryGet<Paging>(out var paging) && paging.IsTake,
-                component: () => B.Select()
+            conventions.AddParameterComponent<Select>(
+                when: c => c.Parameter.TryGet<Paging>(out var paging) && paging.IsTake
             );
             conventions.EditParameterComponent<Select>(
                 when: c => c.Parameter.TryGet<Paging>(out var paging) && paging.IsTake,
                 component: s =>
                 {
                     s.Data = Inline(_pageSizeOptions, options: i => i.RequireLocalization = false);
-                    s.Override(B.PageSize());
+                    s.Override<PageSize>();
                 }
             );
             conventions.EditParameterComponent<Select>(

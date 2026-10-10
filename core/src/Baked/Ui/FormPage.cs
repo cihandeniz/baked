@@ -1,10 +1,8 @@
-﻿using B = Baked.Ui.Components;
-
-namespace Baked.Ui;
+﻿namespace Baked.Ui;
 
 public record FormPage : PageSchemaBase
 {
-    public IComponentDescriptor Title { get; set; } = B.MissingComponent();
+    public IComponentDescriptor Title { get; set; } = MissingComponent.Default;
     public Button Submit { get; set; } = new();
     public List<Section> Sections { get; init; } = [];
     public List<ValidationComposable>? Validations { get; set; }

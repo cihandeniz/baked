@@ -6,8 +6,6 @@ using Humanizer;
 
 using static Baked.Ui.Actions;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Ux.ActionsAsButtons;
 
 public class ActionsAsButtonsUxFeature : IFeature<UxConfigurator>
@@ -17,26 +15,23 @@ public class ActionsAsButtonsUxFeature : IFeature<UxConfigurator>
         configurator.Domain.ConfigureConventions(conventions =>
         {
             // `Button`
-            conventions.AddMethodComponent(
+            conventions.AddMethodComponent<Button>(
                 when: c => c.Method.Has<UiAction>() && !c.Method.DefaultOverload.Parameters.Any(),
-                where: cc => cc.Path.EndsWith("actions", "*"),
-                component: () => B.Button()
+                where: cc => cc.Path.EndsWith("actions", "*")
             );
 
             // `SimpleForm` with dialog options
-            conventions.AddMethodComponent(
+            conventions.AddMethodComponent<SimpleForm>(
                 when: c =>
                     c.Method.Has<UiAction>() &&
                     (
                         c.Method.DefaultOverload.Parameters.Any() ||
                         c.Method.GetAction().Method == HttpMethod.Delete
                     ),
-                where: cc => cc.Path.EndsWith("actions", "*"),
-                component: () => B.SimpleForm()
+                where: cc => cc.Path.EndsWith("actions", "*")
             );
-            conventions.AddMethodSchema(
-                where: cc => cc.Path.EndsWith("actions", "*", "simple-form", "dialog-options"),
-                schema: () => B.SimpleFormDialog()
+            conventions.AddMethodSchema<SimpleForm.Dialog>(
+                where: cc => cc.Path.EndsWith("actions", "*", "simple-form", "dialog-options")
             );
             conventions.EditMethodSchema<SimpleForm.Dialog>(
                 when: c => !c.Method.DefaultOverload.Parameters.Any(),
@@ -49,10 +44,9 @@ public class ActionsAsButtonsUxFeature : IFeature<UxConfigurator>
             );
 
             // adds button to the methods with a route
-            conventions.AddMethodComponent(
+            conventions.AddMethodComponent<Button>(
                 when: c => c.Method.Has<UiAction>() && c.Method.Has<UiRoute>(),
-                where: cc => cc.Path.EndsWith("actions", "*"),
-                component: () => B.Button()
+                where: cc => cc.Path.EndsWith("actions", "*")
             );
 
             // adds redirect action for methods with a route
@@ -79,16 +73,14 @@ public class ActionsAsButtonsUxFeature : IFeature<UxConfigurator>
             );
 
             // Open button (for dialog)
-            conventions.AddMethodComponent(
-                where: cc => cc.Path.EndsWith("dialog-options", "open"),
-                component: () => B.Button()
+            conventions.AddMethodComponent<Button>(
+                where: cc => cc.Path.EndsWith("dialog-options", "open")
             );
 
             // Submit button (for dialog and page)
-            conventions.AddMethodComponent(
+            conventions.AddMethodComponent<Button>(
                 when: c => c.Method.Has<UiAction>(),
-                where: cc => cc.Path.EndsWith("submit"),
-                component: () => B.Button()
+                where: cc => cc.Path.EndsWith("submit")
             );
             conventions.EditMethodComponent<Button>(
                 where: cc => cc.Path.EndsWith("submit"),
@@ -110,9 +102,8 @@ public class ActionsAsButtonsUxFeature : IFeature<UxConfigurator>
             );
 
             // add cancel button for dialog options
-            conventions.AddMethodComponent(
-                where: cc => cc.Path.EndsWith("dialog-options", "cancel"),
-                component: () => B.Button()
+            conventions.AddMethodComponent<Button>(
+                where: cc => cc.Path.EndsWith("dialog-options", "cancel")
             );
 
             // configures back button on form-page
@@ -128,9 +119,8 @@ public class ActionsAsButtonsUxFeature : IFeature<UxConfigurator>
             );
 
             // adds back button to form page
-            conventions.AddMethodComponent(
-                where: cc => cc.Path.EndsWith("form-page", "title", "page-title", "actions", "back"),
-                component: () => B.Button()
+            conventions.AddMethodComponent<Button>(
+                where: cc => cc.Path.EndsWith("form-page", "title", "page-title", "actions", "back")
             );
 
             // configure label for cancel & button

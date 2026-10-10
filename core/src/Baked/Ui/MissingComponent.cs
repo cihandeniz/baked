@@ -2,6 +2,8 @@
 
 public record MissingComponent : IComponentSchema
 {
+    public static readonly IComponentDescriptor Default = new MissingComponent().ToDescriptor();
+
     public List<string> Path { get; init; } = [];
     public DomainSource? Source { get; set; }
     public string? Component { get; set; }

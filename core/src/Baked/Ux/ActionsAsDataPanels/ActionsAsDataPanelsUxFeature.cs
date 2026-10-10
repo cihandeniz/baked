@@ -4,8 +4,6 @@ using Humanizer;
 
 using static Baked.Theme.Default.DomainDatas;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Ux.ActionsAsDataPanels;
 
 public class ActionsAsDataPanelsUxFeature : IFeature<UxConfigurator>
@@ -14,9 +12,8 @@ public class ActionsAsDataPanelsUxFeature : IFeature<UxConfigurator>
     {
         configurator.Domain.ConfigureConventions(conventions =>
         {
-            conventions.AddMethodComponent(
-                where: cc => cc.Path.EndsWith("contents", "*", "*", "component"),
-                component: () => B.DataPanel()
+            conventions.AddMethodComponent<DataPanel>(
+                where: cc => cc.Path.EndsWith("contents", "*", "*", "component")
             );
             conventions.AddMethodSchema(
                 where: cc => cc.Path.EndsWith("data-panel", "title"),

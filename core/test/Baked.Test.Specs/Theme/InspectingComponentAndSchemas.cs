@@ -63,7 +63,7 @@ public class InspectingComponentAndSchemas : TestSpec
 
         using (_diagnostics)
         {
-            _trace.CaptureDescriptor(c, cc, () => new Text { Prop = "testProp" }.Describe());
+            _trace.CaptureDescriptor(c, cc, () => new Text { Prop = "testProp" }.ToDescriptor());
         }
 
         _messages.ShouldContain(m => m.Message.Contains("testProp"));
@@ -80,7 +80,7 @@ public class InspectingComponentAndSchemas : TestSpec
 
         using (_diagnostics)
         {
-            var sb = _trace.CaptureDescriptor(c, cc, () => new SelectButton { OptionLabel = "initialized" }.Describe());
+            var sb = _trace.CaptureDescriptor(c, cc, () => new SelectButton { OptionLabel = "initialized" }.ToDescriptor());
             _trace.CaptureDescriptor(c, cc, sb, () => sb.Schema.OptionLabel = "updated");
         }
 
@@ -99,8 +99,8 @@ public class InspectingComponentAndSchemas : TestSpec
 
         using (_diagnostics)
         {
-            var t = new Text().Describe();
-            _trace.CaptureDescriptor(c, cc, t, () => t.Override(new MyText { SomethingExtra = "overridden" }.Describe()));
+            var t = new Text().ToDescriptor();
+            _trace.CaptureDescriptor(c, cc, t, () => t.Override(new MyText { SomethingExtra = "overridden" }.ToDescriptor()));
         }
 
         _messages.ShouldContain(m => m.Message.Contains("overridden"));
@@ -124,7 +124,7 @@ public class InspectingComponentAndSchemas : TestSpec
             _trace.CaptureDescriptor(c, cc, () => new DataTable.Column
             {
                 Key = "test-key",
-                Component = new Text().Describe()
+                Component = new Text().ToDescriptor()
             });
         }
 
@@ -145,7 +145,7 @@ public class InspectingComponentAndSchemas : TestSpec
 
         using (_diagnostics)
         {
-            _trace.CaptureDescriptor(c, cc, () => new Text().Describe());
+            _trace.CaptureDescriptor(c, cc, () => new Text().ToDescriptor());
         }
 
         _messages.ShouldContain(m => m.Message.Contains("[darkgoldenrod]<self>:[/] Text"));
@@ -200,8 +200,8 @@ public class InspectingComponentAndSchemas : TestSpec
 
         using (_diagnostics)
         {
-            _trace.CaptureDescriptor(c, page1, () => new Text { Prop = "prop1" }.Describe());
-            _trace.CaptureDescriptor(c, page2, () => new Text { Prop = "prop2" }.Describe());
+            _trace.CaptureDescriptor(c, page1, () => new Text { Prop = "prop1" }.ToDescriptor());
+            _trace.CaptureDescriptor(c, page2, () => new Text { Prop = "prop2" }.ToDescriptor());
         }
 
         _messages.ShouldContain(m => m.Message.Contains("prop1"));
@@ -222,8 +222,8 @@ public class InspectingComponentAndSchemas : TestSpec
 
         using (_diagnostics)
         {
-            _trace.CaptureDescriptor(cParent, ccParent, () => new Text().Describe());
-            _trace.CaptureDescriptor(cChild, ccChild, () => new Text().Describe());
+            _trace.CaptureDescriptor(cParent, ccParent, () => new Text().ToDescriptor());
+            _trace.CaptureDescriptor(cChild, ccChild, () => new Text().ToDescriptor());
         }
 
         _messages.ShouldContain(m => m.Message.Contains("/page/parent"));
@@ -245,8 +245,8 @@ public class InspectingComponentAndSchemas : TestSpec
 
         using (_diagnostics)
         {
-            _trace.CaptureDescriptor(cId, ccId, () => new Text().Describe());
-            _trace.CaptureDescriptor(cName, ccName, () => new Text().Describe());
+            _trace.CaptureDescriptor(cId, ccId, () => new Text().ToDescriptor());
+            _trace.CaptureDescriptor(cName, ccName, () => new Text().ToDescriptor());
         }
 
         _messages.ShouldContain(m => m.Message.Contains("/page/parent/id"));
@@ -268,8 +268,8 @@ public class InspectingComponentAndSchemas : TestSpec
 
         using (_diagnostics)
         {
-            _trace.CaptureDescriptor(cAddChild, ccAddChild, () => new Text().Describe());
-            _trace.CaptureDescriptor(cGetChildren, ccGetChildren, () => new Text().Describe());
+            _trace.CaptureDescriptor(cAddChild, ccAddChild, () => new Text().ToDescriptor());
+            _trace.CaptureDescriptor(cGetChildren, ccGetChildren, () => new Text().ToDescriptor());
         }
 
         _messages.ShouldContain(m => m.Message.Contains("/page/parent/add-child"));
@@ -306,8 +306,8 @@ public class InspectingComponentAndSchemas : TestSpec
 
         using (_diagnostics)
         {
-            _trace.CaptureDescriptor(cName, ccName, () => new Text().Describe());
-            _trace.CaptureDescriptor(cSurname, ccSurname, () => new Text().Describe());
+            _trace.CaptureDescriptor(cName, ccName, () => new Text().ToDescriptor());
+            _trace.CaptureDescriptor(cSurname, ccSurname, () => new Text().ToDescriptor());
         }
 
         _messages.ShouldContain(m => m.Message.Contains("/page/parent/update/name"));
@@ -323,7 +323,7 @@ public class InspectingComponentAndSchemas : TestSpec
 
         using (_diagnostics)
         {
-            _trace.CaptureDescriptor(c, cc, () => new Text().Describe());
+            _trace.CaptureDescriptor(c, cc, () => new Text().ToDescriptor());
         }
 
         _messages.ShouldContain(m => m.Message.Contains("[magenta]/test/path[/]"));
@@ -358,7 +358,7 @@ public class InspectingComponentAndSchemas : TestSpec
 
         using (_diagnostics)
         {
-            _trace.CaptureDescriptor(c, cc, () => new DataTable { Paginator = true }.Describe());
+            _trace.CaptureDescriptor(c, cc, () => new DataTable { Paginator = true }.ToDescriptor());
         }
 
         _messages.ShouldContain(m => m.Message.Contains("<DataTable>"));

@@ -6,8 +6,6 @@ using Humanizer;
 
 using static Baked.Ui.Datas;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Ux.DescriptionProperty;
 
 public class DescriptionPropertyUxFeature : IFeature<UxConfigurator>
@@ -39,24 +37,21 @@ public class DescriptionPropertyUxFeature : IFeature<UxConfigurator>
                 schema: f => f.Wide = true
             );
 
-            conventions.AddParameterComponent(
-                when: c => c.Parameter.Has<UiDescription>(),
-                component: () => B.Textarea()
+            conventions.AddParameterComponent<Textarea>(
+                when: c => c.Parameter.Has<UiDescription>()
             );
             conventions.EditParameterSchema<FormPage.InputGroup>(
                 when: c => c.Parameter.Has<UiDescription>(),
                 schema: f => f.Wide = true
             );
 
-            conventions.AddPropertyComponent(
+            conventions.AddPropertyComponent<Dialog>(
                 when: c => c.Property.Has<UiDescription>(),
-                where: cc => cc.Path.EndsWith("data-table", "columns", "*", "component"),
-                component: () => B.Dialog()
+                where: cc => cc.Path.EndsWith("data-table", "columns", "*", "component")
             );
-            conventions.AddPropertyComponent(
+            conventions.AddPropertyComponent<Button>(
                 when: c => c.Property.Has<UiDescription>(),
-                where: cc => cc.Path.EndsWith("open"),
-                component: () => B.Button()
+                where: cc => cc.Path.EndsWith("open")
             );
             conventions.EditPropertyComponent<Button>(
                 when: c => c.Property.Has<UiDescription>(),

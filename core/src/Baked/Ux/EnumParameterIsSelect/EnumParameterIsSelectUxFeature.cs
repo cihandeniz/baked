@@ -4,8 +4,6 @@ using Baked.Ui;
 using Humanizer;
 using System.ComponentModel.DataAnnotations;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Ux.EnumParameterIsSelect;
 
 public class EnumParameterIsSelectUxFeature(int _maxMemberCountForSelectButton)
@@ -16,37 +14,33 @@ public class EnumParameterIsSelectUxFeature(int _maxMemberCountForSelectButton)
         configurator.Domain.ConfigureConventions(conventions =>
         {
             // Use `SelectButton` when enum member count is <= _maxMemberCountForSelectButton
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<SelectButton>(
                 when: c =>
                     c.Parameter.ParameterType.SkipNullable().IsEnum &&
-                    c.Parameter.ParameterType.SkipNullable().GetEnumNames().Count() <= _maxMemberCountForSelectButton,
-                component: () => B.SelectButton()
+                    c.Parameter.ParameterType.SkipNullable().GetEnumNames().Count() <= _maxMemberCountForSelectButton
             );
 
             // Use `Select` when enum member count is > _maxMemberCountForSelectButton
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<Select>(
                 when: c =>
                     c.Parameter.ParameterType.SkipNullable().IsEnum &&
-                    c.Parameter.ParameterType.SkipNullable().GetEnumNames().Count() > _maxMemberCountForSelectButton,
-                component: () => B.Select()
+                    c.Parameter.ParameterType.SkipNullable().GetEnumNames().Count() > _maxMemberCountForSelectButton
             );
 
             // Use `MultiSelectButton` for flags enum, when enum member count is <= _maxMemberCountForSelectButton
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<MultiSelectButton>(
                 when: c =>
                     c.Parameter.ParameterType.SkipNullable().IsEnum &&
                     c.Parameter.ParameterType.SkipNullable().GetEnumNames().Count() <= _maxMemberCountForSelectButton &&
-                    c.Parameter.ParameterType.SkipNullable().TryGetMetadata(out var metadata) && metadata.Has<FlagsAttribute>(),
-                component: () => B.MultiSelectButton()
+                    c.Parameter.ParameterType.SkipNullable().TryGetMetadata(out var metadata) && metadata.Has<FlagsAttribute>()
             );
 
             // Use `MultiSelect` for flags enum, when enum member count is > _maxMemberCountForSelectButton
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<MultiSelect>(
                 when: c =>
                     c.Parameter.ParameterType.SkipNullable().IsEnum &&
                     c.Parameter.ParameterType.SkipNullable().GetEnumNames().Count() > _maxMemberCountForSelectButton &&
-                    c.Parameter.ParameterType.SkipNullable().TryGetMetadata(out var metadata) && metadata.Has<FlagsAttribute>(),
-                component: () => B.MultiSelect()
+                    c.Parameter.ParameterType.SkipNullable().TryGetMetadata(out var metadata) && metadata.Has<FlagsAttribute>()
             );
 
             // Default value of a required enum parameter is set to the first enum

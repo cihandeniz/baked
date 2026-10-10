@@ -13,7 +13,7 @@ public interface IComponentDescriptor : ISupportsReaction
         if (left is null) { return right; }
         if (left is not ComponentDescriptor<Composite> composite)
         {
-            composite = new Composite { Parts = { left } }.Describe();
+            composite = new Composite { Parts = { left } }.ToDescriptor();
         }
 
         composite.Schema.Parts.Add(right);

@@ -1,10 +1,8 @@
-﻿using B = Baked.Ui.Components;
-
-namespace Baked.Ui;
+﻿namespace Baked.Ui;
 
 public record TabbedPage : PageSchemaBase
 {
-    public IComponentDescriptor Title { get; set; } = B.MissingComponent();
+    public IComponentDescriptor Title { get; set; } = MissingComponent.Default;
     public List<Input> Inputs { get; init; } = [];
     public List<Tab> Tabs { get; init; } = [];
 }

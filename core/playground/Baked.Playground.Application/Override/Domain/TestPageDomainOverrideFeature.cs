@@ -3,8 +3,6 @@ using Baked.Domain.Configuration;
 using Baked.Playground.Theme;
 using Baked.Ui;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Playground.Override.Domain;
 
 public class TestPageDomainOverrideFeature : IFeature
@@ -13,10 +11,9 @@ public class TestPageDomainOverrideFeature : IFeature
     {
         configurator.Domain.ConfigureConventions(conventions =>
         {
-            conventions.AddTypeComponent(
+            conventions.AddTypeComponent<TabbedPage>(
                 when: c => c.Type.Is<TestPage>(),
                 where: cc => cc.Path.EndsWith("page"),
-                component: () => new TabbedPage().Describe(),
                 order: Order.At.Override
             );
             conventions.EditTypeComponent<TabbedPage>(
@@ -31,10 +28,9 @@ public class TestPageDomainOverrideFeature : IFeature
                 },
                 order: Order.At.Override
             );
-            conventions.AddTypeSchema(
+            conventions.AddTypeSchema<Tab>(
                 when: c => c.Type.Is<TestPage>(),
                 where: cc => cc.Path.EndsWith("tabs", "default"),
-                schema: () => B.Tab(),
                 order: Order.At.Override
             );
             conventions.EditTypeSchema<Tab>(
@@ -52,9 +48,8 @@ public class TestPageDomainOverrideFeature : IFeature
                 order: Order.At.Override
             );
 
-            conventions.AddMethodSchema(
+            conventions.AddMethodSchema<Content>(
                 when: c => c.Type.Is<TestPage>() && c.Method.Name is nameof(TestPage.GetData),
-                schema: () => B.Content(),
                 order: Order.At.Override
             );
             conventions.EditMethodSchema<Content>(
@@ -62,10 +57,9 @@ public class TestPageDomainOverrideFeature : IFeature
                 schema: tabContent => tabContent.Narrow = true,
                 order: Order.At.Override
             );
-            conventions.AddMethodComponent(
+            conventions.AddMethodComponent<Text>(
                 when: c => c.Type.Is<TestPage>() && c.Method.Name is nameof(TestPage.GetData),
                 where: cc => cc.Path.EndsWith("component"),
-                component: () => B.Text(),
                 order: Order.At.Override
             );
             conventions.EditMethodComponent<Text>(

@@ -3,8 +3,6 @@ using Baked.Business;
 using Baked.Theme.Default;
 using Baked.Ui;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Ux.ListIsDataTable;
 
 public class ListIsDataTableUxFeature : IFeature<UxConfigurator>
@@ -13,10 +11,9 @@ public class ListIsDataTableUxFeature : IFeature<UxConfigurator>
     {
         configurator.Domain.ConfigureConventions(conventions =>
         {
-            conventions.AddMethodComponent(
+            conventions.AddMethodComponent<DataTable>(
                 when: c => c.Method.DefaultOverload.ReturnsList(),
-                where: cc => cc.Path.EndsWith("*-panel", "content") || cc.Path.EndsWith("*-container", "content"),
-                component: () => B.DataTable()
+                where: cc => cc.Path.EndsWith("*-panel", "content") || cc.Path.EndsWith("*-container", "content")
             );
             conventions.EditMethodComponent<DataTable>(
                 when: c =>
@@ -43,14 +40,13 @@ public class ListIsDataTableUxFeature : IFeature<UxConfigurator>
                 },
                 order: -10
             );
-            conventions.AddMethodSchema(
+            conventions.AddMethodSchema<DataTable.Column>(
                 when: c =>
                     c.Method.DefaultOverload.ReturnsList() &&
                     c.Method.DefaultOverload.ReturnType.SkipTask().TryGetElementType(out var elementType) &&
                     elementType.TryGetMembers(out var elementMembers) &&
                     elementMembers.Methods.Having<UiAction>().Any(m => !m.Get<UiAction>().HideInLists),
-                where: cc => cc.Path.EndsWith("data-table", "actions"),
-                schema: () => B.DataTableColumn()
+                where: cc => cc.Path.EndsWith("data-table", "actions")
             );
             conventions.EditMethodSchema<DataTable.Column>(
                 when: c =>

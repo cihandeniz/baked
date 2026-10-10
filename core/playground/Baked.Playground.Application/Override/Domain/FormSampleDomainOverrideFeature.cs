@@ -6,8 +6,6 @@ using Baked.Playground.Theme;
 using Baked.Theme.Default;
 using Baked.Ui;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Playground.Override.Domain;
 
 public class FormSampleDomainOverrideFeature : IFeature
@@ -49,10 +47,9 @@ public class FormSampleDomainOverrideFeature : IFeature
             );
 
             // Properties
-            conventions.AddPropertyComponent(
+            conventions.AddPropertyComponent<Text>(
                 when: c => c.Property.PropertyType.SkipNullable().IsEnum,
                 where: cc => cc.Path.StartsWith("page", "form-sample"),
-                component: () => B.Text(),
                 order: Order.At.Override
             );
         });

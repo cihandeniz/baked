@@ -1,7 +1,5 @@
 ﻿using Baked.Ui;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Test.Ui;
 
 public class BuildingReactions : TestSpec
@@ -9,7 +7,7 @@ public class BuildingReactions : TestSpec
     [Test]
     public void Reactions_is_null_by_default()
     {
-        var descriptor = B.Text();
+        var descriptor = new Text().ToDescriptor();
 
         descriptor.Reactions.ShouldBeNull();
     }
@@ -17,7 +15,7 @@ public class BuildingReactions : TestSpec
     [Test]
     public void Show_reaction_is_set_to_show_key()
     {
-        var descriptor = B.Text();
+        var descriptor = new Text().ToDescriptor();
 
         descriptor.ShowOn(GiveMe.AString());
 
@@ -28,7 +26,7 @@ public class BuildingReactions : TestSpec
     [Test]
     public void Reload_reaction_is_set_to_when_key()
     {
-        var descriptor = B.Text();
+        var descriptor = new Text().ToDescriptor();
 
         descriptor.ReloadOn(GiveMe.AString());
 
@@ -39,7 +37,7 @@ public class BuildingReactions : TestSpec
     [Test]
     public void First_trigger_is_set_to_reactions_directly()
     {
-        var descriptor = B.Text();
+        var descriptor = new Text().ToDescriptor();
 
         descriptor.ReloadOn(GiveMe.AString());
 
@@ -50,7 +48,7 @@ public class BuildingReactions : TestSpec
     [Test]
     public void When_further_triggers_are_added__root_trigger_is_converted_to_composite()
     {
-        var descriptor = B.Text();
+        var descriptor = new Text().ToDescriptor();
 
         descriptor.ReloadOn(GiveMe.AString());
         descriptor.ReloadWhen(GiveMe.AString());

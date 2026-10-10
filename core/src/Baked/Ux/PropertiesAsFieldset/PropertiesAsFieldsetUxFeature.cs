@@ -6,8 +6,6 @@ using Baked.Ui;
 
 using static Baked.Ui.Datas;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Ux.PropertiesAsFieldset;
 
 public class PropertiesAsFieldsetUxFeature : IFeature<UxConfigurator>
@@ -31,19 +29,17 @@ public class PropertiesAsFieldsetUxFeature : IFeature<UxConfigurator>
                 },
                 order: -10
             );
-            conventions.AddTypeSchema(
+            conventions.AddTypeSchema<Content>(
                 when: c =>
                     c.Type.TryGetMembers(out var members) &&
                     members.Properties.GetDataProperties().Any(),
-                where: cc => cc.Path.EndsWith("fields"),
-                schema: () => B.Content()
+                where: cc => cc.Path.EndsWith("fields")
             );
-            conventions.AddTypeComponent(
+            conventions.AddTypeComponent<Fieldset>(
                 when: c =>
                     c.Type.TryGetMembers(out var members) &&
                     members.Properties.GetDataProperties().Any(),
-                where: cc => cc.Path.EndsWith("fields", "component"),
-                component: () => B.Fieldset()
+                where: cc => cc.Path.EndsWith("fields", "component")
             );
             conventions.EditTypeComponent<Fieldset>(
                 when: c =>
@@ -62,9 +58,7 @@ public class PropertiesAsFieldsetUxFeature : IFeature<UxConfigurator>
                     }
                 }
             );
-            conventions.AddPropertySchema(
-                schema: () => B.Field()
-            );
+            conventions.AddPropertySchema<Field>();
             conventions.EditPropertySchema<Field>(
                 when: c =>
                     c.Property.Has<UiData>() &&

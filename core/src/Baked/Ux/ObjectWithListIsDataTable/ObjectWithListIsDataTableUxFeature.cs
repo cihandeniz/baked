@@ -5,8 +5,6 @@ using Baked.Theme.Default;
 using Baked.Ui;
 using Humanizer;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Ux.ObjectWithListIsDataTable;
 
 public class ObjectWithListIsDataTableUxFeature : IFeature<UxConfigurator>
@@ -44,12 +42,11 @@ public class ObjectWithListIsDataTableUxFeature : IFeature<UxConfigurator>
                 order: Order.At.Infra
             );
 
-            conventions.AddMethodComponent(
+            conventions.AddMethodComponent<DataTable>(
                 when: c =>
                     c.Method.DefaultOverload.ReturnType.SkipTask().TryGetMetadata(out var returnMetadata) &&
                     returnMetadata.Has<ObjectWithList>(),
-                where: cc => cc.Path.EndsWith("data-panel", "content"),
-                component: () => B.DataTable()
+                where: cc => cc.Path.EndsWith("data-panel", "content")
             );
             conventions.EditMethodComponent<DataTable>(
                 when: c =>
@@ -96,7 +93,7 @@ public class ObjectWithListIsDataTableUxFeature : IFeature<UxConfigurator>
                 },
                 order: -10
             );
-            conventions.AddMethodSchema(
+            conventions.AddMethodSchema<DataTable.Column>(
                 when: c =>
                     c.Method.DefaultOverload.ReturnType.SkipTask().TryGetMembers(out var returnMembers) &&
                     returnMembers.TryGet<ObjectWithList>(out var objectWithList) &&
@@ -105,8 +102,7 @@ public class ObjectWithListIsDataTableUxFeature : IFeature<UxConfigurator>
                         .PropertyType.TryGetElementType(out var elementType) &&
                     elementType.TryGetMembers(out var elementMembers) &&
                     elementMembers.Methods.Having<UiAction>().Any(m => !m.Get<UiAction>().HideInLists),
-                where: cc => cc.Path.EndsWith("data-table", "actions"),
-                schema: () => B.DataTableColumn()
+                where: cc => cc.Path.EndsWith("data-table", "actions")
             );
             conventions.EditMethodSchema<DataTable.Column>(
                 when: c =>
@@ -137,11 +133,10 @@ public class ObjectWithListIsDataTableUxFeature : IFeature<UxConfigurator>
                 }
             );
 
-            conventions.AddMethodSchema(
+            conventions.AddMethodSchema<DataTable.Footer>(
                 when: c =>
                     c.Method.DefaultOverload.ReturnType.SkipTask().TryGetMetadata(out var returnMetadata) &&
-                    returnMetadata.Has<ObjectWithList>(),
-                schema: () => B.DataTableFooter()
+                    returnMetadata.Has<ObjectWithList>()
             );
             conventions.EditMethodSchema<DataTable.Footer>(
                 when: c =>

@@ -9,8 +9,6 @@ using Humanizer;
 using static Baked.Theme.Default.DomainDatas;
 using static Baked.Ui.Datas;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Theme.Default;
 
 public class DefaultThemeFeature(IEnumerable<Route> _routes,
@@ -52,9 +50,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds simple page to types
-            conventions.AddTypeComponent(
-                where: cc => cc.Path.Is("page", "*"),
-                component: (_, cc) => B.SimplePage()
+            conventions.AddTypeComponent<SimplePage>(
+                where: cc => cc.Path.Is("page", "*")
             );
             conventions.EditTypeComponent<SimplePage>(
                 component: (sp, c, cc) => sp.Schema.Title = c.Type.GenerateRequiredComponent(cc.Drill("simple-page", "title")),
@@ -62,9 +59,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds tabbed page to types
-            conventions.AddTypeComponent(
-                where: cc => cc.Path.Is("page", "*"),
-                component: (_, cc) => B.TabbedPage()
+            conventions.AddTypeComponent<TabbedPage>(
+                where: cc => cc.Path.Is("page", "*")
             );
             conventions.EditTypeComponent<TabbedPage>(
                 component: (sp, c, cc) => sp.Schema.Title = c.Type.GenerateRequiredComponent(cc.Drill("tabbed-page", "title")),
@@ -86,9 +82,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds tab to type
-            conventions.AddTypeSchema(
-                where: cc => cc.Path.EndsWith("tabs", "*"),
-                schema: () => B.Tab()
+            conventions.AddTypeSchema<Tab>(
+                where: cc => cc.Path.EndsWith("tabs", "*")
             );
             conventions.EditTypeSchema<Tab>(
                 where: cc => cc.Path.EndsWith("tabs", "*"),
@@ -118,9 +113,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds page title to type
-            conventions.AddTypeComponent(
-                where: cc => cc.Path.Is("page", "*", "*-page", "title"),
-                component: () => B.PageTitle()
+            conventions.AddTypeComponent<PageTitle>(
+                where: cc => cc.Path.Is("page", "*", "*-page", "title")
             );
             conventions.EditTypeComponent<PageTitle>(
                 component: (pt, c, cc) =>
@@ -212,7 +206,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds text component to string, guid, mail address, locatable and value type properties
-            conventions.AddPropertyComponent(
+            conventions.AddPropertyComponent<Text>(
                 when: c =>
                     c.Property.PropertyType.Is<string>() ||
                     c.Property.PropertyType.SkipNullable().Is<Guid>() ||
@@ -222,35 +216,30 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                         metadata.Has<Locatable>() ||
                         metadata.Has<Primitive>()
                     ),
-                component: () => B.Text(),
                 order: Order.At.Min
             );
 
             // adds text component to enum properties
-            conventions.AddPropertyComponent(
+            conventions.AddPropertyComponent<Text>(
                 when: c => c.Property.PropertyType.SkipNullable().IsEnum,
-                component: () => B.Text(),
                 order: Order.At.Min
             );
 
             // adds text link to uri properties
-            conventions.AddPropertyComponent(
+            conventions.AddPropertyComponent<TextLink>(
                 when: c => c.Property.PropertyType.SkipNullable().Is<Uri>(),
-                component: () => B.TextLink(),
                 order: Order.At.Min
             );
 
             // adds check to boolean properties
-            conventions.AddPropertyComponent(
+            conventions.AddPropertyComponent<Check>(
                 when: c => c.Property.PropertyType.SkipNullable().Is<bool>(),
-                component: () => B.Check(),
                 order: Order.At.Min
             );
 
             // adds date to date only properties
-            conventions.AddPropertyComponent(
+            conventions.AddPropertyComponent<Date>(
                 when: c => c.Property.PropertyType.SkipNullable().Is<DateOnly>(),
-                component: () => B.Date(),
                 order: Order.At.Min
             );
             conventions.EditPropertyComponent<Date>(
@@ -260,9 +249,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds date to date time properties
-            conventions.AddPropertyComponent(
+            conventions.AddPropertyComponent<Date>(
                 when: c => c.Property.PropertyType.SkipNullable().Is<DateTime>(),
-                component: () => B.Date(),
                 order: Order.At.Min
             );
             conventions.EditPropertyComponent<Date>(
@@ -370,9 +358,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds form page to methods
-            conventions.AddMethodComponent(
-                where: cc => cc.Path.Is("page", "*", "*"),
-                component: (_, cc) => B.FormPage()
+            conventions.AddMethodComponent<FormPage>(
+                where: cc => cc.Path.Is("page", "*", "*")
             );
             conventions.EditMethodComponent<FormPage>(
                 component: (fp, c, cc) =>
@@ -387,9 +374,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds page title to method
-            conventions.AddMethodComponent(
-                where: cc => cc.Path.Is("page", "*", "*", "*-page", "title"),
-                component: () => B.PageTitle()
+            conventions.AddMethodComponent<PageTitle>(
+                where: cc => cc.Path.Is("page", "*", "*", "*-page", "title")
             );
             conventions.EditMethodComponent<PageTitle>(
                 component: (pt, c, cc) =>
@@ -407,9 +393,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds content to method
-            conventions.AddMethodSchema(
-                where: cc => cc.Path.EndsWith("contents", "*"),
-                schema: () => B.Content()
+            conventions.AddMethodSchema<Content>(
+                where: cc => cc.Path.EndsWith("contents", "*")
             );
             conventions.EditMethodSchema<Content>(
                 schema: (cn, c, cc) =>
@@ -467,7 +452,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                 schema: dtc =>
                 {
                     dtc.Key = "actions";
-                    dtc.Component = B.Composite();
+                    dtc.Component = new Composite().ToDescriptor();
                 },
                 order: Order.At.Min
             );
@@ -512,12 +497,11 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds simple form to methods
-            conventions.AddMethodComponent(
+            conventions.AddMethodComponent<SimpleForm>(
                 when: c =>
                     c.Method.TryGet<ApiAction>(out var action) &&
                     action.Method != HttpMethod.Get,
-                where: cc => cc.Path.EndsWith("contents", "*", "*", "component"),
-                component: () => B.SimpleForm()
+                where: cc => cc.Path.EndsWith("contents", "*", "*", "component")
             );
             conventions.EditMethodComponent<SimpleForm>(
                 component: (sf, c, cc) =>
@@ -585,9 +569,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds form page input group to parameters
-            conventions.AddParameterSchema(
-                when: c => c.Parameter.Has<ApiParameter>(),
-                schema: () => B.FormPageInputGroup()
+            conventions.AddParameterSchema<FormPage.InputGroup>(
+                when: c => c.Parameter.Has<ApiParameter>()
             );
             conventions.EditParameterSchema<FormPage.InputGroup>(
                 schema: (fpig, c, cc) =>
@@ -601,9 +584,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds input to parameters
-            conventions.AddParameterSchema(
-                when: c => c.Parameter.Has<ApiParameter>(),
-                schema: () => B.Input()
+            conventions.AddParameterSchema<Input>(
+                when: c => c.Parameter.Has<ApiParameter>()
             );
             conventions.EditParameterSchema<Input>(
                 when: c => c.Parameter.Has<ApiParameter>(),
@@ -669,41 +651,36 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds input text to string and value type parameters
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<InputText>(
                 when: c =>
                     c.Parameter.ParameterType.Is<string>() ||
                     c.Parameter.ParameterType.SkipNullable().TryGetMetadata(out var metadata) && metadata.Has<Primitive>(),
-                component: () => B.InputText(),
                 order: Order.At.Min
             );
 
             // adds input number to int and long parameters
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<InputNumber>(
                 when: c =>
                     c.Parameter.ParameterType.SkipNullable().Is<int>() ||
                     c.Parameter.ParameterType.SkipNullable().Is<long>(),
-                component: () => B.InputNumber(),
                 order: Order.At.Min
             );
 
             // adds input money to decimal parameters
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<InputMoney>(
                 when: c => c.Parameter.ParameterType.SkipNullable().Is<decimal>(),
-                component: () => B.InputMoney(),
                 order: Order.At.Min
             );
 
             // adds input rate to double parameters
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<InputRate>(
                 when: c => c.Parameter.ParameterType.SkipNullable().Is<double>(),
-                component: () => B.InputRate(),
                 order: Order.At.Min
             );
 
             // adds input checkbox to bool parameters
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<InputCheckbox>(
                 when: c => c.Parameter.ParameterType.SkipNullable().Is<bool>(),
-                component: () => B.InputCheckbox(),
                 order: Order.At.Min
             );
             conventions.EditParameterComponent<InputCheckbox>(
@@ -713,23 +690,20 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             );
 
             // adds input url to uri parameters
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<InputUrl>(
                 when: c => c.Parameter.ParameterType.SkipNullable().Is<Uri>(),
-                component: () => B.InputUrl(),
                 order: Order.At.Min
             );
 
             // adds input mail address to mail address parameters
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<InputMailAddress>(
                 when: c => c.Parameter.ParameterType.SkipNullable().Is<MailAddress>(),
-                component: () => B.InputMailAddress(),
                 order: Order.At.Min
             );
 
             // add input date to date only parameters
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<InputDate>(
                 when: c => c.Parameter.ParameterType.SkipNullable().Is<DateOnly>(),
-                component: () => B.InputDate(),
                 order: Order.At.Min
             );
             conventions.EditParameterComponent<InputDate>(
@@ -826,7 +800,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
 
         configurator.Ui.ConfigureComponentExports(exports =>
         {
-            exports.AddFromExtensions(typeof(B));
+            exports.AddFromThemeAssembly(this);
         });
 
         configurator.Ui.ConfigureAppDescriptor(app =>
@@ -835,7 +809,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             {
                 var error = new ErrorPage
                 {
-                    SafeLinks = [.. _routes.Where(r => r.ErrorSafeLink).Select(r => r.AsCardLink(l))],
+                    SafeLinks = [.. _routes.Where(r => r.ErrorSafeLink).Select(r => r.ToCardLink(l))],
                     ErrorInfos =
                     {
                         [403] = new(
@@ -854,12 +828,12 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                 };
                 _errorPageOptions.Apply(error);
 
-                app.Error = error.Describe(data: Computed.UseError());
+                app.Error = error.ToDescriptor(data: Computed.UseError());
                 app.InlineError = new Message
                 {
                     Icon = "pi pi-exclamation-circle",
                     Severity = "error"
-                }.Describe();
+                }.ToDescriptor();
             });
         });
 
@@ -869,7 +843,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
             {
                 var sideMenu = new SideMenu
                 {
-                    Menu = [.. _routes.Where(r => r.SideMenu).Select(r => r.AsSideMenuItem(l))]
+                    Menu = [.. _routes.Where(r => r.SideMenu).Select(r => r.ToSideMenuItem(l))]
                 };
                 _sideMenuOptions.Apply(sideMenu);
 
@@ -878,7 +852,7 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                 {
                     if (route.Disabled) { continue; }
 
-                    header.Sitemap[route.Path] = route.AsHeaderItem(l);
+                    header.Sitemap[route.Path] = route.ToHeaderItem(l);
                 }
 
                 _headerOptions.Apply(header);
@@ -886,8 +860,8 @@ public class DefaultThemeFeature(IEnumerable<Route> _routes,
                 layouts.AddLayout(new DefaultLayout
                 {
                     Path = "default",
-                    SideMenu = sideMenu.Describe(data: Computed.UseRoute()),
-                    Header = header.Describe(data: Computed.UseRoute())
+                    SideMenu = sideMenu.ToDescriptor(data: Computed.UseRoute()),
+                    Header = header.ToDescriptor(data: Computed.UseRoute())
                 });
             });
 

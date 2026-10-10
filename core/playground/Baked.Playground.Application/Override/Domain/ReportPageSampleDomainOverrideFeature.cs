@@ -6,8 +6,6 @@ using Baked.Ui;
 
 using static Baked.Ui.Datas;
 
-using B = Baked.Ui.Components;
-
 namespace Baked.Playground.Override.Domain;
 
 public class ReportPageSampleDomainOverrideFeature : IFeature
@@ -27,10 +25,9 @@ public class ReportPageSampleDomainOverrideFeature : IFeature
                 attribute: group => group.TabName = "data-table",
                 order: Order.At.Override
             );
-            conventions.AddTypeComponent(
+            conventions.AddTypeComponent<Icon>(
                 when: c => c.Type.Is<ReportPageSample>(),
                 where: cc => cc.Path.EndsWith("single-value", "icon"),
-                component: () => B.Icon(),
                 order: Order.At.Override
             );
             conventions.EditTypeComponent<Icon>(
@@ -39,10 +36,9 @@ public class ReportPageSampleDomainOverrideFeature : IFeature
                 component: cd => cd.Schema.IconClass = "pi-box",
                 order: Order.At.Override
             );
-            conventions.AddTypeComponent(
+            conventions.AddTypeComponent<Icon>(
                 when: c => c.Type.Is<ReportPageSample>(),
                 where: cc => cc.Path.EndsWith("data-table", "icon"),
-                component: () => B.Icon(),
                 order: Order.At.Override
             );
             conventions.EditTypeComponent<Icon>(
@@ -60,14 +56,12 @@ public class ReportPageSampleDomainOverrideFeature : IFeature
             );
 
             // Parameter overrides
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<Select>(
                 when: c => c.Type.Is<ReportPageSample>() && c.Method.Name is nameof(ReportPageSample.With) && !c.Parameter.IsNullable,
-                component: () => B.Select(),
                 order: Order.At.Override
             );
-            conventions.AddParameterComponent(
+            conventions.AddParameterComponent<Select>(
                 when: c => c.Type.Is<ReportPageSample>() && c.Method.Name is nameof(ReportPageSample.GetFirst) && c.Parameter.Name is "count",
-                component: () => B.Select(),
                 order: Order.At.Override
             );
 

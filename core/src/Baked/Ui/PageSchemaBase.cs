@@ -1,6 +1,6 @@
 ﻿namespace Baked.Ui;
 
-public record PageSchemaBase : IPageSchema
+public abstract record PageSchemaBase : IPageSchema
 {
     string _path = string.Empty;
 

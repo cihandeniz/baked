@@ -9,15 +9,13 @@ using Baked.Ui;
 
 using static Baked.Theme.Default.DomainDatas;
 
-using B = Baked.Ui.Components;
-using C = Baked.Playground.Ui.Components;
 using Route = Baked.Theme.Route;
 
 namespace Baked.Playground.Theme.Custom;
 
 public class CustomThemeFeature(IEnumerable<Func<Router, Route>> routes)
     : DefaultThemeFeature(routes.Select(r => r(new())),
-        _sideMenuOptions: sm => sm.Footer = B.LanguageSwitcher(),
+        _sideMenuOptions: sm => sm.Footer = new LanguageSwitcher().ToDescriptor(),
         _errorPageOptions: ep =>
         {
             ep.ErrorInfos[503] = new(
@@ -49,10 +47,9 @@ public class CustomThemeFeature(IEnumerable<Func<Router, Route>> routes)
             );
 
             // String api rendering
-            conventions.AddMethodComponent(
+            conventions.AddMethodComponent<Text>(
                 when: c => c.Method.DefaultOverload.ReturnType.Is<string>(),
-                where: cc => cc.Path.EndsWith("data-panel", "content"),
-                component: () => B.Text()
+                where: cc => cc.Path.EndsWith("data-panel", "content")
             );
             conventions.EditMethodComponent<Text>(
                 when: c => c.Method.DefaultOverload.ReturnType.Is<string>(),
@@ -60,7 +57,7 @@ public class CustomThemeFeature(IEnumerable<Func<Router, Route>> routes)
                 order: Order.At.Min
             );
             conventions.EditMethodComponent<Text>(
-                component: t => t.Override(C.MyText())
+                component: t => t.Override<MyText>()
             );
             conventions.EditMethodComponent<Text>(
                 component: t => t.Schema.MaxLength = 100
@@ -88,7 +85,7 @@ public class CustomThemeFeature(IEnumerable<Func<Router, Route>> routes)
 
         configurator.Ui.ConfigureComponentExports(c =>
         {
-            c.AddFromExtensions(typeof(C));
+            c.AddFromThemeAssembly(this);
         });
 
         configurator.Ui.ConfigurePageDescriptors(pages =>

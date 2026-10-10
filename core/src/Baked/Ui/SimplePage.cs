@@ -1,9 +1,7 @@
-﻿using B = Baked.Ui.Components;
-
-namespace Baked.Ui;
+﻿namespace Baked.Ui;
 
 public record SimplePage : PageSchemaBase
 {
-    public IComponentDescriptor Title { get; set; } = B.MissingComponent();
+    public IComponentDescriptor Title { get; set; } = MissingComponent.Default;
     public List<Content> Contents { get; init; } = [];
 }
